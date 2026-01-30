@@ -26,6 +26,7 @@ src/main/java/vn/clinic/patientflow/
 ├── patient/                # Module: patient, patient_insurance
 ├── scheduling/             # Module: slot_template, calendar_day, appointment
 ├── triage/                 # Module: triage_session, complaint, vital
+│   └── ai/                  # AI gợi ý acuity: AiTriageProvider, RuleBasedTriageProvider
 ├── queue/                  # Module: queue_definition, queue_entry
 ├── clinical/               # Module: consultation, clinical_vital
 └── aiaudit/                # Module: ai_model_version, ai_triage_audit
@@ -81,6 +82,13 @@ java -jar target/patient-flow-triage-0.1.0-SNAPSHOT.jar
 ```
 
 Test `PatientFlowApplicationTests` dùng profile `dev` và cần PostgreSQL đã chạy migration. Chạy test với DB thật hoặc dùng `-DskipTests` khi build.
+
+## AI phân loại (Triage)
+
+- **Provider:** `AiTriageProvider` (interface). Mặc định: `RuleBasedTriageProvider` (từ khóa lý do khám + sinh hiệu → acuity 1–5).
+- **Cấu hình:** `triage.ai.enabled`, `triage.ai.model-key`, `triage.ai.provider=rule-based`.
+- **Luồng:** POST /api/triage/suggest → gợi ý (không ghi audit). POST /api/triage/sessions với `useAiSuggestion=true` → gọi AI, tạo session, ghi `ai_triage_audit` (input/output, latency, model_version).
+- **Audit:** Mỗi lần gọi AI khi tạo session được ghi vào `ai_model_version` (tự tạo nếu chưa có) và `ai_triage_audit`.
 
 ## Tài liệu
 

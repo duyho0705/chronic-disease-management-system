@@ -12,13 +12,24 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import vn.clinic.patientflow.api.dto.CreateTriageSessionRequest;
 import vn.clinic.patientflow.api.dto.PagedResponse;
+import vn.clinic.patientflow.api.dto.SuggestAcuityRequest;
 import vn.clinic.patientflow.api.dto.TriageSessionDto;
+import vn.clinic.patientflow.api.dto.TriageSuggestionDto;
+import vn.clinic.patientflow.patient.domain.Patient;
+import vn.clinic.patientflow.patient.service.PatientService;
+import vn.clinic.patientflow.triage.ai.AiTriageService;
+import vn.clinic.patientflow.triage.ai.AiTriageProvider;
 import vn.clinic.patientflow.triage.domain.TriageComplaint;
 import vn.clinic.patientflow.triage.domain.TriageSession;
 import vn.clinic.patientflow.triage.domain.TriageVital;
 import vn.clinic.patientflow.triage.service.TriageService;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,6 +43,47 @@ import java.util.stream.Collectors;
 public class TriageController {
 
     private final TriageService triageService;
+    private final AiTriageService aiTriageService;
+    private final AiTriageProvider aiTriageProvider;
+    private final PatientService patientService;
+
+    @PostMapping("/suggest")
+    @Operation(summary = "Gợi ý mức độ ưu tiên (AI/rule). Không tạo session; dùng trước khi POST /sessions với useAiSuggestion=true hoặc để hiển thị gợi ý.")
+    public TriageSuggestionDto suggest(@Valid @RequestBody SuggestAcuityRequest request) {
+        AiTriageService.TriageInput input = buildTriageInput(request);
+        AiTriageService.TriageSuggestionResult result = aiTriageService.suggest(input);
+        return TriageSuggestionDto.builder()
+                .suggestedAcuity(result.getSuggestedAcuity())
+                .confidence(result.getConfidence())
+                .latencyMs(result.getLatencyMs())
+                .providerKey(aiTriageProvider.getProviderKey())
+                .build();
+    }
+
+    private AiTriageService.TriageInput buildTriageInput(SuggestAcuityRequest request) {
+        int ageInYears = request.getAgeInYears() != null ? request.getAgeInYears() : 0;
+        if (request.getPatientId() != null) {
+            Patient p = patientService.getById(request.getPatientId());
+            if (p.getDateOfBirth() != null) {
+                ageInYears = (int) ChronoUnit.YEARS.between(p.getDateOfBirth(), LocalDate.now());
+            }
+        }
+        Map<String, BigDecimal> vitals = new HashMap<>();
+        if (request.getVitals() != null) {
+            for (var v : request.getVitals()) {
+                if (v.getVitalType() != null && v.getValueNumeric() != null) {
+                    vitals.put(v.getVitalType(), v.getValueNumeric());
+                }
+            }
+        }
+        List<String> complaintTypes = request.getComplaintTypes() != null ? request.getComplaintTypes() : List.of();
+        return AiTriageService.TriageInput.builder()
+                .chiefComplaintText(request.getChiefComplaintText())
+                .ageInYears(ageInYears)
+                .vitals(vitals)
+                .complaintTypes(complaintTypes)
+                .build();
+    }
 
     @PostMapping("/sessions")
     @ResponseStatus(HttpStatus.CREATED)

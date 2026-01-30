@@ -48,7 +48,8 @@ Base URL: `http://localhost:8080` (dev). Swagger UI: `/swagger-ui.html`.
 
 | Method | Path | Mô tả |
 |--------|------|--------|
-| POST | /api/triage/sessions | Tạo phiên phân loại (body: branchId, patientId, startedAt, acuityLevel, complaints[], vitals[], ...) |
+| POST | /api/triage/suggest | Gợi ý acuity (AI/rule). Body: chiefComplaintText, ageInYears?, patientId?, vitals[], complaintTypes[]. Trả về suggestedAcuity, confidence, latencyMs, providerKey. Không tạo session. |
+| POST | /api/triage/sessions | Tạo phiên phân loại. Body: branchId, patientId, startedAt, acuityLevel (bắt buộc nếu useAiSuggestion=false), useAiSuggestion?, complaints[], vitals[], ... Nếu useAiSuggestion=true: gọi AI, ghi audit (ai_triage_audit). |
 | GET | /api/triage/sessions/{id} | Lấy phiên theo ID |
 | GET | /api/triage/sessions?branchId= | Danh sách phiên theo chi nhánh (phân trang) |
 | GET | /api/triage/sessions/{id}/complaints | Lý do khám / triệu chứng |

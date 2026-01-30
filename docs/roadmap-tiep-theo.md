@@ -40,14 +40,16 @@ Sau khi đã có **ERD** ([erd-patient-flow-triage-vi.md](./erd-patient-flow-tri
 
 ---
 
-## 4. Tích hợp AI phân loại (Triage)
+## 4. Tích hợp AI phân loại (Triage) ✅ Đã xong
 
 - **Mục đích:** Service/API gọi model AI (hoặc rule-based) để gợi ý `acuity_level`; ghi `triage_session` + `ai_triage_audit`.
-- **Bao gồm:**
-  - Input: chief complaint, vitals, tuổi (từ patient).
-  - Output: suggested acuity, confidence (nếu có).
-  - Ghi audit: `ai_model_version`, `ai_triage_audit` (input/output, latency).
-- **Triển khai:** Có thể bắt đầu bằng rule đơn giản hoặc LLM/API bên ngoài, sau đó thay bằng model riêng.
+- **Đã có:**
+  - **AiTriageProvider** (interface) + **RuleBasedTriageProvider**: từ khóa lý do khám (Việt/Anh) + sinh hiệu → acuity 1–5 (ESI). Cấu hình `triage.ai.provider=rule-based`.
+  - **AiTriageService**: `suggest(TriageInput)` (đo latency), `recordAudit(triageSessionId, input, result)`; `getOrCreateCurrentModelVersion(modelKey)` (tự tạo bản ghi khi chưa có).
+  - **TriageService**: Khi `useAiSuggestion=true` trong CreateTriageSessionRequest → gọi AI, ghi session với acuity_source=AI, ghi `ai_triage_audit` sau khi tạo session.
+  - **API:** POST /api/triage/suggest (body: chiefComplaintText, patientId?, ageInYears?, vitals[]) → suggestedAcuity, confidence, latencyMs, providerKey. POST /api/triage/sessions hỗ trợ `useAiSuggestion`.
+  - Cấu hình: `triage.ai.enabled`, `triage.ai.model-key`, `triage.ai.provider`. Xem `docs/api-endpoints.md`.
+- **Bước sau:** Thêm provider khác (LLM/API bên ngoài) hoặc tinh chỉnh rule; đánh giá model và A/B test.
 
 ---
 

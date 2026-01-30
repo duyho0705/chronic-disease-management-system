@@ -57,6 +57,13 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: method
 
+# AI Triage (rule-based mặc định; sau có thể thêm provider: openai, rest)
+triage:
+  ai:
+    enabled: true
+    model-key: triage_acuity_v1
+    provider: rule-based
+
 # Logging
 logging:
   level:

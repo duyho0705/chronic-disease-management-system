@@ -31,7 +31,7 @@ public class CreateTriageSessionRequest {
     @NotNull
     private Instant startedAt;
 
-    @NotNull
+    /** Bắt buộc khi useAiSuggestion=false; bị ghi đè bởi AI khi useAiSuggestion=true. */
     @Size(max = 32)
     private String acuityLevel;
 
@@ -46,6 +46,9 @@ public class CreateTriageSessionRequest {
     private String chiefComplaintText;
 
     private String notes;
+
+    /** Nếu true: gọi AI gợi ý acuity, ghi audit; acuityLevel từ request bị ghi đè bởi kết quả AI. */
+    private Boolean useAiSuggestion;
 
     private List<ComplaintItem> complaints;
 

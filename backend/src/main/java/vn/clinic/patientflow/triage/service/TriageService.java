@@ -23,8 +23,14 @@ import vn.clinic.patientflow.triage.repository.TriageComplaintRepository;
 import vn.clinic.patientflow.triage.repository.TriageSessionRepository;
 import vn.clinic.patientflow.triage.repository.TriageVitalRepository;
 import vn.clinic.patientflow.api.dto.CreateTriageSessionRequest;
+import vn.clinic.patientflow.triage.ai.AiTriageService;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -38,6 +44,7 @@ public class TriageService {
     private final PatientService patientService;
     private final IdentityService identityService;
     private final SchedulingAppointmentRepository schedulingAppointmentRepository;
+    private final AiTriageService aiTriageService;
 
     @Transactional(readOnly = true)
     public TriageSession getById(UUID id) {
@@ -81,6 +88,25 @@ public class TriageService {
                 ? identityService.getUserById(request.getTriagedByUserId())
                 : null;
 
+        String acuityLevel = request.getAcuityLevel();
+        String acuitySource = request.getAcuitySource();
+        String aiSuggestedAcuity = request.getAiSuggestedAcuity();
+        BigDecimal aiConfidenceScore = request.getAiConfidenceScore();
+
+        AiTriageService.TriageInput aiInput = null;
+        AiTriageService.TriageSuggestionResult aiResult = null;
+
+        if (Boolean.TRUE.equals(request.getUseAiSuggestion())) {
+            aiInput = buildTriageInput(request, patient);
+            aiResult = aiTriageService.suggest(aiInput);
+            acuityLevel = aiResult.getSuggestedAcuity();
+            acuitySource = "AI";
+            aiSuggestedAcuity = aiResult.getSuggestedAcuity();
+            aiConfidenceScore = aiResult.getConfidence();
+        } else if (request.getAcuityLevel() == null || request.getAcuityLevel().isBlank()) {
+            throw new IllegalArgumentException("acuityLevel is required when useAiSuggestion is false");
+        }
+
         TriageSession session = TriageSession.builder()
                 .tenant(tenant)
                 .branch(branch)
@@ -88,14 +114,18 @@ public class TriageService {
                 .appointment(appointment)
                 .triagedByUser(triagedByUser)
                 .startedAt(request.getStartedAt())
-                .acuityLevel(request.getAcuityLevel())
-                .acuitySource(request.getAcuitySource())
-                .aiSuggestedAcuity(request.getAiSuggestedAcuity())
-                .aiConfidenceScore(request.getAiConfidenceScore())
+                .acuityLevel(acuityLevel)
+                .acuitySource(acuitySource)
+                .aiSuggestedAcuity(aiSuggestedAcuity)
+                .aiConfidenceScore(aiConfidenceScore)
                 .chiefComplaintText(request.getChiefComplaintText())
                 .notes(request.getNotes())
                 .build();
         session = triageSessionRepository.save(session);
+
+        if (Boolean.TRUE.equals(request.getUseAiSuggestion()) && aiInput != null && aiResult != null) {
+            aiTriageService.recordAudit(session.getId(), aiInput, aiResult);
+        }
 
         if (request.getComplaints() != null) {
             for (var c : request.getComplaints()) {
@@ -121,5 +151,31 @@ public class TriageService {
             }
         }
         return triageSessionRepository.findById(session.getId()).orElseThrow();
+    }
+
+    private AiTriageService.TriageInput buildTriageInput(CreateTriageSessionRequest request, Patient patient) {
+        int ageInYears = patient.getDateOfBirth() != null
+                ? (int) ChronoUnit.YEARS.between(patient.getDateOfBirth(), LocalDate.now())
+                : 0;
+        Map<String, BigDecimal> vitals = new HashMap<>();
+        if (request.getVitals() != null) {
+            for (var v : request.getVitals()) {
+                if (v.getVitalType() != null && v.getValueNumeric() != null) {
+                    vitals.put(v.getVitalType(), v.getValueNumeric());
+                }
+            }
+        }
+        List<String> complaintTypes = request.getComplaints() != null
+                ? request.getComplaints().stream()
+                .map(CreateTriageSessionRequest.ComplaintItem::getComplaintType)
+                .filter(java.util.Objects::nonNull)
+                .toList()
+                : List.of();
+        return AiTriageService.TriageInput.builder()
+                .chiefComplaintText(request.getChiefComplaintText())
+                .ageInYears(ageInYears)
+                .vitals(vitals)
+                .complaintTypes(complaintTypes)
+                .build();
     }
 }
