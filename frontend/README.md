@@ -30,12 +30,19 @@ frontend/
 └── package.json
 ```
 
+## Yêu cầu
+
+- **Node.js**: 18.x hoặc 20.x LTS (khuyến nghị). Tránh Node 22 khi dùng Vite 5 (tương thích tốt hơn).
+- Có file `.nvmrc` (Node 20) để `nvm use` nếu dùng nvm.
+
 ## Chạy dev
 
 1. **Backend** phải chạy trước tại `http://localhost:8080` (Spring Boot).
 2. Trong thư mục `frontend`:
 
 ```bash
+# Lần đầu hoặc sau khi đổi dependency: xóa lock cũ rồi cài lại
+rm -rf node_modules package-lock.json   # Windows: rmdir /s /q node_modules & del package-lock.json
 npm install
 npm run dev
 ```

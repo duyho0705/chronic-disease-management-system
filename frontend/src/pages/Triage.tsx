@@ -111,15 +111,18 @@ export function Triage() {
   })
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">Phân loại ưu tiên (Triage)</h1>
+    <div className="mx-auto max-w-6xl space-y-8">
+      <header className="page-header">
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Phân loại ưu tiên</h1>
+        <p className="mt-1 text-sm text-slate-600">Tìm bệnh nhân, nhập lý do khám và sinh hiệu, gợi ý AI mức ưu tiên 1–5.</p>
+      </header>
 
-      {error && <div className="card border-red-200 bg-red-50 text-red-700">{error}</div>}
-      {success && <div className="card border-green-200 bg-green-50 text-green-700">{success}</div>}
+      {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{success}</div>}
 
       {/* Chọn bệnh nhân */}
-      <div className="card max-w-xl">
-        <h3 className="text-sm font-semibold text-slate-700 mb-2">Bệnh nhân</h3>
+      <section className="card max-w-2xl">
+        <h2 className="section-title mb-4">Bệnh nhân</h2>
         <div className="flex gap-2">
           <input
             type="text"
@@ -134,20 +137,20 @@ export function Triage() {
           </button>
         </div>
         {patient && (
-          <div className="mt-3 p-3 bg-slate-50 rounded-lg">
-            <p className="font-medium">{patient.fullNameVi}</p>
-            <p className="text-sm text-slate-600">
+          <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50/50 p-4">
+            <p className="font-semibold text-slate-900">{patient.fullNameVi}</p>
+            <p className="mt-1 text-sm text-slate-600">
               {patient.dateOfBirth} · {patient.phone || '—'}
             </p>
           </div>
         )}
-      </div>
+      </section>
 
       {patientId && (
         <>
           {/* Lý do khám + AI gợi ý */}
-          <div className="card max-w-2xl">
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">Lý do đến khám / Triệu chứng</h3>
+          <section className="card max-w-2xl">
+            <h2 className="section-title mb-4">Lý do đến khám / Triệu chứng</h2>
             <textarea
               className="input min-h-[80px]"
               placeholder="Nhập lý do khám (tiếng Việt hoặc tiếng Anh)..."
@@ -162,21 +165,21 @@ export function Triage() {
               />
               <span className="text-sm">Dùng gợi ý AI (rule-based)</span>
             </label>
-            <div className="mt-3 flex gap-2">
-              <button type="button" onClick={runSuggest} className="btn-secondary">
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <button type="button" onClick={runSuggest} className="btn-secondary rounded-lg">
                 Gợi ý mức ưu tiên (AI)
               </button>
               {suggestion && (
-                <span className="text-sm text-slate-600 self-center">
-                  Gợi ý: <strong>{suggestion.suggestedAcuity}</strong> (độ tin cậy {suggestion.confidence}, {suggestion.latencyMs}ms)
+                <span className="text-sm text-slate-600">
+                  Gợi ý: <strong className="text-slate-900">{suggestion.suggestedAcuity}</strong> (độ tin cậy {suggestion.confidence}, {suggestion.latencyMs}ms)
                 </span>
               )}
             </div>
-          </div>
+          </section>
 
           {/* Sinh hiệu */}
-          <div className="card max-w-2xl">
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">Sinh hiệu (tùy chọn)</h3>
+          <section className="card max-w-2xl">
+            <h2 className="section-title mb-4">Sinh hiệu (tùy chọn)</h2>
             <div className="space-y-2">
               {VITAL_TYPES.map((type) => (
                 <div key={type} className="flex items-center gap-2">
@@ -212,15 +215,16 @@ export function Triage() {
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
           {/* Mức ưu tiên + Ghi chú + Tạo phiên */}
-          <div className="card max-w-2xl">
-            <div className="space-y-3">
+          <section className="card max-w-2xl">
+            <h2 className="section-title mb-4">Mức ưu tiên & Ghi chú</h2>
+            <div className="space-y-4">
               <div>
                 <label className="label">Mức độ ưu tiên (ESI 1–5)</label>
                 <select
-                  className="input w-32"
+                  className="input w-32 rounded-lg"
                   value={acuityLevel}
                   onChange={(e) => setAcuityLevel(e.target.value)}
                 >
@@ -242,12 +246,12 @@ export function Triage() {
                 type="button"
                 onClick={() => createSession.mutate()}
                 disabled={createSession.isPending}
-                className="btn-success"
+                className="btn-success rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 focus:ring-emerald-500"
               >
                 {createSession.isPending ? 'Đang tạo...' : 'Tạo phiên phân loại'}
               </button>
             </div>
-          </div>
+          </section>
         </>
       )}
     </div>

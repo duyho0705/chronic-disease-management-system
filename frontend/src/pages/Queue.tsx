@@ -55,15 +55,18 @@ export function Queue() {
   })
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">Hàng chờ</h1>
+    <div className="mx-auto max-w-6xl space-y-8">
+      <header className="page-header">
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Hàng chờ</h1>
+        <p className="mt-1 text-sm text-slate-600">Xem danh sách đang chờ, thêm bệnh nhân, gọi số.</p>
+      </header>
 
-      {error && <div className="card border-red-200 bg-red-50 text-red-700">{error}</div>}
-      {success && <div className="card border-green-200 bg-green-50 text-green-700">{success}</div>}
+      {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{success}</div>}
 
       {/* Chọn hàng chờ */}
-      <div className="card">
-        <h3 className="text-sm font-semibold text-slate-700 mb-2">Định nghĩa hàng chờ</h3>
+      <section className="card">
+        <h2 className="section-title mb-4">Định nghĩa hàng chờ</h2>
         {definitions?.length ? (
           <div className="flex flex-wrap gap-2">
             {definitions.map((d) => (
@@ -71,10 +74,10 @@ export function Queue() {
                 key={d.id}
                 type="button"
                 onClick={() => setSelectedQueueId(d.id)}
-                className={`rounded-lg px-4 py-2 text-sm font-medium ${
+                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
                   selectedQueueId === d.id
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
+                    ? 'border-slate-900 bg-slate-900 text-white'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 {d.nameVi}
@@ -84,13 +87,13 @@ export function Queue() {
         ) : (
           <p className="text-slate-500">Chưa có định nghĩa hàng chờ cho chi nhánh này.</p>
         )}
-      </div>
+      </section>
 
       {selectedQueueId && (
         <>
           {/* Thêm vào hàng */}
-          <div className="card max-w-xl">
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">Thêm bệnh nhân vào hàng</h3>
+          <section className="card max-w-2xl">
+            <h2 className="section-title mb-4">Thêm bệnh nhân vào hàng</h2>
             <div className="flex flex-wrap gap-2">
               <input
                 type="text"
@@ -110,27 +113,27 @@ export function Queue() {
                 type="button"
                 onClick={() => addEntry.mutate()}
                 disabled={addEntry.isPending || !addPatientId.trim()}
-                className="btn-primary"
+                className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800 focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 disabled:opacity-50"
               >
                 {addEntry.isPending ? 'Đang thêm...' : 'Thêm vào hàng'}
               </button>
             </div>
-          </div>
+          </section>
 
           {/* Danh sách đang chờ */}
-          <div className="card">
-            <h3 className="text-sm font-semibold text-slate-700 mb-3">Danh sách đang chờ (WAITING)</h3>
+          <section className="card">
+            <h2 className="section-title mb-4">Danh sách đang chờ (WAITING)</h2>
             {isLoading ? (
               <p className="text-slate-500">Đang tải...</p>
             ) : entries?.length ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-sm">
+              <div className="overflow-x-auto rounded-lg border border-slate-200">
+                <table className="min-w-full">
                   <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-2 font-medium">Vị trí</th>
-                      <th className="text-left py-2 font-medium">Patient ID</th>
-                      <th className="text-left py-2 font-medium">Trạng thái</th>
-                      <th className="text-left py-2 font-medium">Thao tác</th>
+                    <tr>
+                      <th className="table-th">Vị trí</th>
+                      <th className="table-th">Bệnh nhân</th>
+                      <th className="table-th">Trạng thái</th>
+                      <th className="table-th">Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -149,7 +152,7 @@ export function Queue() {
             ) : (
               <p className="text-slate-500">Không có bệnh nhân nào đang chờ.</p>
             )}
-          </div>
+          </section>
         </>
       )}
     </div>
@@ -173,19 +176,23 @@ function QueueRow({
     enabled: !!entry.patientId && !!headers?.tenantId,
   })
   return (
-    <tr className="border-b border-slate-100 hover:bg-slate-50">
-      <td className="py-2">{entry.position ?? '—'}</td>
-      <td className="py-2">
+    <tr className="hover:bg-slate-50/80">
+      <td className="table-td font-medium text-slate-900">{entry.position ?? '—'}</td>
+      <td className="table-td font-medium text-slate-900">
         {patient ? patient.fullNameVi : entry.patientId.slice(0, 8) + '…'}
       </td>
-      <td className="py-2">{entry.status}</td>
-      <td className="py-2">
+      <td className="table-td">
+        <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+          {entry.status}
+        </span>
+      </td>
+      <td className="table-td">
         {entry.status === 'WAITING' && (
           <button
             type="button"
             onClick={onCall}
             disabled={loading}
-            className="btn-success text-xs"
+            className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
           >
             {loading ? '...' : 'Gọi'}
           </button>
