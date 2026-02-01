@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTenant } from '@/context/TenantContext'
-import { listPatients, findPatientByCccd, createPatient, updatePatient } from '@/api/patients'
+import { listPatients, findPatientByCccd, findPatientByPhone, createPatient, updatePatient } from '@/api/patients'
 import type { PatientDto, CreatePatientRequest } from '@/types/api'
+import { toastService } from '@/services/toast'
 
 function PatientForm({
   initial,
@@ -30,21 +31,21 @@ function PatientForm({
     ethnicity: initial?.ethnicity ?? '',
   })
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
     setSaving(true)
     try {
       if (initial?.id) {
         await updatePatient(initial.id, form, headers)
+        toastService.success('✅ Cập nhật thông tin bệnh nhân thành công!')
       } else {
         await createPatient(form, headers)
+        toastService.success('✅ Đăng ký bệnh nhân mới thành công!')
       }
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Lỗi lưu')
+      toastService.error(err instanceof Error ? err.message : 'Lỗi lưu thông tin bệnh nhân')
     } finally {
       setSaving(false)
     }
@@ -53,7 +54,6 @@ function PatientForm({
   return (
     <form onSubmit={submit} className="card space-y-4 max-w-2xl">
       <h3 className="section-title">{initial?.id ? 'Cập nhật bệnh nhân' : 'Đăng ký bệnh nhân mới'}</h3>
-      {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="label">Họ tên *</label>
@@ -137,6 +137,7 @@ export function Patients() {
   const { headers } = useTenant()
   const [page, setPage] = useState(0)
   const [cccdSearch, setCccdSearch] = useState('')
+  const [phoneSearch, setPhoneSearch] = useState('')
   const [foundPatient, setFoundPatient] = useState<PatientDto | null | 'none'>(null)
   const [showForm, setShowForm] = useState(false)
   const [editingPatient, setEditingPatient] = useState<PatientDto | null>(null)
@@ -151,6 +152,14 @@ export function Patients() {
     if (!cccdSearch.trim() || !headers) return
     setFoundPatient(null)
     const p = await findPatientByCccd(cccdSearch.trim(), headers)
+    setFoundPatient(p ?? 'none')
+    if (p) setEditingPatient(p)
+  }
+
+  const searchPhone = async () => {
+    if (!phoneSearch.trim() || !headers) return
+    setFoundPatient(null)
+    const p = await findPatientByPhone(phoneSearch.trim(), headers)
     setFoundPatient(p ?? 'none')
     if (p) setEditingPatient(p)
   }
@@ -212,6 +221,24 @@ export function Patients() {
             </button>
           </div>
         )}
+      </section>
+
+      {/* Tìm theo SĐT */}
+      <section className="card max-w-2xl">
+        <h2 className="section-title mb-4">Tìm theo Số điện thoại</h2>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Nhập số điện thoại"
+            value={phoneSearch}
+            onChange={(e) => setPhoneSearch(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && searchPhone()}
+            className="input flex-1"
+          />
+          <button type="button" onClick={searchPhone} className="btn-primary">
+            Tìm
+          </button>
+        </div>
       </section>
 
       {/* Form đăng ký / cập nhật */}

@@ -16,6 +16,7 @@ import type {
   UpdateUserRequest,
   UserRoleAssignmentDto,
 } from '@/types/api'
+import { toastService } from '@/services/toast'
 
 const PAGE_SIZE = 10
 
@@ -123,11 +124,11 @@ export function Admin() {
                       <td className="table-td text-xs text-slate-600">
                         {u.roleAssignments?.length
                           ? u.roleAssignments
-                              .map(
-                                (r) =>
-                                  `${r.roleCode}${r.tenantName ? ` @ ${r.tenantName}` : ''}${r.branchName ? ` / ${r.branchName}` : ''}`
-                              )
-                              .join(', ')
+                            .map(
+                              (r) =>
+                                `${r.roleCode}${r.tenantName ? ` @ ${r.tenantName}` : ''}${r.branchName ? ` / ${r.branchName}` : ''}`
+                            )
+                            .join(', ')
                           : '—'}
                       </td>
                       <td className="table-td">
@@ -250,8 +251,14 @@ function CreateUserForm({
 
   const createMutation = useMutation({
     mutationFn: createUser,
-    onSuccess: () => onSuccess(),
-    onError: (err: Error) => setError(err.message),
+    onSuccess: () => {
+      toastService.success('✅ Tạo user thành công!')
+      onSuccess()
+    },
+    onError: (err: Error) => {
+      setError(err.message)
+      toastService.error(err.message)
+    },
   })
 
   const submit = (e: React.FormEvent) => {

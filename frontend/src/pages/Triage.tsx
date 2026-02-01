@@ -4,6 +4,7 @@ import { useTenant } from '@/context/TenantContext'
 import { getPatient, findPatientByCccd } from '@/api/patients'
 import { suggestAcuity, createTriageSession } from '@/api/triage'
 import type { PatientDto, VitalItem, ComplaintItem } from '@/types/api'
+import { toastService } from '@/services/toast'
 
 const ACUITY_LEVELS = ['1', '2', '3', '4', '5'] as const
 const VITAL_TYPES = ['TEMPERATURE', 'HEART_RATE', 'BLOOD_PRESSURE_SYSTOLIC', 'BLOOD_PRESSURE_DIASTOLIC', 'RESPIRATORY_RATE', 'SPO2'] as const
@@ -20,8 +21,6 @@ export function Triage() {
   const [vitals, setVitals] = useState<{ type: string; value: string; unit: string }[]>([])
   const [notes, setNotes] = useState('')
   const [overrideReason, setOverrideReason] = useState('')
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   const { data: patient } = useQuery({
     queryKey: ['patient', patientId],
@@ -31,18 +30,17 @@ export function Triage() {
 
   const searchByCccd = async () => {
     if (!cccdSearch.trim() || !headers) return
-    setError('')
     const p = await findPatientByCccd(cccdSearch.trim(), headers)
     if (p) {
       setPatientId(p.id)
+      toastService.success(`Đã tìm thấy: ${p.fullNameVi}`)
     } else {
-      setError('Không tìm thấy bệnh nhân với CCCD này.')
+      toastService.warning('Không tìm thấy bệnh nhân với CCCD này')
     }
   }
 
   const runSuggest = async () => {
     if (!headers?.tenantId) return
-    setError('')
     setSuggestion(null)
     try {
       const age = patient?.dateOfBirth
@@ -70,8 +68,9 @@ export function Triage() {
         explanation: res.explanation,
       })
       setAcuityLevel(res.suggestedAcuity)
+      toastService.info('🤖 AI đã phân tích và đề xuất mức độ ưu tiên')
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Lỗi gợi ý AI')
+      toastService.error(e instanceof Error ? e.message : 'Lỗi gợi ý AI')
     }
   }
 
@@ -106,11 +105,16 @@ export function Triage() {
       )
     },
     onSuccess: () => {
-      setSuccess('Đã tạo phiên phân loại.')
+      toastService.success('✅ Đã tạo phiên phân loại thành công!')
       queryClient.invalidateQueries({ queryKey: ['triage'] })
-      setTimeout(() => setSuccess(''), 3000)
+      // Reset form
+      setChiefComplaint('')
+      setVitals([])
+      setNotes('')
+      setOverrideReason('')
+      setSuggestion(null)
     },
-    onError: (e: Error) => setError(e.message),
+    onError: (e: Error) => toastService.error(e.message),
   })
 
   return (
@@ -119,9 +123,6 @@ export function Triage() {
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Phân loại ưu tiên</h1>
         <p className="mt-1 text-sm text-slate-600">Tìm bệnh nhân, nhập lý do khám và sinh hiệu, gợi ý AI mức ưu tiên 1–5.</p>
       </header>
-
-      {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
-      {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{success}</div>}
 
       {/* Chọn bệnh nhân */}
       <section className="card max-w-2xl">

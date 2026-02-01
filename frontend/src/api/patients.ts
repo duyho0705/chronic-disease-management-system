@@ -28,6 +28,17 @@ export async function findPatientByCccd(
   }
 }
 
+export async function findPatientByPhone(
+  phone: string,
+  tenant: TenantHeaders | null
+): Promise<PatientDto | null> {
+  try {
+    return await get<PatientDto>(`/patients/by-phone?phone=${encodeURIComponent(phone)}`, tenant)
+  } catch {
+    return null
+  }
+}
+
 export async function createPatient(
   body: CreatePatientRequest,
   tenant: TenantHeaders | null

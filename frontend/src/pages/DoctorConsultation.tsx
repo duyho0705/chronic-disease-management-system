@@ -5,6 +5,7 @@ import { useTenant } from '@/context/TenantContext'
 import { getConsultation, updateConsultation, completeConsultation, getPatientHistory } from '@/api/clinical'
 import { getPatient } from '@/api/patients'
 import { ArrowLeft, Save, CheckCircle, Activity, FileText, History as HistoryIcon, Stethoscope, Clock } from 'lucide-react'
+import { toastService } from '@/services/toast'
 
 export function DoctorConsultation() {
     const { consultationId } = useParams<{ consultationId: string }>()
@@ -15,8 +16,6 @@ export function DoctorConsultation() {
     const [activeTab, setActiveTab] = useState<'evaluation' | 'history'>('evaluation')
     const [diagnosis, setDiagnosis] = useState('')
     const [prescription, setPrescription] = useState('')
-    const [error, setError] = useState('')
-    const [success, setSuccess] = useState('')
 
     const { data: consultation, isLoading } = useQuery({
         queryKey: ['consultation', consultationId],
@@ -51,20 +50,19 @@ export function DoctorConsultation() {
                 headers
             ),
         onSuccess: () => {
-            setSuccess('Đã lưu nháp thành công.')
+            toastService.success('💾 Đã lưu nháp thành công')
             queryClient.invalidateQueries({ queryKey: ['consultation', consultationId] })
-            setTimeout(() => setSuccess(''), 3000)
         },
-        onError: (e: Error) => setError(e.message),
+        onError: (e: Error) => toastService.error(e.message),
     })
 
     const completeMutation = useMutation({
         mutationFn: () => completeConsultation(consultationId!, headers),
         onSuccess: () => {
-            alert('Đã hoàn tất khám bệnh!')
+            toastService.success('✅ Hoàn tất khám bệnh thành công!')
             navigate('/queue')
         },
-        onError: (e: Error) => setError(e.message),
+        onError: (e: Error) => toastService.error(e.message),
     })
 
     if (isLoading) return <div className="p-8">Đang tải hồ sơ bệnh án...</div>

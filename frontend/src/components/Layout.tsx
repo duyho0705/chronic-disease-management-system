@@ -10,6 +10,7 @@ const nav = [
   { to: '/triage', label: 'Phân loại' },
   { to: '/queue', label: 'Hàng chờ' },
   { to: '/ai-audit', label: 'AI Audit', roles: ['admin'] },
+  { to: '/analytics', label: 'Analytics', roles: ['admin', 'clinic_manager'] },
   { to: '/admin', label: 'Quản trị', roles: ['admin'] },
 ]
 
@@ -40,11 +41,10 @@ export function Layout() {
               <Link
                 key={to}
                 to={to}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
-                  location.pathname === to || (to !== '/dashboard' && location.pathname.startsWith(to))
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition ${location.pathname === to || (to !== '/dashboard' && location.pathname.startsWith(to))
                     ? 'bg-slate-100 text-slate-900'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 {label}
               </Link>

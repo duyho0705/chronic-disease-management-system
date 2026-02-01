@@ -3,6 +3,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTenant } from '@/context/TenantContext'
 import { getQueueDefinitions, getQueueEntries, addQueueEntry, callQueueEntry } from '@/api/queues'
 import { getPatient } from '@/api/patients'
+import { AcuityIndicator } from '@/components/AcuityBadge'
+import { toastService } from '@/services/toast'
+import { SkeletonTable } from '@/components/Skeleton'
 
 export function Queue() {
   const { headers, branchId } = useTenant()
@@ -10,8 +13,6 @@ export function Queue() {
   const [selectedQueueId, setSelectedQueueId] = useState<string | null>(null)
   const [addPatientId, setAddPatientId] = useState('')
   const [addTriageSessionId, setAddTriageSessionId] = useState('')
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   const { data: definitions } = useQuery({
     queryKey: ['queue-definitions', branchId, headers?.tenantId],
@@ -38,20 +39,21 @@ export function Queue() {
       )
     },
     onSuccess: () => {
-      setSuccess('Đã thêm vào hàng chờ.')
+      toastService.success('✅ Đã thêm bệnh nhân vào hàng chờ')
       setAddPatientId('')
       setAddTriageSessionId('')
       queryClient.invalidateQueries({ queryKey: ['queue-entries'] })
-      setTimeout(() => setSuccess(''), 3000)
     },
-    onError: (e: Error) => setError(e.message),
+    onError: (e: Error) => toastService.error(e.message),
   })
 
   const callEntry = useMutation({
     mutationFn: (entryId: string) => callQueueEntry(entryId, headers),
     onSuccess: () => {
+      toastService.info('🔔 Đã gọi bệnh nhân')
       queryClient.invalidateQueries({ queryKey: ['queue-entries'] })
     },
+    onError: (e: Error) => toastService.error(e.message),
   })
 
   return (
@@ -60,9 +62,6 @@ export function Queue() {
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Hàng chờ</h1>
         <p className="mt-1 text-sm text-slate-600">Xem danh sách đang chờ, thêm bệnh nhân, gọi số.</p>
       </header>
-
-      {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
-      {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{success}</div>}
 
       {/* Chọn hàng chờ */}
       <section className="card">
@@ -74,11 +73,10 @@ export function Queue() {
                 key={d.id}
                 type="button"
                 onClick={() => setSelectedQueueId(d.id)}
-                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
-                  selectedQueueId === d.id
-                    ? 'border-slate-900 bg-slate-900 text-white'
-                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-                }`}
+                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${selectedQueueId === d.id
+                  ? 'border-slate-900 bg-slate-900 text-white'
+                  : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                  }`}
               >
                 {d.nameVi}
               </button>
@@ -124,7 +122,7 @@ export function Queue() {
           <section className="card">
             <h2 className="section-title mb-4">Danh sách đang chờ (WAITING)</h2>
             {isLoading ? (
-              <p className="text-slate-500">Đang tải...</p>
+              <SkeletonTable rows={5} columns={5} />
             ) : entries?.length ? (
               <div className="overflow-x-auto rounded-lg border border-slate-200">
                 <table className="min-w-full">
@@ -178,7 +176,9 @@ function QueueRow({
   })
   return (
     <tr className="hover:bg-slate-50/80">
-      <td className="table-td font-semibold text-slate-900">{entry.acuityLevel ?? '—'}</td>
+      <td className="table-td">
+        <AcuityIndicator level={entry.acuityLevel} />
+      </td>
       <td className="table-td font-medium text-slate-900">{entry.position ?? '—'}</td>
       <td className="table-td font-medium text-slate-900">
         {patient ? patient.fullNameVi : entry.patientId.slice(0, 8) + '…'}
