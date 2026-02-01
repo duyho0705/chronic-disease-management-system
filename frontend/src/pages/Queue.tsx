@@ -128,11 +128,11 @@ export function Queue() {
                 <table className="min-w-full">
                   <thead>
                     <tr>
-                      <th className="table-th">Ưu tiên</th>
-                      <th className="table-th">Vị trí</th>
+                      <th className="table-th w-16">Ưu tiên</th>
+                      <th className="table-th hidden sm:table-cell">Vị trí</th>
                       <th className="table-th">Bệnh nhân</th>
-                      <th className="table-th">Trạng thái</th>
-                      <th className="table-th">Thao tác</th>
+                      <th className="table-th hidden md:table-cell">Trạng thái</th>
+                      <th className="table-th text-right">Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -175,26 +175,31 @@ function QueueRow({
     enabled: !!entry.patientId && !!headers?.tenantId,
   })
   return (
-    <tr className="hover:bg-slate-50/80">
+    <tr className="hover:bg-slate-50/80 transition-colors">
       <td className="table-td">
         <AcuityIndicator level={entry.acuityLevel} />
       </td>
-      <td className="table-td font-medium text-slate-900">{entry.position ?? '—'}</td>
-      <td className="table-td font-medium text-slate-900">
-        {patient ? patient.fullNameVi : entry.patientId.slice(0, 8) + '…'}
-      </td>
+      <td className="table-td font-medium text-slate-900 hidden sm:table-cell">{entry.position ?? '—'}</td>
       <td className="table-td">
-        <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+        <div className="font-semibold text-slate-900 line-clamp-1">{patient ? patient.fullNameVi : 'Loading...'}</div>
+        <div className="text-xs text-slate-500 sm:hidden">
+          #{entry.position ?? '-'} · {entry.status}
+        </div>
+      </td>
+      <td className="table-td hidden md:table-cell">
+        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${entry.status === 'WAITING' ? 'bg-blue-100 text-blue-700' :
+            entry.status === 'CALLED' ? 'bg-yellow-100 text-yellow-800' : 'bg-slate-100 text-slate-700'
+          }`}>
           {entry.status}
         </span>
       </td>
-      <td className="table-td">
+      <td className="table-td text-right">
         {entry.status === 'WAITING' && (
           <button
             type="button"
             onClick={onCall}
             disabled={loading}
-            className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
+            className="btn-success text-xs py-1.5 px-3"
           >
             {loading ? '...' : 'Gọi'}
           </button>

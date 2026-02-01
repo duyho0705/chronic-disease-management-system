@@ -4,6 +4,8 @@ import { useTenant } from '@/context/TenantContext'
 import { listPatients, findPatientByCccd, findPatientByPhone, createPatient, updatePatient } from '@/api/patients'
 import type { PatientDto, CreatePatientRequest } from '@/types/api'
 import { toastService } from '@/services/toast'
+import { CheckInModal } from '@/components/CheckInModal'
+import { SkeletonPatientList } from '@/components/Skeleton'
 
 function PatientForm({
   initial,
@@ -141,6 +143,7 @@ export function Patients() {
   const [foundPatient, setFoundPatient] = useState<PatientDto | null | 'none'>(null)
   const [showForm, setShowForm] = useState(false)
   const [editingPatient, setEditingPatient] = useState<PatientDto | null>(null)
+  const [checkInPatient, setCheckInPatient] = useState<PatientDto | null>(null)
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['patients', headers?.tenantId, page],
@@ -165,10 +168,10 @@ export function Patients() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <header className="page-header flex flex-wrap items-center justify-between gap-4">
+    <div className="mx-auto max-w-6xl space-y-6">
+      <header className="page-header">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Quản lý bệnh nhân</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Quản lý bệnh nhân</h1>
           <p className="mt-1 text-sm text-slate-600">Tìm CCCD, đăng ký mới, cập nhật hồ sơ.</p>
         </div>
         <button
@@ -219,6 +222,13 @@ export function Patients() {
             >
               Cập nhật thông tin
             </button>
+            <button
+              type="button"
+              onClick={() => setCheckInPatient(foundPatient)}
+              className="mt-3 ml-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white hover:from-emerald-700 hover:to-teal-700 transition-all"
+            >
+              ✅ Check-in
+            </button>
           </div>
         )}
       </section>
@@ -261,7 +271,7 @@ export function Patients() {
       <section className="card">
         <h2 className="section-title mb-4">Danh sách bệnh nhân</h2>
         {isLoading ? (
-          <p className="text-slate-500">Đang tải...</p>
+          <SkeletonPatientList />
         ) : data?.content?.length ? (
           <>
             <div className="overflow-x-auto rounded-lg border border-slate-200">
@@ -269,18 +279,26 @@ export function Patients() {
                 <thead>
                   <tr>
                     <th className="table-th">Họ tên</th>
-                    <th className="table-th">Ngày sinh</th>
-                    <th className="table-th">CCCD</th>
-                    <th className="table-th">SĐT</th>
+                    <th className="table-th hidden md:table-cell">Ngày sinh</th>
+                    <th className="table-th hidden sm:table-cell">CCCD</th>
+                    <th className="table-th">Liên hệ</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.content.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-50/80">
-                      <td className="table-td font-medium text-slate-900">{p.fullNameVi}</td>
-                      <td className="table-td">{p.dateOfBirth}</td>
-                      <td className="table-td">{p.cccd || '—'}</td>
-                      <td className="table-td">{p.phone || '—'}</td>
+                    <tr key={p.id} className="hover:bg-slate-50/80 transition-colors cursor-pointer" onClick={() => {
+                      setEditingPatient(p)
+                      setShowForm(true)
+                    }}>
+                      <td className="table-td">
+                        <div className="font-semibold text-slate-900">{p.fullNameVi}</div>
+                        <div className="text-xs text-slate-500 md:hidden">
+                          {p.dateOfBirth} {p.cccd ? `· ${p.cccd}` : ''}
+                        </div>
+                      </td>
+                      <td className="table-td hidden md:table-cell">{p.dateOfBirth}</td>
+                      <td className="table-td hidden sm:table-cell">{p.cccd || '—'}</td>
+                      <td className="table-td text-sm">{p.phone || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -312,6 +330,20 @@ export function Patients() {
           <p className="text-slate-500">Chưa có bệnh nhân nào.</p>
         )}
       </section>
+
+      {/* Check-In Modal */}
+      {checkInPatient && (
+        <CheckInModal
+          patient={checkInPatient}
+          onClose={() => setCheckInPatient(null)}
+          onSuccess={() => {
+            setCheckInPatient(null)
+            setFoundPatient(null)
+            setCccdSearch('')
+            setPhoneSearch('')
+          }}
+        />
+      )}
     </div>
   )
 }

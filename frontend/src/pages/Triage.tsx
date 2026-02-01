@@ -127,16 +127,16 @@ export function Triage() {
       {/* Chọn bệnh nhân */}
       <section className="card max-w-2xl">
         <h2 className="section-title mb-4">Bệnh nhân</h2>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <input
             type="text"
             placeholder="Nhập CCCD để tìm"
             value={cccdSearch}
             onChange={(e) => setCccdSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && searchByCccd()}
-            className="input flex-1"
+            className="input flex-1 w-full"
           />
-          <button type="button" onClick={searchByCccd} className="btn-primary">
+          <button type="button" onClick={searchByCccd} className="btn-primary w-full sm:w-auto">
             Tìm
           </button>
         </div>
@@ -208,7 +208,7 @@ export function Triage() {
                   <input
                     type="text"
                     placeholder="Giá trị"
-                    className="input w-24"
+                    className="input w-24 sm:flex-1 min-w-[5rem]"
                     value={vitals.find((v) => v.type === type)?.value ?? ''}
                     onChange={(e) => {
                       const val = e.target.value
@@ -222,7 +222,7 @@ export function Triage() {
                   <input
                     type="text"
                     placeholder="Đơn vị"
-                    className="input w-20"
+                    className="input w-20 sm:w-24"
                     value={vitals.find((v) => v.type === type)?.unit ?? ''}
                     onChange={(e) => {
                       const unit = e.target.value
@@ -245,7 +245,7 @@ export function Triage() {
               <div>
                 <label className="label">Mức độ ưu tiên (ESI 1–5)</label>
                 <select
-                  className="input w-32 rounded-lg"
+                  className="input w-full sm:w-48 rounded-lg"
                   value={acuityLevel}
                   onChange={(e) => setAcuityLevel(e.target.value)}
                 >
