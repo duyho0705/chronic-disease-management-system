@@ -424,3 +424,16 @@ export interface CreatePrescriptionRequest {
     unitPrice?: number
   }[]
 }
+
+export interface DisplayEntryDto {
+  patientName: string
+  queueName: string
+  status: string
+  acuityLevel?: string
+}
+
+export interface PublicDisplayDto {
+  branchName: string
+  calling: DisplayEntryDto[]
+  waiting: DisplayEntryDto[]
+}

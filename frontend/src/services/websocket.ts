@@ -8,7 +8,7 @@ export class WebSocketService {
 
     connect() {
         this.client = new Client({
-            webSocketFactory: () => new SockJS('/ws'),
+            webSocketFactory: () => new SockJS('/ws-queue'),
             onConnect: () => {
                 console.log('Connected to WebSocket')
                 this.client?.subscribe('/topic/queue', (message) => {
