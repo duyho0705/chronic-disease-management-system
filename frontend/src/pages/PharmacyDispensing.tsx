@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTenant } from '@/context/TenantContext'
 import { getPendingPrescriptions, dispensePrescription } from '@/api/prescriptions'
-import { Pill, Search, User, ClipboardList, CheckCircle2, ArrowRight, Loader2, PackageOpen } from 'lucide-react'
+import { Pill, Search, User, ClipboardList, CheckCircle2, Loader2, PackageOpen } from 'lucide-react'
 import { useState } from 'react'
 import { toastService } from '@/services/toast'
 import { motion, AnimatePresence } from 'framer-motion'
