@@ -118,10 +118,15 @@ export function LandingPage() {
             <NavLink to="#">Chuyên Khoa</NavLink>
             <NavLink to="#">Bác Sĩ</NavLink>
             <NavLink to="#">Công Nghệ</NavLink>
-            <NavLink to="#">Cổng Bệnh Nhân</NavLink>
             <button
               onClick={() => setIsLoginOpen(true)}
-              className="bg-[#2b8cee] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#2b8cee]/90 transition-all shadow-md shadow-[#2b8cee]/20"
+              className="text-sm font-bold text-[#2d3436] hover:text-[#2b8cee] transition-all"
+            >
+              Đăng Nhập
+            </button>
+            <button
+              onClick={() => setIsLoginOpen(true)} // In a real app, this might go to a booking flow
+              className="bg-[#2b8cee] text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-[#2b8cee]/90 transition-all shadow-lg shadow-[#2b8cee]/20 hover:-translate-y-0.5 active:scale-95"
             >
               Đặt Lịch Khám
             </button>
