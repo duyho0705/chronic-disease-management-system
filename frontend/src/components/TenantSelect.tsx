@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useTenant } from '@/context/TenantContext'
 import { getTenant, getTenantByCode, getBranches } from '@/api/tenants'
 import type { TenantDto, TenantBranchDto } from '@/types/api'
+import { CustomSelect } from './CustomSelect'
+import { MapPin, Building, RotateCcw, Search } from 'lucide-react'
 
 type Props = { className?: string }
 
@@ -54,48 +56,60 @@ export function TenantSelect({ className = '' }: Props) {
   }
 
   return (
-    <div className={`flex flex-wrap items-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-3 ${className}`}>
       {!tenantId ? (
-        <>
-          <input
-            type="text"
-            placeholder="Mã tenant (VD: CLINIC01)"
-            value={tenantCode}
-            onChange={(e) => setTenantCode(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && loadByCode()}
-            className="input w-40"
-          />
-          <button type="button" onClick={loadByCode} className="btn-primary" disabled={loading}>
-            {loading ? 'Đang tải...' : 'Chọn tenant'}
-          </button>
-        </>
-      ) : (
-        <>
-          <span className="text-sm text-slate-600">
-            {tenant?.nameVi || tenantId.slice(0, 8)}
-          </span>
-          <select
-            value={branchId || ''}
-            onChange={(e) => setTenant(tenantId, e.target.value || null)}
-            className="input w-48"
-          >
-            <option value="">-- Chi nhánh --</option>
-            {branches.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.nameVi}
-              </option>
-            ))}
-          </select>
+        <div className="flex items-center gap-2">
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[#2b8cee] transition-colors" />
+            <input
+              type="text"
+              placeholder="Mã phòng khám..."
+              value={tenantCode}
+              onChange={(e) => setTenantCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && loadByCode()}
+              className="pl-9 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-4 focus:ring-[#2b8cee]/10 focus:border-[#2b8cee] outline-none transition-all w-48"
+            />
+          </div>
           <button
             type="button"
-            onClick={() => setTenant(null, null)}
-            className="btn-secondary text-xs"
+            onClick={loadByCode}
+            disabled={loading}
+            className="bg-[#2b8cee] text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-[#2b8cee]/90 transition-all disabled:opacity-50"
           >
-            Đổi tenant
+            {loading ? '...' : 'Chọn'}
           </button>
-        </>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200">
+            <Building className="w-3.5 h-3.5 text-slate-500" />
+            <span className="text-xs font-bold text-slate-700 whitespace-nowrap">
+              {tenant?.nameVi || 'Tenant'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setTenant(null, null)}
+              title="Đổi phòng khám"
+              className="ml-1 p-0.5 text-slate-400 hover:text-red-500 hover:bg-white rounded transition-all"
+            >
+              <RotateCcw className="w-3 h-3" />
+            </button>
+          </div>
+
+          <CustomSelect
+            options={branches}
+            value={branchId || ''}
+            onChange={(val) => setTenant(tenantId, val || null)}
+            labelKey="nameVi"
+            valueKey="id"
+            placeholder="Chọn chi nhánh"
+            size="sm"
+            className="w-48"
+            icon={<MapPin className="w-3.5 h-3.5" />}
+          />
+        </div>
       )}
-      {error && <span className="text-sm text-red-600">{error}</span>}
+      {error && <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded border border-red-100 animate-pulse">{error}</span>}
     </div>
   )
 }

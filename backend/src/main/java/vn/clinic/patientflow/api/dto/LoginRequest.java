@@ -3,7 +3,9 @@ package vn.clinic.patientflow.api.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
@@ -11,6 +13,8 @@ import java.util.UUID;
  * Request đăng nhập – email, mật khẩu, tenant (bắt buộc), branch (tùy chọn).
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginRequest {
 
     @NotBlank(message = "Email không được để trống")

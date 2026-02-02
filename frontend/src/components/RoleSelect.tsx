@@ -1,22 +1,24 @@
 import { useRole } from '@/context/RoleContext'
+import { CustomSelect } from './CustomSelect'
+import { Shield } from 'lucide-react'
 
 export function RoleSelect() {
-  const { role, setRole, roleLabel, roles } = useRole()
+  const { role, setRole, roles } = useRole()
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-xs font-medium uppercase tracking-wider text-slate-500">Vai trò</span>
-      <select
+    <div className="flex items-center gap-3">
+      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Vai trò</span>
+      <CustomSelect
+        options={roles}
         value={role}
-        onChange={(e) => setRole(e.target.value as import('@/context/RoleContext').Role)}
-        className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
-      >
-        {roles.map((r) => (
-          <option key={r.value} value={r.value}>
-            {r.label}
-          </option>
-        ))}
-      </select>
+        onChange={(val) => setRole(val as any)}
+        labelKey="label"
+        valueKey="value"
+        placeholder="Chọn vai trò"
+        size="sm"
+        className="w-48"
+        icon={<Shield className="w-3.5 h-3.5" />}
+      />
     </div>
   )
 }

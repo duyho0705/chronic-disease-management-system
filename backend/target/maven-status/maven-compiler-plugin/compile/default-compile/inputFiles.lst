@@ -42,6 +42,7 @@ E:\Use Cursor\ai-patient-flow-triage-system\backend\src\main\java\vn\clinic\pati
 E:\Use Cursor\ai-patient-flow-triage-system\backend\src\main\java\vn\clinic\patientflow\api\dto\QueueDefinitionDto.java
 E:\Use Cursor\ai-patient-flow-triage-system\backend\src\main\java\vn\clinic\patientflow\api\dto\QueueEntryDto.java
 E:\Use Cursor\ai-patient-flow-triage-system\backend\src\main\java\vn\clinic\patientflow\api\dto\RegisterDeviceTokenRequest.java
+E:\Use Cursor\ai-patient-flow-triage-system\backend\src\main\java\vn\clinic\patientflow\api\dto\RegisterRequest.java
 E:\Use Cursor\ai-patient-flow-triage-system\backend\src\main\java\vn\clinic\patientflow\api\dto\RoleDto.java
 E:\Use Cursor\ai-patient-flow-triage-system\backend\src\main\java\vn\clinic\patientflow\api\dto\SetPasswordRequest.java
 E:\Use Cursor\ai-patient-flow-triage-system\backend\src\main\java\vn\clinic\patientflow\api\dto\SlotTemplateDto.java

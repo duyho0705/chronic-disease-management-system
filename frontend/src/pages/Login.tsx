@@ -6,91 +6,13 @@ import { listTenants, getBranches } from '@/api/tenants'
 import { useQuery } from '@tanstack/react-query'
 import { X, LogIn, Mail, Lock, Building2, MapPin, AlertCircle, Loader2, Stethoscope, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { LoginRequest, TenantDto, TenantBranchDto } from '@/types/api'
+import type { LoginRequest, RegisterRequest, TenantDto, TenantBranchDto } from '@/types/api'
 
 interface LoginFormProps {
   onSuccess: () => void;
 }
 
-interface CustomSelectProps<T> {
-  options: T[];
-  value: string;
-  onChange: (value: string) => void;
-  labelKey: keyof T;
-  valueKey: keyof T;
-  placeholder: string;
-  icon: React.ReactNode;
-  disabled?: boolean;
-}
-
-function CustomSelect<T>({ options, value, onChange, labelKey, valueKey, placeholder, icon, disabled }: CustomSelectProps<T>) {
-  const [isOpen, setIsOpen] = useState(false)
-  const selectedOption = options.find(opt => String(opt[valueKey]) === value)
-
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full pl-12 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between transition-all outline-none text-left
-          ${isOpen ? 'ring-4 ring-[#2b8cee]/10 border-[#2b8cee] bg-white' : 'hover:border-slate-300'}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        `}
-      >
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-          {icon}
-        </div>
-        <span className={`block truncate ${selectedOption ? 'text-slate-900 font-medium' : 'text-slate-400'}`}>
-          {selectedOption ? String(selectedOption[labelKey]) : placeholder}
-        </span>
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
-          <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
-        </div>
-      </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40"
-              onClick={() => setIsOpen(false)}
-            />
-            <motion.ul
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="absolute z-50 mt-2 w-full bg-white border border-slate-100 rounded-2xl shadow-2xl py-2 max-h-60 overflow-auto outline-none"
-            >
-              {options.length === 0 ? (
-                <li className="px-4 py-8 text-center text-slate-400 text-sm italic">Không có dữ liệu</li>
-              ) : (
-                options.map((opt, i) => (
-                  <li
-                    key={i}
-                    onClick={() => {
-                      onChange(String(opt[valueKey]))
-                      setIsOpen(false)
-                    }}
-                    className={`px-4 py-3 text-sm cursor-pointer transition-colors flex items-center justify-between
-                      ${String(opt[valueKey]) === value ? 'bg-[#2b8cee]/5 text-[#2b8cee] font-bold' : 'text-slate-600 hover:bg-slate-50'}
-                    `}
-                  >
-                    {String(opt[labelKey])}
-                    {String(opt[valueKey]) === value && <div className="w-1.5 h-1.5 rounded-full bg-[#2b8cee]" />}
-                  </li>
-                ))
-              )}
-            </motion.ul>
-          </>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
+import { CustomSelect } from '@/components/CustomSelect'
 
 function LoginForm({ onSuccess }: LoginFormProps) {
   const [mode, setMode] = useState<'login' | 'register'>('login')

@@ -1,15 +1,15 @@
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react'
 import { getStoredToken } from '@/api/client'
 import * as authApi from '@/api/auth'
-import type { AuthUserDto, LoginRequest, RegisterRequest } from '@/types/api'
+import type { AuthUserDto, LoginRequest, RegisterRequest, LoginResponse } from '@/types/api'
 
 type AuthContextValue = {
   user: AuthUserDto | null
   token: string | null
   isAuthenticated: boolean
   isLoading: boolean
-  login: (req: LoginRequest) => Promise<void>
-  register: (req: RegisterRequest) => Promise<void>
+  login: (req: LoginRequest) => Promise<LoginResponse>
+  register: (req: RegisterRequest) => Promise<LoginResponse>
   logout: () => void
   refreshUser: () => Promise<void>
 }
@@ -51,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await authApi.login(req)
       setToken(res.token)
       setUser(res.user)
+      return res
     },
     []
   )
@@ -60,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await authApi.register(req)
       setToken(res.token)
       setUser(res.user)
+      return res
     },
     []
   )
