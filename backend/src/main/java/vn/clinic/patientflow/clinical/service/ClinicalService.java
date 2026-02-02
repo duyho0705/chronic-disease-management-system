@@ -204,4 +204,10 @@ public class ClinicalService {
         prescription.setStatus(vn.clinic.patientflow.clinical.domain.Prescription.PrescriptionStatus.DISPENSED);
         prescriptionRepository.save(prescription);
     }
+
+    @Transactional(readOnly = true)
+    public List<vn.clinic.patientflow.clinical.domain.Prescription> getPendingPrescriptions(UUID branchId) {
+        return prescriptionRepository.findByStatusAndConsultationBranchIdOrderByCreatedAtDesc(
+                vn.clinic.patientflow.clinical.domain.Prescription.PrescriptionStatus.ISSUED, branchId);
+    }
 }

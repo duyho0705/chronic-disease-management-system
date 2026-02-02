@@ -31,6 +31,14 @@ public class PrescriptionController {
         return ResponseEntity.ok(mapToDto(p));
     }
 
+    @GetMapping("/pending")
+    @PreAuthorize("hasAnyRole('PHARMACIST', 'ADMIN')")
+    @Operation(summary = "Lấy danh sách đơn thuốc chờ cấp phát")
+    public ResponseEntity<java.util.List<PrescriptionDto>> getPendingPrescriptions(@RequestParam UUID branchId) {
+        var list = clinicalService.getPendingPrescriptions(branchId);
+        return ResponseEntity.ok(list.stream().map(this::mapToDto).collect(Collectors.toList()));
+    }
+
     @PostMapping("/{id}/dispense")
     @PreAuthorize("hasAnyRole('PHARMACIST', 'ADMIN')")
     @Operation(summary = "Xác nhận đã cấp phát thuốc (Trừ kho)")
