@@ -34,6 +34,7 @@ public class QueueService {
         private final PatientService patientService;
         private final TriageSessionRepository triageSessionRepository;
         private final SchedulingAppointmentRepository schedulingAppointmentRepository;
+        private final QueueBroadcastService queueBroadcastService;
 
         @Transactional(readOnly = true)
         public List<QueueDefinition> getDefinitionsByBranch(UUID branchId) {
@@ -93,7 +94,9 @@ public class QueueService {
                                 .status("WAITING")
                                 .joinedAt(Instant.now())
                                 .build();
-                return queueEntryRepository.save(entry);
+                QueueEntry saved = queueEntryRepository.save(entry);
+                queueBroadcastService.broadcastQueueUpdate(saved.getBranch().getId());
+                return saved;
         }
 
         @Transactional
@@ -108,6 +111,13 @@ public class QueueService {
                         entry.setCompletedAt(completedAt);
                 if (position != null)
                         entry.setPosition(position);
-                return queueEntryRepository.save(entry);
+                QueueEntry saved = queueEntryRepository.save(entry);
+                queueBroadcastService.broadcastQueueUpdate(saved.getBranch().getId());
+
+                if ("CALLED".equals(status)) {
+                        queueBroadcastService.notifyPatient(saved.getPatient().getId(), "Mời bạn đến quầy tiếp nhận");
+                }
+
+                return saved;
         }
 }

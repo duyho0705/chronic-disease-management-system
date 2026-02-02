@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +57,7 @@ public class TriageController {
     private final PatientService patientService;
 
     @PostMapping("/suggest")
+    @PreAuthorize("hasAnyRole('TRIAGE_NURSE', 'ADMIN')")
     @Operation(summary = "Gợi ý mức độ ưu tiên (AI/rule). Không tạo session; dùng trước khi POST /sessions với useAiSuggestion=true hoặc để hiển thị gợi ý.")
     public TriageSuggestionDto suggest(@Valid @RequestBody SuggestAcuityRequest request) {
         AiTriageService.TriageInput input = buildTriageInput(request);
@@ -96,6 +98,7 @@ public class TriageController {
 
     @PostMapping("/sessions")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('TRIAGE_NURSE', 'ADMIN')")
     @Operation(summary = "Tạo phiên phân loại (lý do khám, sinh hiệu, acuity)")
     public TriageSessionDto createSession(@Valid @RequestBody CreateTriageSessionRequest request) {
         TriageSession session = triageService.createSession(request);
@@ -109,6 +112,7 @@ public class TriageController {
     }
 
     @GetMapping("/sessions")
+    @PreAuthorize("hasAnyRole('TRIAGE_NURSE', 'ADMIN', 'CLINIC_MANAGER', 'DOCTOR', 'RECEPTIONIST')")
     @Operation(summary = "Danh sách phiên phân loại theo chi nhánh")
     public PagedResponse<TriageSessionDto> listByBranch(
             @RequestParam UUID branchId,
