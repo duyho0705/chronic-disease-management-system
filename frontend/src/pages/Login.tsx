@@ -93,11 +93,13 @@ function CustomSelect<T>({ options, value, onChange, labelKey, valueKey, placeho
 }
 
 function LoginForm({ onSuccess }: LoginFormProps) {
+  const [mode, setMode] = useState<'login' | 'register'>('login')
   const [step, setStep] = useState(1)
-  const { login } = useAuth()
+  const { login, register } = useAuth()
   const { setTenant } = useTenant()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [fullNameVi, setFullNameVi] = useState('')
   const [tenantId, setTenantId] = useState('')
   const [branchId, setBranchId] = useState('')
   const [error, setError] = useState('')
@@ -124,8 +126,8 @@ function LoginForm({ onSuccess }: LoginFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (step === 1) {
-      if (!email || !password) {
-        setError('Vui lòng nhập email và mật khẩu.')
+      if (!email || !password || (mode === 'register' && !fullNameVi)) {
+        setError('Vui lòng nhập đầy đủ thông tin.')
         return
       }
       setStep(2)
@@ -139,18 +141,31 @@ function LoginForm({ onSuccess }: LoginFormProps) {
     }
     setSubmitting(true)
     try {
-      const req: LoginRequest = {
-        email: email.trim(),
-        password,
-        tenantId,
-        branchId: branchId || undefined,
+      if (mode === 'login') {
+        const req: LoginRequest = {
+          email: email.trim(),
+          password,
+          tenantId,
+          branchId: branchId || undefined,
+        }
+        await login(req)
+      } else {
+        const req: RegisterRequest = {
+          email: email.trim(),
+          password,
+          fullNameVi,
+          tenantId,
+          branchId: branchId || undefined,
+        }
+        await register(req)
       }
-      const res = await login(req)
+      // Success logic
+      const res = await login({ email: email.trim(), password, tenantId, branchId: branchId || undefined })
       setTenant(res.user.tenantId, res.user.branchId ?? undefined)
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Đăng nhập thất bại.')
-      setStep(1) // Return to credentials if auth fails
+      setError(err instanceof Error ? err.message : 'Thao tác thất bại.')
+      setStep(1)
     } finally {
       setSubmitting(false)
     }
@@ -187,8 +202,27 @@ function LoginForm({ onSuccess }: LoginFormProps) {
               exit="exit"
               className="space-y-5"
             >
+              {mode === 'register' && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Họ và tên</label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2b8cee] transition-colors">
+                      <LogIn className="w-5 h-5" />
+                    </div>
+                    <input
+                      type="text"
+                      value={fullNameVi}
+                      onChange={(e) => setFullNameVi(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-[#2b8cee]/10 focus:border-[#2b8cee] focus:bg-white outline-none transition-all placeholder:text-slate-300 shadow-sm"
+                      placeholder="Nguyễn Văn A"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Tài khoản</label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Email</label>
                 <div className="relative group">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2b8cee] transition-colors">
                     <Mail className="w-5 h-5" />
@@ -228,6 +262,16 @@ function LoginForm({ onSuccess }: LoginFormProps) {
                 >
                   Tiếp tục
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+                  className="text-sm font-medium text-[#2b8cee] hover:underline"
+                >
+                  {mode === 'login' ? 'Chưa có tài khoản? Đăng ký ngay' : 'Đã có tài khoản? Đăng nhập'}
                 </button>
               </div>
             </motion.div>
@@ -284,7 +328,7 @@ function LoginForm({ onSuccess }: LoginFormProps) {
                   className="flex-[2] bg-[#2b8cee] text-white py-4 rounded-2xl font-bold hover:bg-[#2b8cee]/90 transition-all shadow-xl shadow-[#2b8cee]/20 flex items-center justify-center gap-2 disabled:opacity-70"
                 >
                   {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
-                  Đăng nhập
+                  {mode === 'login' ? 'Đăng nhập' : 'Hoàn tất Đăng ký'}
                 </button>
               </div>
             </motion.div>
@@ -367,8 +411,8 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 <div className="inline-flex w-14 h-14 bg-[#2b8cee]/10 rounded-2xl items-center justify-center mb-6">
                   <Stethoscope className="w-7 h-7 text-[#2b8cee]" />
                 </div>
-                <h2 className="text-3xl font-black text-[#2d3436] tracking-tight">Chào mừng trở lại</h2>
-                <p className="text-slate-400 mt-2 font-medium">Đăng nhập để vào hệ thống quản lý</p>
+                <h2 className="text-3xl font-black text-[#2d3436] tracking-tight">Chào mừng</h2>
+                <p className="text-slate-400 mt-2 font-medium">Đăng nhập hoặc Đăng ký để vào hệ thống</p>
               </div>
 
               <LoginForm onSuccess={() => {

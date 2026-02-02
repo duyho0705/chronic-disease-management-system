@@ -30,6 +30,14 @@ export interface LoginResponse {
   user: AuthUserDto
 }
 
+export interface RegisterRequest {
+  email: string
+  password: string
+  fullNameVi: string
+  tenantId: string
+  branchId?: string | null
+}
+
 export interface UserRoleAssignmentDto {
   tenantId: string
   tenantName?: string

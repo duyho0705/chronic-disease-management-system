@@ -8,6 +8,11 @@ import vn.clinic.patientflow.identity.domain.IdentityUser;
 import vn.clinic.patientflow.identity.domain.IdentityUserRole;
 import vn.clinic.patientflow.identity.repository.IdentityUserRepository;
 import vn.clinic.patientflow.identity.repository.IdentityUserRoleRepository;
+import vn.clinic.patientflow.identity.repository.IdentityRoleRepository;
+import vn.clinic.patientflow.tenant.domain.TenantBranch;
+import vn.clinic.patientflow.tenant.repository.TenantBranchRepository;
+import vn.clinic.patientflow.tenant.repository.TenantRepository;
+import vn.clinic.patientflow.identity.domain.IdentityRole;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,6 +28,9 @@ public class IdentityService {
 
     private final IdentityUserRepository identityUserRepository;
     private final IdentityUserRoleRepository identityUserRoleRepository;
+    private final IdentityRoleRepository identityRoleRepository;
+    private final TenantRepository tenantRepository;
+    private final TenantBranchRepository tenantBranchRepository;
 
     @Transactional(readOnly = true)
     public IdentityUser getUserById(UUID id) {
@@ -32,8 +40,7 @@ public class IdentityService {
 
     @Transactional(readOnly = true)
     public IdentityUser getActiveUserByEmail(String email) {
-        return identityUserRepository.findByEmailAndIsActiveTrue(email)
-                .orElseThrow(() -> new ResourceNotFoundException("IdentityUser", email));
+        return identityUserRepository.findByEmailAndIsActiveTrue(email).orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -42,7 +49,8 @@ public class IdentityService {
     }
 
     /**
-     * Role codes áp dụng cho user trong tenant tại chi nhánh (branch_id IS NULL hoặc = branchId).
+     * Role codes áp dụng cho user trong tenant tại chi nhánh (branch_id IS NULL
+     * hoặc = branchId).
      */
     @Transactional(readOnly = true)
     public List<String> getRoleCodesForUserInTenantAndBranch(UUID userId, UUID tenantId, UUID branchId) {
@@ -57,5 +65,35 @@ public class IdentityService {
     public void updateLastLoginAt(IdentityUser user) {
         user.setLastLoginAt(Instant.now());
         identityUserRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByEmail(String email) {
+        return identityUserRepository.existsByEmail(email);
+    }
+
+    @Transactional
+    public IdentityUser saveUser(IdentityUser user) {
+        return identityUserRepository.save(user);
+    }
+
+    @Transactional
+    public void assignRole(UUID userId, UUID tenantId, UUID branchId, String roleCode) {
+        IdentityUser user = getUserById(userId);
+        IdentityRole role = identityRoleRepository.findByCode(roleCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Role", roleCode));
+
+        IdentityUserRole userRole = new IdentityUserRole();
+        userRole.setUser(user);
+        userRole.setRole(role);
+        userRole.setTenant(tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tenant", tenantId)));
+
+        if (branchId != null) {
+            userRole.setBranch(tenantBranchRepository.findById(branchId)
+                    .orElseThrow(() -> new ResourceNotFoundException("TenantBranch", branchId)));
+        }
+
+        identityUserRoleRepository.save(userRole);
     }
 }

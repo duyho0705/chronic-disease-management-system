@@ -1,6 +1,6 @@
 package vn.clinic.patientflow.auth;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +22,7 @@ import java.util.UUID;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final IdentityService identityService;
@@ -36,16 +37,19 @@ public class AuthService {
     @Transactional
     public LoginResponse login(LoginRequest request) {
         IdentityUser user = identityService.getActiveUserByEmail(request.getEmail().trim().toLowerCase());
-        if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
-            throw new BadCredentialsException("Tài khoản chưa được thiết lập mật khẩu");
+        if (user == null || user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
+            log.warn("Login failed: User not found or no password set for email {}", request.getEmail());
+            throw new BadCredentialsException("Email hoặc mật khẩu không đúng");
         }
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            log.warn("Login failed: Password mismatch for email {}", request.getEmail());
             throw new BadCredentialsException("Email hoặc mật khẩu không đúng");
         }
         UUID tenantId = request.getTenantId();
         UUID branchId = request.getBranchId();
         List<String> roles = identityService.getRoleCodesForUserInTenantAndBranch(user.getId(), tenantId, branchId);
         if (roles.isEmpty()) {
+            log.warn("Login failed: No roles found for user {} in tenant {}", request.getEmail(), tenantId);
             throw new BadCredentialsException("Bạn không có quyền truy cập tenant/chi nhánh này");
         }
         identityService.updateLastLoginAt(user);
@@ -64,5 +68,25 @@ public class AuthService {
                 .expiresAt(expiresAt)
                 .user(userDto)
                 .build();
+    }
+
+    @Transactional
+    public LoginResponse register(vn.clinic.patientflow.api.dto.RegisterRequest request) {
+        if (identityService.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email này đã được sử dụng");
+        }
+
+        IdentityUser user = new IdentityUser();
+        user.setEmail(request.getEmail().trim().toLowerCase());
+        user.setFullNameVi(request.getFullNameVi());
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setIsActive(true);
+        user = identityService.saveUser(user);
+
+        // Assign default role 'admin' for first-time registration in demo
+        identityService.assignRole(user.getId(), request.getTenantId(), request.getBranchId(), "admin");
+
+        return login(new LoginRequest(request.getEmail(), request.getPassword(), request.getTenantId(),
+                request.getBranchId()));
     }
 }

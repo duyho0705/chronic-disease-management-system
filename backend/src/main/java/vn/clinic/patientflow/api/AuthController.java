@@ -34,6 +34,14 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/register")
+    @Operation(summary = "Đăng ký", description = "Tự đăng ký tài khoản mới cho tenant.")
+    public ResponseEntity<LoginResponse> register(
+            @Valid @RequestBody vn.clinic.patientflow.api.dto.RegisterRequest request) {
+        LoginResponse response = authService.register(request);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/me")
     @Operation(summary = "Thông tin user hiện tại", description = "Lấy thông tin user từ JWT (cần Authorization: Bearer <token>).")
     public ResponseEntity<AuthUserDto> me(@AuthenticationPrincipal AuthPrincipal principal) {

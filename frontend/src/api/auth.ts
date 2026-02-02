@@ -1,8 +1,14 @@
 import { post, get, setStoredToken } from './client'
-import type { LoginRequest, LoginResponse, AuthUserDto } from '@/types/api'
+import type { LoginRequest, LoginResponse, AuthUserDto, RegisterRequest } from '@/types/api'
 
 export async function login(request: LoginRequest): Promise<LoginResponse> {
   const res = await post<LoginResponse>('/auth/login', request)
+  if (res.token) setStoredToken(res.token)
+  return res
+}
+
+export async function register(request: RegisterRequest): Promise<LoginResponse> {
+  const res = await post<LoginResponse>('/auth/register', request)
   if (res.token) setStoredToken(res.token)
   return res
 }
