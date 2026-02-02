@@ -10,11 +10,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import vn.clinic.patientflow.api.dto.ConsultationDto;
 import vn.clinic.patientflow.api.dto.CreateConsultationRequest;
-import vn.clinic.patientflow.clinical.domain.ClinicalConsultation;
 import vn.clinic.patientflow.clinical.service.ClinicalService;
-import vn.clinic.patientflow.identity.domain.IdentityUser;
 import vn.clinic.patientflow.identity.service.IdentityService;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController

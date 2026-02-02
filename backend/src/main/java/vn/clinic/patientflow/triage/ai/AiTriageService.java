@@ -29,22 +29,58 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AiTriageService {
 
-    private final AiTriageProvider aiTriageProvider;
+    private final RuleBasedTriageProvider ruleBasedProvider;
+    private final HttpAiTriageProvider httpProvider;
     private final AiModelVersionRepository modelVersionRepository;
     private final AiTriageAuditRepository triageAuditRepository;
     private final TriageSessionRepository triageSessionRepository;
     private final ObjectMapper objectMapper;
+    private final vn.clinic.patientflow.tenant.service.TenantService tenantService;
 
     @Value("${triage.ai.model-key:triage_acuity_v1}")
     private String modelKey;
 
     /**
-     * Gợi ý acuity từ lý do khám, sinh hiệu, tuổi. Đo latency; không ghi audit (chưa có session).
-     * Ghi audit khi gọi từ TriageService.createSession sau khi session được tạo.
+     * Gợi ý acuity từ lý do khám, sinh hiệu, tuổi.
+     * Chọn provider dựa trên cấu hình Tenant.
      */
     public TriageSuggestionResult suggest(TriageInput input) {
+        AiTriageProvider selectedProvider = ruleBasedProvider; // Default
+        
+        try {
+            // Check Tenant settings
+            var tenantIdOpt = vn.clinic.patientflow.common.tenant.TenantContext.getTenantId();
+            if (tenantIdOpt.isPresent()) {
+                var tenant = tenantService.getById(tenantIdOpt.get());
+                if (tenant.getSettingsJson() != null) {
+                    var node = objectMapper.readTree(tenant.getSettingsJson());
+                    if (node.has("enableAi") && node.get("enableAi").asBoolean()) {
+                         String provider = node.has("aiProvider") ? node.get("aiProvider").asText() : "rule-based";
+                         if ("http-endpoint".equalsIgnoreCase(provider)) {
+                             selectedProvider = httpProvider;
+                         }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to read tenant AI settings, falling back to rule-based: {}", e.getMessage());
+        }
+
         long startMs = System.currentTimeMillis();
-        TriageSuggestionResult result = aiTriageProvider.suggest(input);
+        TriageSuggestionResult result;
+        try {
+             result = selectedProvider.suggest(input);
+        } catch (Exception e) {
+            log.error("Provider {} failed, fallback to rule-based: {}", selectedProvider.getProviderKey(), e.getMessage());
+            // Fallback strategy if HTTP fails
+            if (selectedProvider != ruleBasedProvider) {
+                result = ruleBasedProvider.suggest(input);
+                result.setExplanation("(Fallback) " + result.getExplanation());
+            } else {
+                throw e;
+            }
+        }
+        
         int latencyMs = (int) (System.currentTimeMillis() - startMs);
         result.setLatencyMs(latencyMs);
         return result;
@@ -73,12 +109,14 @@ public class AiTriageService {
     }
 
     public AiModelVersion getOrCreateCurrentModelVersion(String key) {
+        // Simple versioning based on provider key for now
+        // In real system, this should track actual model versions from MLFlow/etc.
         return modelVersionRepository.findByModelKeyAndDeprecatedAtIsNull(key)
                 .orElseGet(() -> {
                     AiModelVersion v = AiModelVersion.builder()
                             .modelKey(key)
                             .version("1.0.0")
-                            .configJson("{\"provider\":\"" + aiTriageProvider.getProviderKey() + "\"}")
+                            .configJson("{\"provider\":\"dynamic\"}")
                             .deployedAt(Instant.now())
                             .build();
                     return modelVersionRepository.save(v);
@@ -99,6 +137,7 @@ public class AiTriageService {
         m.put("suggestedAcuity", result.getSuggestedAcuity());
         m.put("confidence", result.getConfidence());
         m.put("latencyMs", result.getLatencyMs());
+        m.put("explanation", result.getExplanation());
         return m;
     }
 

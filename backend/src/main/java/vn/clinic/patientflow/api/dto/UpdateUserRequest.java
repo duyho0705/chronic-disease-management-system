@@ -13,6 +13,10 @@ public class UpdateUserRequest {
 
     private Boolean isActive;
 
+    @Size(max = 20)
+    private String phone;
+
+
     /** Nếu có: thay thế toàn bộ gán role của user. */
     private List<UserRoleAssignmentInput> roleAssignments;
 

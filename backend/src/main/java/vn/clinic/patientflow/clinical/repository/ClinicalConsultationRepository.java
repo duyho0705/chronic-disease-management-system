@@ -6,4 +6,5 @@ import vn.clinic.patientflow.clinical.domain.ClinicalConsultation;
 import java.util.UUID;
 
 public interface ClinicalConsultationRepository extends JpaRepository<ClinicalConsultation, UUID> {
+    java.util.List<ClinicalConsultation> findByPatientIdOrderByStartedAtDesc(UUID patientId);
 }

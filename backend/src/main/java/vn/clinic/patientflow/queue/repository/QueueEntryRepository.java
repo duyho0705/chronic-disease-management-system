@@ -12,14 +12,14 @@ import java.util.UUID;
 
 public interface QueueEntryRepository extends JpaRepository<QueueEntry, UUID> {
 
-    List<QueueEntry> findByBranchIdAndQueueDefinitionIdAndStatusOrderByPositionAsc(
+    List<QueueEntry> findByBranch_IdAndQueueDefinition_IdAndStatusOrderByPositionAsc(
             UUID branchId, UUID queueDefinitionId, String status);
 
     /** Lấy WAITING entries kèm triage session để sort theo acuity (1 trước 5). */
     @Query("SELECT e FROM QueueEntry e LEFT JOIN FETCH e.triageSession ts WHERE e.branch.id = :branchId AND e.queueDefinition.id = :queueDefinitionId AND e.status = :status ORDER BY e.joinedAt ASC")
     List<QueueEntry> findWaitingWithTriageByBranchAndQueue(UUID branchId, UUID queueDefinitionId, String status);
 
-    List<QueueEntry> findByBranchIdAndStatusOrderByJoinedAtAsc(UUID branchId, String status);
+    List<QueueEntry> findByBranch_IdAndStatusOrderByJoinedAtAsc(UUID branchId, String status);
 
     /** Số bản ghi đã gọi (called_at not null) trong kỳ – dùng cho báo cáo thời gian chờ. */
     @Query("SELECT COUNT(e) FROM QueueEntry e WHERE e.branch.id = :branchId AND e.calledAt IS NOT NULL AND e.joinedAt >= :from AND e.joinedAt <= :to")

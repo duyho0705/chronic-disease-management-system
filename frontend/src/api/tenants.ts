@@ -1,5 +1,4 @@
 import { get, post, put } from './client'
-import type { TenantHeaders } from './client'
 import type { TenantDto, TenantBranchDto, CreateTenantRequest, CreateBranchRequest, UpdateTenantSettingsRequest } from '@/types/api'
 
 export async function listTenants(): Promise<TenantDto[]> {
@@ -8,6 +7,10 @@ export async function listTenants(): Promise<TenantDto[]> {
 
 export async function getTenant(id: string): Promise<TenantDto> {
   return get<TenantDto>(`/tenants/${id}`, null)
+}
+
+export async function getTenantByCode(code: string): Promise<TenantDto> {
+  return get<TenantDto>(`/tenants/by-code/${code}`, null)
 }
 
 export async function createTenant(data: CreateTenantRequest): Promise<TenantDto> {
@@ -31,3 +34,6 @@ export async function updateTenantSettings(
   const req: UpdateTenantSettingsRequest = { settingsJson: settingsJson }
   return put<TenantDto>(`/tenants/${tenantId}/settings`, req, null)
 }
+
+export const getBranches = listBranches
+
