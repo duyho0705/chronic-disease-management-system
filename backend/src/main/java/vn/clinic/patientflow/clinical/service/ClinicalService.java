@@ -10,6 +10,7 @@ import vn.clinic.patientflow.clinical.repository.ClinicalVitalRepository;
 import vn.clinic.patientflow.common.exception.ResourceNotFoundException;
 import vn.clinic.patientflow.common.tenant.TenantContext;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ public class ClinicalService {
     private final ClinicalVitalRepository vitalRepository;
     private final vn.clinic.patientflow.queue.repository.QueueEntryRepository queueEntryRepository;
     private final vn.clinic.patientflow.identity.service.IdentityService identityService;
+    private final vn.clinic.patientflow.billing.service.BillingService billingService;
 
     @Transactional(readOnly = true)
     public ClinicalConsultation getById(UUID id) {
@@ -90,6 +92,29 @@ public class ClinicalService {
         var cons = getById(id);
         cons.setStatus("COMPLETED");
         cons.setEndedAt(java.time.Instant.now());
-        return consultationRepository.save(cons);
+        cons = consultationRepository.save(cons);
+
+        // Create default invoice for Consultation Fee
+        vn.clinic.patientflow.billing.domain.Invoice invoice = vn.clinic.patientflow.billing.domain.Invoice.builder()
+                .tenant(cons.getTenant())
+                .branch(cons.getBranch())
+                .patient(cons.getPatient())
+                .consultation(cons)
+                .status("PENDING")
+                .items(new java.util.ArrayList<>())
+                .discountAmount(BigDecimal.ZERO)
+                .build();
+
+        invoice.getItems().add(vn.clinic.patientflow.billing.domain.InvoiceItem.builder()
+                .invoice(invoice)
+                .itemName("Phí khám bệnh / Consultation Fee")
+                .quantity(BigDecimal.ONE)
+                .unitPrice(new BigDecimal("150000")) // Default fee
+                .lineTotal(new BigDecimal("150000"))
+                .build());
+
+        billingService.createInvoice(invoice);
+
+        return cons;
     }
 }

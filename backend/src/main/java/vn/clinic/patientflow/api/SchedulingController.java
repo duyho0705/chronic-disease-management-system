@@ -11,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,6 +55,7 @@ public class SchedulingController {
     private final IdentityService identityService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'TRIAGE_NURSE', 'ADMIN', 'CLINIC_MANAGER')")
     @Operation(summary = "Danh sách lịch hẹn theo chi nhánh và ngày")
     public PagedResponse<AppointmentDto> list(
             @RequestParam UUID branchId,
@@ -72,6 +74,7 @@ public class SchedulingController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
     @Operation(summary = "Tạo lịch hẹn")
     public AppointmentDto create(@Valid @RequestBody CreateAppointmentRequest request) {
         TenantBranch branch = tenantService.getBranchById(request.getBranchId());
@@ -95,12 +98,23 @@ public class SchedulingController {
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
     @Operation(summary = "Cập nhật trạng thái lịch hẹn")
     public AppointmentDto updateStatus(@PathVariable UUID id, @RequestParam String status) {
         return AppointmentDto.fromEntity(schedulingService.updateAppointmentStatus(id, status));
     }
 
+    @PostMapping("/{id}/check-in")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
+    @Operation(summary = "Check-in lịch hẹn (chuyển vào hàng chờ)")
+    public AppointmentDto checkIn(
+            @PathVariable UUID id,
+            @RequestParam UUID queueDefinitionId) {
+        return AppointmentDto.fromEntity(schedulingService.checkIn(id, queueDefinitionId));
+    }
+
     @GetMapping("/slots")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
     @Operation(summary = "Danh sách mẫu khung giờ theo tenant")
     public List<SlotTemplateDto> getSlotTemplates() {
         UUID tenantId = TenantContext.getTenantIdOrThrow();

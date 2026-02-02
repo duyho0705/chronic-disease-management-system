@@ -31,6 +31,7 @@ public class SchedulingService {
     private final SchedulingCalendarDayRepository calendarDayRepository;
     private final SchedulingAppointmentRepository appointmentRepository;
     private final TenantService tenantService;
+    private final vn.clinic.patientflow.queue.service.QueueService queueService;
 
     @Transactional(readOnly = true)
     public List<SchedulingSlotTemplate> getSlotTemplatesByTenant(UUID tenantId) {
@@ -75,5 +76,27 @@ public class SchedulingService {
         SchedulingAppointment existing = getAppointmentById(id);
         existing.setStatus(status);
         return appointmentRepository.save(existing);
+    }
+
+    @Transactional
+    public SchedulingAppointment checkIn(UUID id, UUID queueDefinitionId) {
+        SchedulingAppointment existing = getAppointmentById(id);
+        if ("CHECKED_IN".equals(existing.getStatus())) {
+            throw new IllegalStateException("Appointment is already checked in");
+        }
+
+        existing.setStatus("CHECKED_IN");
+        SchedulingAppointment saved = appointmentRepository.save(existing);
+
+        // Add to queue
+        queueService.createEntry(
+                queueDefinitionId,
+                saved.getPatient().getId(),
+                null,
+                saved.getId(),
+                0 // Default position or calculated
+        );
+
+        return saved;
     }
 }

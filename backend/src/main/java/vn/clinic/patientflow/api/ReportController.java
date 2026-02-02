@@ -10,7 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import vn.clinic.patientflow.api.dto.AiEffectivenessDto;
 import vn.clinic.patientflow.api.dto.DailyVolumeDto;
 import vn.clinic.patientflow.api.dto.WaitTimeSummaryDto;
+import vn.clinic.patientflow.report.ReportExportService;
 import vn.clinic.patientflow.report.ReportService;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.IOException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,6 +32,7 @@ import java.util.UUID;
 public class ReportController {
 
     private final ReportService reportService;
+    private final ReportExportService reportExportService;
 
     @GetMapping("/wait-time")
     @Operation(summary = "Báo cáo thời gian chờ trung bình")
@@ -34,7 +40,7 @@ public class ReportController {
             @RequestParam UUID branchId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
-        
+
         LocalDate end = toDate != null ? toDate : LocalDate.now();
         LocalDate start = fromDate != null ? fromDate : end.minusDays(30);
 
@@ -65,5 +71,63 @@ public class ReportController {
         LocalDate start = fromDate != null ? fromDate : end.minusDays(30);
 
         return ResponseEntity.ok(reportService.getAiEffectiveness(branchId, start, end));
+    }
+
+    @GetMapping("/daily-volume/excel")
+    @Operation(summary = "Xuất báo cáo số lượng bệnh nhân ra file Excel")
+    public ResponseEntity<byte[]> exportDailyVolumeExcel(
+            @RequestParam UUID branchId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate)
+            throws IOException {
+
+        LocalDate end = toDate != null ? toDate : LocalDate.now();
+        LocalDate start = fromDate != null ? fromDate : end.minusDays(30);
+        List<DailyVolumeDto> data = reportService.getDailyVolume(branchId, start, end);
+        byte[] bytes = reportExportService.exportDailyVolumeExcel(data);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=daily-volume.xlsx")
+                .contentType(
+                        MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(bytes);
+    }
+
+    @GetMapping("/ai-effectiveness/pdf")
+    @Operation(summary = "Xuất báo cáo hiệu quả AI ra file PDF")
+    public ResponseEntity<byte[]> exportAiEffectivenessPdf(
+            @RequestParam UUID branchId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
+
+        LocalDate end = toDate != null ? toDate : LocalDate.now();
+        LocalDate start = fromDate != null ? fromDate : end.minusDays(30);
+        AiEffectivenessDto data = reportService.getAiEffectiveness(branchId, start, end);
+        byte[] bytes = reportExportService.exportAiEffectivenessPdf(data);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ai-effectiveness.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(bytes);
+    }
+
+    @GetMapping("/wait-time/excel")
+    @Operation(summary = "Xuất báo cáo thời gian chờ ra file Excel")
+    public ResponseEntity<byte[]> exportWaitTimeExcel(
+            @RequestParam UUID branchId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate)
+            throws IOException {
+
+        LocalDate end = toDate != null ? toDate : LocalDate.now();
+        LocalDate start = fromDate != null ? fromDate : end.minusDays(30);
+        WaitTimeSummaryDto data = reportService.getWaitTimeSummary(branchId, start, end);
+        byte[] bytes = reportExportService.exportWaitTimeExcel(data);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=wait-time.xlsx")
+                .contentType(
+                        MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(bytes);
     }
 }
