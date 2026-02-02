@@ -101,12 +101,17 @@ public class AiTriageService {
         AiModelVersion modelVersion = getOrCreateCurrentModelVersion(modelKey);
         String inputJson = toJsonSafe(inputToMap(input));
         String outputJson = toJsonSafe(resultToMap(result));
+        String suggestedAcuity = result.getSuggestedAcuity();
+        String actualAcuity = session.getAcuityLevel();
+        boolean matched = suggestedAcuity != null && suggestedAcuity.equalsIgnoreCase(actualAcuity);
+
         AiTriageAudit audit = AiTriageAudit.builder()
                 .triageSession(session)
                 .modelVersion(modelVersion)
                 .inputJson(inputJson)
                 .outputJson(outputJson)
                 .latencyMs(result.getLatencyMs())
+                .matched(matched)
                 .calledAt(Instant.now())
                 .build();
         triageAuditRepository.save(audit);

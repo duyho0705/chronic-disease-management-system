@@ -37,6 +37,9 @@ public class AiTriageAudit extends BaseEntity {
     @Column(name = "latency_ms")
     private Integer latencyMs;
 
+    @Column(name = "matched")
+    private Boolean matched;
+
     @Column(name = "called_at", nullable = false)
     private Instant calledAt;
 

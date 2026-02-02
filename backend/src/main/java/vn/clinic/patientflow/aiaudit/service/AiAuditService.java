@@ -84,7 +84,7 @@ public class AiAuditService {
                 .triageSessionId(session.getId())
                 .suggestedAcuity(suggestedAcuity)
                 .actualAcuity(actualAcuity)
-                .matched(suggestedAcuity != null && suggestedAcuity.equals(actualAcuity))
+                .matched(Boolean.TRUE.equals(a.getMatched()))
                 .calledAt(a.getCalledAt())
                 .latencyMs(a.getLatencyMs())
                 .patientId(session.getPatient().getId())
