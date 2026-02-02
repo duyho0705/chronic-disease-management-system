@@ -1,11 +1,6 @@
 -- =============================================================================
--- Migration 00001: Initial schema – AI Patient Flow & Triage (Vietnam clinics)
+-- Migration V1: Initial schema – AI Patient Flow & Triage (Vietnam clinics)
 -- Modular monolith, PostgreSQL 10+ (khuyến nghị 14+)
--- ERD: docs/erd-patient-flow-triage-vi.md
--- =============================================================================
--- PostgreSQL 10–12: bật extension trước khi chạy (gen_random_uuid() cần pgcrypto):
---   CREATE EXTENSION IF NOT EXISTS pgcrypto;
--- PostgreSQL 13+: gen_random_uuid() có sẵn trong core, không cần extension.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -44,9 +39,6 @@ CREATE TABLE tenant_branch (
 );
 
 CREATE INDEX ix_tenant_branch_tenant_id ON tenant_branch(tenant_id);
-
-COMMENT ON TABLE tenant IS 'Đơn vị thuê (phòng khám / tập đoàn phòng khám). Gốc multi-tenant.';
-COMMENT ON TABLE tenant_branch IS 'Chi nhánh vật lý thuộc tenant.';
 
 -- -----------------------------------------------------------------------------
 -- 2. IDENTITY MODULE
@@ -92,10 +84,6 @@ CREATE UNIQUE INDEX uq_identity_user_role_tenant_role_all_branches
 CREATE INDEX ix_identity_user_role_user_id ON identity_user_role(user_id);
 CREATE INDEX ix_identity_user_role_tenant_id ON identity_user_role(tenant_id);
 CREATE INDEX ix_identity_user_role_branch_id ON identity_user_role(branch_id);
-
-COMMENT ON TABLE identity_user IS 'Tài khoản nhân viên / admin.';
-COMMENT ON TABLE identity_role IS 'Định nghĩa vai trò (Lễ tân, Y tá phân loại, Bác sĩ, Admin).';
-COMMENT ON TABLE identity_user_role IS 'Gán vai trò cho user theo tenant/chi nhánh. branch_id NULL = toàn tenant.';
 
 -- -----------------------------------------------------------------------------
 -- 3. PATIENT MODULE
@@ -144,9 +132,6 @@ CREATE TABLE patient_insurance (
 
 CREATE INDEX ix_patient_insurance_patient_id ON patient_insurance(patient_id);
 CREATE INDEX ix_patient_insurance_patient_primary ON patient_insurance(patient_id, is_primary) WHERE is_primary = true;
-
-COMMENT ON TABLE patient IS 'Bệnh nhân. Mã ngoài: external_id (phòng khám), cccd (CCCD).';
-COMMENT ON TABLE patient_insurance IS 'BHYT / bảo hiểm khác. is_primary: một bảo hiểm chính mỗi bệnh nhân.';
 
 -- -----------------------------------------------------------------------------
 -- 4. SCHEDULING MODULE
@@ -208,8 +193,6 @@ CREATE INDEX ix_scheduling_appointment_patient_id ON scheduling_appointment(pati
 CREATE INDEX ix_scheduling_appointment_branch_date ON scheduling_appointment(branch_id, appointment_date);
 CREATE INDEX ix_scheduling_appointment_created_by ON scheduling_appointment(created_by_user_id);
 
-COMMENT ON TABLE scheduling_appointment IS 'Lịch hẹn. status: SCHEDULED → CHECKED_IN/NO_SHOW/CANCELLED/COMPLETED.';
-
 -- -----------------------------------------------------------------------------
 -- 5. TRIAGE MODULE
 -- -----------------------------------------------------------------------------
@@ -265,9 +248,6 @@ CREATE TABLE triage_vital (
 
 CREATE INDEX ix_triage_vital_triage_session_id ON triage_vital(triage_session_id);
 
-COMMENT ON TABLE triage_session IS 'Phiên phân loại ưu tiên. acuity_source: HUMAN | AI | HYBRID.';
-COMMENT ON COLUMN triage_session.ai_confidence_score IS '0–1 nếu model trả về.';
-
 -- -----------------------------------------------------------------------------
 -- 6. QUEUE MODULE
 -- -----------------------------------------------------------------------------
@@ -314,8 +294,6 @@ CREATE INDEX ix_queue_entry_queue_definition_id ON queue_entry(queue_definition_
 CREATE INDEX ix_queue_entry_patient_id ON queue_entry(patient_id);
 CREATE INDEX ix_queue_entry_branch_status_joined ON queue_entry(branch_id, status, joined_at);
 CREATE INDEX ix_queue_entry_triage_session_id ON queue_entry(triage_session_id);
-
-COMMENT ON TABLE queue_entry IS 'Một bệnh nhân trong hàng chờ. Thời gian chờ = called_at - joined_at (hoặc now - joined_at nếu đang chờ).';
 
 -- -----------------------------------------------------------------------------
 -- 7. CLINICAL MODULE
@@ -390,10 +368,8 @@ CREATE INDEX ix_ai_triage_audit_triage_session_id ON ai_triage_audit(triage_sess
 CREATE INDEX ix_ai_triage_audit_model_version_id ON ai_triage_audit(model_version_id);
 CREATE INDEX ix_ai_triage_audit_called_at ON ai_triage_audit(called_at);
 
-COMMENT ON TABLE ai_triage_audit IS 'Kiểm toán mỗi lần gọi AI phân loại. Truy vết cho tuân thủ và an toàn.';
-
 -- -----------------------------------------------------------------------------
--- TRIGGER: updated_at (EXECUTE PROCEDURE tương thích PG10+)
+-- TRIGGER: updated_at (PG10+)
 -- -----------------------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION set_updated_at()
