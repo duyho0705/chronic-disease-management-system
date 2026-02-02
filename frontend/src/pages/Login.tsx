@@ -311,7 +311,7 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-[#2d3436]/40 backdrop-blur-md"
+            className="absolute inset-0 bg-[#2d3436]/10 backdrop-blur-[2px]"
           />
 
           <motion.div

@@ -49,7 +49,7 @@ export function Layout() {
 
   const handleLogout = () => {
     logout()
-    navigate('/login', { replace: true })
+    navigate('/', { replace: true, state: { openLogin: true } })
   }
 
   return (
@@ -97,7 +97,7 @@ export function Layout() {
 
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 md:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 z-50 bg-[#2d3436]/10 backdrop-blur-[2px] md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Mobile Sidebar */}

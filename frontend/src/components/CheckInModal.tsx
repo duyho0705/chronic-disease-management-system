@@ -62,7 +62,7 @@ export function CheckInModal({ patient, onClose, onSuccess }: CheckInModalProps)
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2d3436]/10 backdrop-blur-[2px]">
             <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-6">

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import {
   Calendar,
@@ -99,8 +99,17 @@ function CustomSelect({ options, defaultValue, onChange }: CustomSelectProps) {
 }
 
 export function LandingPage() {
+  const location = useLocation()
   const [date, setDate] = useState('')
   const [isLoginOpen, setIsLoginOpen] = useState(false)
+
+  useEffect(() => {
+    if (location.state?.openLogin) {
+      setIsLoginOpen(true)
+      // Clear state to avoid reopening on refresh
+      window.history.replaceState({}, document.title)
+    }
+  }, [location])
 
   return (
     <div className="min-h-screen bg-[#f6f7f8] font-sans text-[#2d3436]">
