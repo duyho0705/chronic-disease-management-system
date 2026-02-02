@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTenant } from '@/context/TenantContext'
-import { getWaitTimeSummary, getDailyVolume, getAiEffectiveness } from '@/api/reports'
+import { getWaitTimeSummary, getDailyVolume, getAiEffectiveness, exportWaitTimeExcel, exportDailyVolumeExcel, exportAiEffectivenessPdf } from '@/api/reports'
+import { FileDown, FileBarChart, Download } from 'lucide-react'
+import { toastService } from '@/services/toast'
 
 export function Reports() {
     const { headers, branchId } = useTenant()
@@ -81,6 +83,15 @@ export function Reports() {
                     <p className="mt-1 text-xs text-slate-500">
                         Trên {waitTimeQuery.data?.totalCompletedEntries ?? 0} lượt khám hoàn thành
                     </p>
+                    <div className="mt-4 flex gap-2">
+                        <button
+                            onClick={() => exportWaitTimeExcel(commonParams, headers).catch(e => toastService.error(e.message))}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700"
+                        >
+                            <Download className="h-3.5 w-3.5" />
+                            Xuất Excel
+                        </button>
+                    </div>
                 </div>
 
                 {/* Card 2: AI Automation */}
@@ -95,6 +106,15 @@ export function Reports() {
                     <p className="mt-1 text-xs text-slate-500">
                         Tỷ lệ khớp với quyết định của y tá
                     </p>
+                    <div className="mt-4 flex gap-2">
+                        <button
+                            onClick={() => exportAiEffectivenessPdf(commonParams, headers).catch(e => toastService.error(e.message))}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700"
+                        >
+                            <FileDown className="h-3.5 w-3.5" />
+                            Xuất PDF
+                        </button>
+                    </div>
                 </div>
 
                 {/* Card 3: Traffic */}
@@ -114,7 +134,16 @@ export function Reports() {
 
             {/* Chart Section: Daily Volume */}
             <section className="card">
-                <h3 className="section-title mb-6">Biểu đồ lượt khám theo ngày</h3>
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="section-title">Biểu đồ lượt khám theo ngày</h3>
+                    <button
+                        onClick={() => exportDailyVolumeExcel(commonParams, headers).catch(e => toastService.error(e.message))}
+                        className="btn-secondary text-xs flex items-center gap-2"
+                    >
+                        <FileBarChart className="h-4 w-4" />
+                        Tải dữ liệu Excel
+                    </button>
+                </div>
                 {dailyVolumeQuery.isLoading ? (
                     <div className="h-64 animate-pulse rounded bg-slate-100" />
                 ) : (

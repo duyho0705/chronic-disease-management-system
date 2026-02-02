@@ -10,6 +10,9 @@ import {
   ListOrdered,
   Brain,
   BarChart2,
+  FileText,
+  Calendar,
+  CreditCard,
   Settings,
   LogOut,
   Menu,
@@ -21,6 +24,9 @@ const nav = [
   { to: '/patients', label: 'Bệnh nhân', icon: Users },
   { to: '/triage', label: 'Phân loại', icon: Stethoscope },
   { to: '/queue', label: 'Hàng chờ', icon: ListOrdered },
+  { to: '/scheduling', label: 'Lịch hẹn', icon: Calendar },
+  { to: '/billing', label: 'Viện phí', icon: CreditCard },
+  { to: '/reports', label: 'Báo cáo', icon: FileText, roles: ['admin', 'clinic_manager'] },
   { to: '/ai-audit', label: 'AI Audit', icon: Brain, roles: ['admin'] },
   { to: '/analytics', label: 'Analytics', icon: BarChart2, roles: ['admin', 'clinic_manager'] },
   { to: '/admin', label: 'Quản trị', icon: Settings, roles: ['admin'] },
@@ -64,8 +70,8 @@ export function Layout() {
                 key={to}
                 to={to}
                 className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-all ${isActive
-                    ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   }`}
               >
                 <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-500'}`} />
@@ -108,8 +114,8 @@ export function Layout() {
               to={to}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname.startsWith(to)
-                  ? 'bg-slate-900 text-white'
-                  : 'text-slate-600 hover:bg-slate-50'
+                ? 'bg-slate-900 text-white'
+                : 'text-slate-600 hover:bg-slate-50'
                 }`}
             >
               <Icon className="h-5 w-5" />

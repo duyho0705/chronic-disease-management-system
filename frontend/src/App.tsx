@@ -7,10 +7,13 @@ import { LandingPage } from '@/pages/LandingPage'
 import { Login } from '@/pages/Login'
 import { Dashboard } from '@/pages/Dashboard'
 import { Patients } from '@/pages/Patients'
+import { Billing } from '@/pages/Billing'
+import { Scheduling } from '@/pages/Scheduling'
 import { Triage } from '@/pages/Triage'
 import { Queue } from '@/pages/Queue'
 import { AiAudit } from '@/pages/AiAudit'
 import { Analytics } from '@/pages/Analytics'
+import { Reports } from '@/pages/Reports'
 import { Admin } from '@/pages/Admin'
 
 function App() {
@@ -35,6 +38,9 @@ function App() {
             <Route path="patients" element={<Patients />} />
             <Route path="triage" element={<Triage />} />
             <Route path="queue" element={<Queue />} />
+            <Route path="scheduling" element={<Scheduling />} />
+            <Route path="billing" element={<Billing />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="ai-audit" element={<AiAudit />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="admin" element={<Admin />} />

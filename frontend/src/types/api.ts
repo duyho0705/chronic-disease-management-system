@@ -301,3 +301,73 @@ export interface CreateConsultationRequest {
   diagnosisNotes?: string
   prescriptionNotes?: string
 }
+
+export interface WaitTimeSummaryDto {
+  branchId: string
+  branchName: string
+  fromDate: string
+  toDate: string
+  averageWaitMinutes: number | null
+  totalCompletedEntries: number
+}
+
+export interface DailyVolumeDto {
+  date: string
+  branchId: string
+  branchName: string
+  triageCount: number
+  completedQueueEntries: number
+}
+
+export interface AiEffectivenessDto {
+  branchId: string
+  branchName: string
+  fromDate: string
+  toDate: string
+  totalSessions: number
+  aiSessions: number
+  humanSessions: number
+  matchCount: number
+  overrideCount: number
+  matchRate: number | null
+  overrideRate: number | null
+}
+
+export interface InvoiceItemDto {
+  id: string
+  itemCode?: string
+  itemName: string
+  quantity: number
+  unitPrice: number
+  lineTotal: number
+}
+
+export interface InvoiceDto {
+  id: string
+  invoiceNumber: string
+  patientId: string
+  patientName: string
+  consultationId?: string
+  totalAmount: number
+  discountAmount: number
+  finalAmount: number
+  status: string // PENDING, PAID, CANCELLED
+  paymentMethod?: string
+  paidAt?: string
+  createdAt: string
+  items: InvoiceItemDto[]
+}
+
+export interface CreateInvoiceRequest {
+  patientId: string
+  branchId?: string
+  consultationId?: string
+  discountAmount?: number
+  notes?: string
+  items: {
+    itemCode?: string
+    itemName: string
+    quantity: number
+    unitPrice: number
+  }[]
+}

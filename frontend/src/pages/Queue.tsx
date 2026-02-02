@@ -6,6 +6,8 @@ import { getPatient } from '@/api/patients'
 import { AcuityIndicator } from '@/components/AcuityBadge'
 import { toastService } from '@/services/toast'
 import { SkeletonTable } from '@/components/Skeleton'
+import { useEffect } from 'react'
+import { WebSocketService } from '@/services/websocket'
 
 export function Queue() {
   const { headers, branchId } = useTenant()
@@ -25,6 +27,17 @@ export function Queue() {
     queryFn: () => getQueueEntries(selectedQueueId!, branchId!, headers),
     enabled: !!selectedQueueId && !!branchId && !!headers?.tenantId,
   })
+
+  useEffect(() => {
+    const ws = new WebSocketService((msg) => {
+      console.log('WS Update:', msg)
+      if (msg.type === 'QUEUE_UPDATE') {
+        queryClient.invalidateQueries({ queryKey: ['queue-entries'] })
+      }
+    })
+    ws.connect()
+    return () => ws.disconnect()
+  }, [queryClient])
 
   const addEntry = useMutation({
     mutationFn: () => {
@@ -188,7 +201,7 @@ function QueueRow({
       </td>
       <td className="table-td hidden md:table-cell">
         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${entry.status === 'WAITING' ? 'bg-blue-100 text-blue-700' :
-            entry.status === 'CALLED' ? 'bg-yellow-100 text-yellow-800' : 'bg-slate-100 text-slate-700'
+          entry.status === 'CALLED' ? 'bg-yellow-100 text-yellow-800' : 'bg-slate-100 text-slate-700'
           }`}>
           {entry.status}
         </span>

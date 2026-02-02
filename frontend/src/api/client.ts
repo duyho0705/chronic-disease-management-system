@@ -62,3 +62,20 @@ export const put = <T>(path: string, body: unknown, tenant?: TenantHeaders | nul
 
 export const patch = <T>(path: string, body?: unknown, tenant?: TenantHeaders | null) =>
   api<T>(path, { method: 'PATCH', body: body ? JSON.stringify(body) : undefined, tenant })
+
+export async function downloadFile(path: string, tenant: TenantHeaders | null, filename: string) {
+  const url = `${API_BASE}${path}`
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: headers(tenant),
+  })
+  if (!res.ok) throw new Error('Download failed')
+  const blob = await res.blob()
+  const downloadUrl = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = downloadUrl
+  link.setAttribute('download', filename)
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+}
