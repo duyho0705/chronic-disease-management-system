@@ -23,6 +23,9 @@ public class ClinicalService {
     private final vn.clinic.patientflow.queue.repository.QueueEntryRepository queueEntryRepository;
     private final vn.clinic.patientflow.identity.service.IdentityService identityService;
     private final vn.clinic.patientflow.billing.service.BillingService billingService;
+    private final vn.clinic.patientflow.clinical.repository.PrescriptionRepository prescriptionRepository;
+    private final vn.clinic.patientflow.pharmacy.repository.PharmacyProductRepository productRepository;
+    private final vn.clinic.patientflow.pharmacy.service.PharmacyService pharmacyService;
 
     @Transactional(readOnly = true)
     public ClinicalConsultation getById(UUID id) {
@@ -113,8 +116,92 @@ public class ClinicalService {
                 .lineTotal(new BigDecimal("150000"))
                 .build());
 
+        // Add Prescription items if exists
+        prescriptionRepository.findByConsultationId(cons.getId()).ifPresent(prescription -> {
+            for (var item : prescription.getItems()) {
+                String name = item.getProductNameCustom();
+                if (item.getProduct() != null) {
+                    name = item.getProduct().getNameVi();
+                }
+
+                BigDecimal price = item.getUnitPrice() != null ? item.getUnitPrice() : BigDecimal.ZERO;
+
+                invoice.getItems().add(vn.clinic.patientflow.billing.domain.InvoiceItem.builder()
+                        .invoice(invoice)
+                        .itemName("Thuốc: " + name)
+                        .quantity(item.getQuantity())
+                        .unitPrice(price)
+                        .lineTotal(price.multiply(item.getQuantity()))
+                        .build());
+            }
+        });
+
         billingService.createInvoice(invoice);
 
         return cons;
+    }
+
+    @Transactional
+    public vn.clinic.patientflow.clinical.domain.Prescription createPrescription(
+            vn.clinic.patientflow.api.dto.CreatePrescriptionRequest request) {
+        var cons = getById(request.getConsultationId());
+
+        vn.clinic.patientflow.clinical.domain.Prescription prescription = vn.clinic.patientflow.clinical.domain.Prescription
+                .builder()
+                .consultation(cons)
+                .patient(cons.getPatient())
+                .doctorUserId(cons.getDoctorUser() != null ? cons.getDoctorUser().getId() : null)
+                .status(vn.clinic.patientflow.clinical.domain.Prescription.PrescriptionStatus.ISSUED)
+                .notes(request.getNotes())
+                .items(new java.util.ArrayList<>())
+                .build();
+
+        for (var itemReq : request.getItems()) {
+            vn.clinic.patientflow.clinical.domain.PrescriptionItem item = vn.clinic.patientflow.clinical.domain.PrescriptionItem
+                    .builder()
+                    .prescription(prescription)
+                    .quantity(itemReq.getQuantity())
+                    .dosageInstruction(itemReq.getDosageInstruction())
+                    .productNameCustom(itemReq.getProductNameCustom())
+                    .unitPrice(itemReq.getUnitPrice())
+                    .build();
+
+            if (itemReq.getProductId() != null) {
+                var product = productRepository.findById(itemReq.getProductId()).orElse(null);
+                item.setProduct(product);
+                if (item.getUnitPrice() == null && product != null) {
+                    item.setUnitPrice(product.getStandardPrice());
+                }
+            }
+            prescription.getItems().add(item);
+        }
+
+        return prescriptionRepository.save(prescription);
+    }
+
+    @Transactional
+    public void dispensePrescription(UUID prescriptionId, UUID performedByUserId) {
+        var prescription = prescriptionRepository.findById(prescriptionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Prescription", prescriptionId));
+
+        if (prescription
+                .getStatus() == vn.clinic.patientflow.clinical.domain.Prescription.PrescriptionStatus.DISPENSED) {
+            throw new IllegalStateException("Prescription already dispensed");
+        }
+
+        for (var item : prescription.getItems()) {
+            if (item.getProduct() != null) {
+                pharmacyService.dispenseStock(
+                        prescription.getConsultation().getBranch().getId(),
+                        item.getProduct().getId(),
+                        item.getQuantity(),
+                        prescription.getId(),
+                        performedByUserId,
+                        "Dispensed for prescription " + prescription.getId());
+            }
+        }
+
+        prescription.setStatus(vn.clinic.patientflow.clinical.domain.Prescription.PrescriptionStatus.DISPENSED);
+        prescriptionRepository.save(prescription);
     }
 }

@@ -371,3 +371,56 @@ export interface CreateInvoiceRequest {
     unitPrice: number
   }[]
 }
+
+export interface PharmacyProductDto {
+  id: string
+  code: string
+  nameVi: string
+  genericName?: string
+  unit: string
+  standardPrice: number
+  active: boolean
+}
+
+export interface PharmacyInventoryDto {
+  id: string
+  branchId: string
+  product: PharmacyProductDto
+  currentStock: number
+  minStockLevel: number
+  lastRestockAt?: string
+  updatedAt: string
+}
+
+export interface PrescriptionItemDto {
+  id?: string
+  productId?: string
+  productName?: string
+  quantity: number
+  dosageInstruction: string
+  unitPrice?: number
+}
+
+export interface PrescriptionDto {
+  id: string
+  consultationId: string
+  patientId: string
+  patientName: string
+  doctorUserId?: string
+  doctorName?: string
+  status: string
+  notes?: string
+  items: PrescriptionItemDto[]
+}
+
+export interface CreatePrescriptionRequest {
+  consultationId: string
+  notes?: string
+  items: {
+    productId?: string
+    productNameCustom?: string
+    quantity: number
+    dosageInstruction: string
+    unitPrice?: number
+  }[]
+}

@@ -1,0 +1,63 @@
+package vn.clinic.patientflow.api;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import vn.clinic.patientflow.api.dto.CreatePrescriptionRequest;
+import vn.clinic.patientflow.api.dto.PrescriptionDto;
+import vn.clinic.patientflow.api.dto.PrescriptionItemDto;
+import vn.clinic.patientflow.clinical.domain.Prescription;
+import vn.clinic.patientflow.clinical.service.ClinicalService;
+
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/prescriptions")
+@RequiredArgsConstructor
+@Tag(name = "Prescription", description = "Quản lý đơn thuốc")
+public class PrescriptionController {
+
+    private final ClinicalService clinicalService;
+
+    @PostMapping
+    @PreAuthorize("hasRole('DOCTOR')")
+    @Operation(summary = "Tạo đơn thuốc cho phiên khám")
+    public ResponseEntity<PrescriptionDto> createPrescription(@RequestBody CreatePrescriptionRequest request) {
+        Prescription p = clinicalService.createPrescription(request);
+        return ResponseEntity.ok(mapToDto(p));
+    }
+
+    @PostMapping("/{id}/dispense")
+    @PreAuthorize("hasAnyRole('PHARMACIST', 'ADMIN')")
+    @Operation(summary = "Xác nhận đã cấp phát thuốc (Trừ kho)")
+    public ResponseEntity<Void> dispensePrescription(@PathVariable UUID id) {
+        // In real app, get user ID from security context
+        clinicalService.dispensePrescription(id, null);
+        return ResponseEntity.ok().build();
+    }
+
+    private PrescriptionDto mapToDto(Prescription p) {
+        return PrescriptionDto.builder()
+                .id(p.getId())
+                .consultationId(p.getConsultation().getId())
+                .patientId(p.getPatient().getId())
+                .patientName(p.getPatient().getFullNameVi())
+                .doctorUserId(p.getDoctorUserId())
+                .status(p.getStatus().name())
+                .notes(p.getNotes())
+                .items(p.getItems().stream().map(item -> PrescriptionItemDto.builder()
+                        .id(item.getId())
+                        .productId(item.getProduct() != null ? item.getProduct().getId() : null)
+                        .productName(
+                                item.getProduct() != null ? item.getProduct().getNameVi() : item.getProductNameCustom())
+                        .quantity(item.getQuantity())
+                        .dosageInstruction(item.getDosageInstruction())
+                        .unitPrice(item.getUnitPrice())
+                        .build()).collect(Collectors.toList()))
+                .build();
+    }
+}

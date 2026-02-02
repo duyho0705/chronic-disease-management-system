@@ -8,6 +8,8 @@ import { Login } from '@/pages/Login'
 import { Dashboard } from '@/pages/Dashboard'
 import { Patients } from '@/pages/Patients'
 import { Billing } from '@/pages/Billing'
+import { Inventory } from '@/pages/Inventory'
+import { PharmacyDispensing } from '@/pages/PharmacyDispensing'
 import { Scheduling } from '@/pages/Scheduling'
 import { Triage } from '@/pages/Triage'
 import { Queue } from '@/pages/Queue'
@@ -40,6 +42,8 @@ function App() {
             <Route path="queue" element={<Queue />} />
             <Route path="scheduling" element={<Scheduling />} />
             <Route path="billing" element={<Billing />} />
+            <Route path="inventory" element={<Inventory />} />
+            <Route path="dispensing" element={<PharmacyDispensing />} />
             <Route path="reports" element={<Reports />} />
             <Route path="ai-audit" element={<AiAudit />} />
             <Route path="analytics" element={<Analytics />} />
