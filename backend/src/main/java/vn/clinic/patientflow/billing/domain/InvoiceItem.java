@@ -3,8 +3,6 @@ package vn.clinic.patientflow.billing.domain;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,8 +27,7 @@ import lombok.Setter;
 public class InvoiceItem {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 

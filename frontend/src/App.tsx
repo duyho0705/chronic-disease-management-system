@@ -10,6 +10,7 @@ import { Patients } from '@/pages/Patients'
 import { Billing } from '@/pages/Billing'
 import { Inventory } from '@/pages/Inventory'
 import { DisplayPage } from '@/pages/DisplayPage'
+import { KioskPage } from '@/pages/KioskPage'
 import { PharmacyDispensing } from '@/pages/PharmacyDispensing'
 import { Scheduling } from '@/pages/Scheduling'
 import { Triage } from '@/pages/Triage'
@@ -36,6 +37,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/display/:branchId" element={<DisplayPage />} />
+        <Route path="/kiosk/:branchId" element={<KioskPage />} />
         <Route element={<RequireAuth />}>
           <Route element={<Layout />}>
             <Route path="dashboard" element={<Dashboard />} />

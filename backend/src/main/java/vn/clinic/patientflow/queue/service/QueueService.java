@@ -49,10 +49,6 @@ public class QueueService {
                                 .orElseThrow(() -> new ResourceNotFoundException("QueueEntry", id));
         }
 
-        /**
-         * Danh sách đang chờ, sắp xếp theo mức ưu tiên (acuity 1 trước 5) rồi thời gian
-         * vào hàng.
-         */
         @Transactional(readOnly = true)
         public List<QueueEntry> getWaitingEntries(UUID branchId, UUID queueDefinitionId) {
                 List<QueueEntry> list = queueEntryRepository.findWaitingWithTriageByBranchAndQueue(
@@ -67,7 +63,7 @@ public class QueueService {
 
         @Transactional
         public QueueEntry createEntry(UUID queueDefinitionId, UUID patientId, UUID triageSessionId,
-                        UUID appointmentId, int position) {
+                        UUID appointmentId, Integer position) {
                 UUID tenantId = TenantContext.getTenantIdOrThrow();
                 Tenant tenant = tenantService.getById(tenantId);
                 QueueDefinition queueDef = queueDefinitionRepository.findById(queueDefinitionId)
@@ -90,7 +86,7 @@ public class QueueService {
                                 .patient(patient)
                                 .triageSession(triageSession)
                                 .appointment(appointment)
-                                .position(position)
+                                .position(position != null ? position : 0)
                                 .status("WAITING")
                                 .joinedAt(Instant.now())
                                 .build();

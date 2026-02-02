@@ -244,6 +244,7 @@ export interface QueueDefinitionDto {
   branchId: string
   code: string
   nameVi: string
+  description?: string
   acuityFilter?: string
   displayOrder?: number
   isActive?: boolean
@@ -436,4 +437,13 @@ export interface PublicDisplayDto {
   branchName: string
   calling: DisplayEntryDto[]
   waiting: DisplayEntryDto[]
+}
+
+export interface KioskRegistrationRequest {
+  fullName: string
+  phone: string
+  dateOfBirth: string
+  branchId: string
+  queueDefinitionId: string
+  appointmentId?: string
 }

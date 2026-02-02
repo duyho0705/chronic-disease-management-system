@@ -55,7 +55,7 @@ public class PublicDisplayController {
                 .patientName(maskName(e.getPatient().getFullNameVi()))
                 .queueName(e.getQueueDefinition().getNameVi())
                 .status(e.getStatus())
-                .acuityLevel(e.getAcuityLevel() != null ? e.getAcuityLevel().name() : null)
+                .acuityLevel(e.getAcuityLevel())
                 .build();
     }
 

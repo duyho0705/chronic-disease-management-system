@@ -13,7 +13,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Một bệnh nhân trong hàng chờ. Thời gian chờ = called_at - joined_at (hoặc now - joined_at nếu đang chờ).
+ * Một bệnh nhân trong hàng chờ. Thời gian chờ = called_at - joined_at (hoặc now
+ * - joined_at nếu đang chờ).
  */
 @Entity
 @Table(name = "queue_entry")
@@ -62,6 +63,10 @@ public class QueueEntry extends BaseAuditableEntity {
 
     @Column(name = "completed_at")
     private Instant completedAt;
+
+    public String getAcuityLevel() {
+        return triageSession != null ? triageSession.getAcuityLevel() : null;
+    }
 
     public QueueEntry(UUID id) {
         super(id);
