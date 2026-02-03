@@ -142,8 +142,8 @@ export function PharmacyDispensing() {
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="text-sm font-black text-slate-900">x{item.quantity}</p>
-                                                    <p className={`text-[9px] font-black uppercase tracking-widest ${item.availableStock >= item.quantity ? 'text-emerald-500' : 'text-red-500'}`}>
-                                                        Kho: {item.availableStock || 0}
+                                                    <p className={`text-[9px] font-black uppercase tracking-widest ${(item.availableStock ?? 0) >= item.quantity ? 'text-emerald-500' : 'text-red-500'}`}>
+                                                        Kho: {item.availableStock ?? 0}
                                                     </p>
                                                 </div>
                                             </div>

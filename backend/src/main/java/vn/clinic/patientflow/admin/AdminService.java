@@ -144,7 +144,7 @@ public class AdminService {
     @Transactional(readOnly = true)
     public PagedResponse<AuditLogDto> listAuditLogs(UUID tenantId, Pageable pageable) {
         if (tenantId == null)
-            tenantId = vn.clinic.patientflow.common.tenant.TenantContext.getTenantId();
+            tenantId = vn.clinic.patientflow.common.tenant.TenantContext.getTenantId().orElse(null);
 
         Page<vn.clinic.patientflow.common.domain.AuditLog> page = auditLogRepository
                 .findByTenantIdOrderByCreatedAtDesc(tenantId, pageable);

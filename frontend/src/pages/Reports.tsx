@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTenant } from '@/context/TenantContext'
 import {
     getWaitTimeSummary, getDailyVolume, getAiEffectiveness, getRevenueReport,
-    exportWaitTimeExcel, exportDailyVolumeExcel, exportAiEffectivenessPdf
+    exportDailyVolumeExcel, exportAiEffectivenessPdf
 } from '@/api/reports'
 import {
     FileDown, FileBarChart, Download, Calendar,

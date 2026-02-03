@@ -8,11 +8,10 @@ import vn.clinic.patientflow.api.dto.PrescriptionTemplateDto;
 import vn.clinic.patientflow.clinical.domain.PrescriptionTemplate;
 import vn.clinic.patientflow.clinical.domain.PrescriptionTemplateItem;
 import vn.clinic.patientflow.clinical.repository.PrescriptionTemplateRepository;
-import vn.clinic.patientflow.common.tenant.TenantContext;
 import vn.clinic.patientflow.tenant.domain.Tenant;
 import vn.clinic.patientflow.tenant.repository.TenantRepository;
 import vn.clinic.patientflow.pharmacy.repository.PharmacyProductRepository;
-import vn.clinic.patientflow.auth.AuthPrincipal;
+import vn.clinic.patientflow.common.tenant.TenantContext;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +27,7 @@ public class PrescriptionTemplateService {
 
     @Transactional
     public PrescriptionTemplate createTemplate(CreatePrescriptionTemplateRequest request, UUID creatorId) {
-        UUID tenantId = vn.clinic.patientflow.common.tenant.TenantContext.getTenantIdOrThrow();
+        UUID tenantId = TenantContext.getTenantIdOrThrow();
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow();
 
         PrescriptionTemplate template = PrescriptionTemplate.builder()
@@ -51,7 +50,7 @@ public class PrescriptionTemplateService {
 
     @Transactional(readOnly = true)
     public List<PrescriptionTemplateDto> getTemplates() {
-        UUID tenantId = vn.clinic.patientflow.common.tenant.TenantContext.getTenantIdOrThrow();
+        UUID tenantId = TenantContext.getTenantIdOrThrow();
         return templateRepository.findByTenantId(tenantId).stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());

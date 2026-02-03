@@ -1,20 +1,24 @@
 package vn.clinic.patientflow.api;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.*;
-import vn.clinic.patientflow.clinical.repository.ClinicalConsultationRepository;
-import vn.clinic.patientflow.clinical.repository.PrescriptionRepository;
-import vn.clinic.patientflow.billing.repository.InvoiceRepository;
-import vn.clinic.patientflow.triage.repository.TriageSessionRepository;
-import vn.clinic.patientflow.triage.repository.TriageVitalRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import vn.clinic.patientflow.api.dto.TimelineItemDto;
+import vn.clinic.patientflow.api.dto.TriageVitalDto;
+import vn.clinic.patientflow.billing.repository.InvoiceRepository;
+import vn.clinic.patientflow.clinical.repository.ClinicalConsultationRepository;
+import vn.clinic.patientflow.triage.repository.TriageSessionRepository;
+import vn.clinic.patientflow.triage.repository.TriageVitalRepository;
 
 @RestController
 @RequestMapping("/api/ehr")
@@ -25,7 +29,6 @@ public class EhrController {
     private final TriageVitalRepository vitalRepository;
     private final TriageSessionRepository triageRepository;
     private final ClinicalConsultationRepository consultationRepository;
-    private final PrescriptionRepository prescriptionRepository;
     private final InvoiceRepository invoiceRepository;
 
     @GetMapping("/patient/{patientId}/vitals")
@@ -62,14 +65,14 @@ public class EhrController {
                         .type("CONSULTATION")
                         .timestamp(c.getStartedAt())
                         .title("Khám bệnh")
-                        .subtitle("BS. " + c.getDoctorName())
+                        .subtitle(c.getDoctorUser() != null ? "BS. " + c.getDoctorUser().getFullNameVi() : "Bác sĩ")
                         .content(c.getDiagnosisNotes())
                         .status(c.getStatus())
                         .build()));
 
         // 3. Invoices
         invoiceRepository.findAll().stream() // Ideally we should have findByPatientId in InvoiceRepository
-                .filter(i -> i.getPatientId().equals(patientId))
+                .filter(i -> i.getPatient() != null && i.getPatient().getId().equals(patientId))
                 .forEach(i -> timeline.add(TimelineItemDto.builder()
                         .id(i.getId().toString())
                         .type("INVOICE")

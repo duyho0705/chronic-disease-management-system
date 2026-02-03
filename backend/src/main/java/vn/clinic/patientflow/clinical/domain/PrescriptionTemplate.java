@@ -2,7 +2,6 @@ package vn.clinic.patientflow.clinical.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import vn.clinic.patientflow.pharmacy.domain.PharmacyProduct;
 import vn.clinic.patientflow.tenant.domain.Tenant;
 import java.util.ArrayList;
 import java.util.List;
