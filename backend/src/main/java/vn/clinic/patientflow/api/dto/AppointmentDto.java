@@ -20,7 +20,9 @@ public class AppointmentDto {
     private UUID id;
     private UUID tenantId;
     private UUID branchId;
+    private String branchName;
     private UUID patientId;
+    private String patientName;
     private LocalDate appointmentDate;
     private LocalTime slotStartTime;
     private LocalTime slotEndTime;
@@ -32,12 +34,15 @@ public class AppointmentDto {
     private Instant updatedAt;
 
     public static AppointmentDto fromEntity(SchedulingAppointment e) {
-        if (e == null) return null;
+        if (e == null)
+            return null;
         return AppointmentDto.builder()
                 .id(e.getId())
                 .tenantId(e.getTenant() != null ? e.getTenant().getId() : null)
                 .branchId(e.getBranch() != null ? e.getBranch().getId() : null)
+                .branchName(e.getBranch() != null ? e.getBranch().getNameVi() : null)
                 .patientId(e.getPatient() != null ? e.getPatient().getId() : null)
+                .patientName(e.getPatient() != null ? e.getPatient().getFullNameVi() : null)
                 .appointmentDate(e.getAppointmentDate())
                 .slotStartTime(e.getSlotStartTime())
                 .slotEndTime(e.getSlotEndTime())

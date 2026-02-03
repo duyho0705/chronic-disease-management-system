@@ -572,3 +572,18 @@ export interface AuditLogDto {
   details: string
   createdAt: string
 }
+
+export interface SlotAvailabilityDto {
+  startTime: string
+  endTime: string
+  available: boolean
+}
+
+export interface CreateAppointmentRequest {
+  branchId: string
+  appointmentDate: string
+  slotStartTime: string
+  slotEndTime: string
+  appointmentType?: string
+  notes?: string
+}

@@ -15,10 +15,13 @@ import vn.clinic.patientflow.patient.service.PatientService;
 import vn.clinic.patientflow.scheduling.service.SchedulingService;
 import vn.clinic.patientflow.triage.service.TriageService;
 import vn.clinic.patientflow.queue.service.QueueService;
+import vn.clinic.patientflow.patient.service.PatientNotificationService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import vn.clinic.patientflow.tenant.service.TenantService;
 
 @RestController
 @RequestMapping("/api/portal")
@@ -33,6 +36,8 @@ public class PatientPortalController {
     private final BillingService billingService;
     private final TriageService triageService;
     private final QueueService queueService;
+    private final TenantService tenantService;
+    private final PatientNotificationService patientNotificationService;
 
     @GetMapping("/profile")
     @Operation(summary = "Lấy hồ sơ bệnh nhân của user hiện tại")
@@ -126,6 +131,47 @@ public class PatientPortalController {
                     return dto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/branches")
+    @Operation(summary = "Danh sách chi nhánh đang hoạt động")
+    public List<TenantBranchDto> getBranches() {
+        UUID tenantId = vn.clinic.patientflow.common.tenant.TenantContext.getTenantIdOrThrow();
+        return tenantService.getBranchesByTenantId(tenantId).stream()
+                .filter(vn.clinic.patientflow.tenant.domain.TenantBranch::getIsActive)
+                .map(TenantBranchDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/slots")
+    @Operation(summary = "Lấy danh sách slot khả dụng")
+    public List<SlotAvailabilityDto> getSlots(@RequestParam UUID branchId, @RequestParam LocalDate date) {
+        return schedulingService.getAvailableSlots(branchId, date);
+    }
+
+    @PostMapping("/appointments")
+    @Operation(summary = "Đặt lịch hẹn mới")
+    public AppointmentDto createAppointment(@RequestBody CreateAppointmentRequest request) {
+        Patient p = getAuthenticatedPatient();
+        vn.clinic.patientflow.scheduling.domain.SchedulingAppointment appointment = vn.clinic.patientflow.scheduling.domain.SchedulingAppointment
+                .builder()
+                .branch(new vn.clinic.patientflow.tenant.domain.TenantBranch(request.getBranchId()))
+                .patient(p)
+                .appointmentDate(request.getAppointmentDate())
+                .slotStartTime(request.getSlotStartTime())
+                .slotEndTime(request.getSlotEndTime())
+                .status("SCHEDULED")
+                .appointmentType(request.getAppointmentType())
+                .notes(request.getNotes())
+                .build();
+        return AppointmentDto.fromEntity(schedulingService.createAppointment(appointment));
+    }
+
+    @PostMapping("/register-token")
+    @Operation(summary = "Đăng ký FCM token cho bệnh nhân")
+    public void registerToken(@RequestBody RegisterFcmTokenRequest request) {
+        Patient p = getAuthenticatedPatient();
+        patientNotificationService.registerToken(p, request.getToken(), request.getDeviceType());
     }
 
     private Patient getAuthenticatedPatient() {

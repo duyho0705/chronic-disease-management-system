@@ -22,6 +22,9 @@ import vn.clinic.patientflow.scheduling.repository.SchedulingSlotTemplateReposit
 import vn.clinic.patientflow.tenant.domain.Tenant;
 import vn.clinic.patientflow.tenant.domain.TenantBranch;
 import vn.clinic.patientflow.tenant.service.TenantService;
+import vn.clinic.patientflow.api.dto.SlotAvailabilityDto;
+import java.time.LocalTime;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -112,5 +115,24 @@ public class SchedulingService {
         return appointmentRepository
                 .findByPatientIdAndStatusInAndAppointmentDateGreaterThanEqualOrderByAppointmentDateAsc(
                         patientId, List.of("SCHEDULED", "CONFIRMED"), LocalDate.now());
+    }
+
+    @Transactional(readOnly = true)
+    public List<SlotAvailabilityDto> getAvailableSlots(UUID branchId, LocalDate date) {
+        UUID tenantId = TenantContext.getTenantIdOrThrow();
+        List<SchedulingSlotTemplate> templates = getSlotTemplatesByTenant(tenantId);
+
+        List<SchedulingAppointment> existing = appointmentRepository.findByTenantIdAndBranchIdAndAppointmentDate(
+                tenantId, branchId, date, org.springframework.data.domain.Pageable.unpaged()).getContent();
+
+        return templates.stream().map(t -> {
+            boolean isTaken = existing.stream().anyMatch(a -> !"CANCELLED".equals(a.getStatus())
+                    && a.getSlotStartTime().equals(t.getStartTime()));
+            return SlotAvailabilityDto.builder()
+                    .startTime(t.getStartTime())
+                    .endTime(t.getStartTime().plusMinutes(t.getDurationMinutes()))
+                    .available(!isTaken)
+                    .build();
+        }).collect(Collectors.toList());
     }
 }

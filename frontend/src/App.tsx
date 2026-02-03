@@ -27,6 +27,9 @@ import { PatientLayout } from '@/components/PatientLayout'
 import PatientDashboard from '@/pages/patient/Dashboard'
 import PatientHistory from '@/pages/patient/History'
 import PatientHistoryDetail from '@/pages/patient/HistoryDetail'
+import PatientAppointments from '@/pages/patient/Appointments'
+import PatientBooking from '@/pages/patient/Booking'
+import PatientProfile from '@/pages/patient/Profile'
 import { Outlet } from 'react-router-dom'
 
 function App() {
@@ -53,6 +56,9 @@ function App() {
             <Route index element={<PatientDashboard />} />
             <Route path="history" element={<PatientHistory />} />
             <Route path="history/:id" element={<PatientHistoryDetail />} />
+            <Route path="appointments" element={<PatientAppointments />} />
+            <Route path="booking" element={<PatientBooking />} />
+            <Route path="profile" element={<PatientProfile />} />
           </Route>
           <Route element={<Layout />}>
             <Route path="dashboard" element={<Dashboard />} />

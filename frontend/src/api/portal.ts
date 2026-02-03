@@ -1,4 +1,4 @@
-import { get } from './client'
+import { get, post } from './client'
 import type { TenantHeaders } from './client'
 import type {
     PatientPortalStatusDto,
@@ -7,7 +7,10 @@ import type {
     AppointmentDto,
     ConsultationDto,
     ConsultationDetailDto,
-    QueueEntryDto
+    QueueEntryDto,
+    TenantBranchDto,
+    SlotAvailabilityDto,
+    CreateAppointmentRequest
 } from '@/types/api'
 
 export async function getPortalProfile(tenant: TenantHeaders | null): Promise<PatientDto> {
@@ -36,4 +39,20 @@ export async function getPortalQueues(tenant: TenantHeaders | null): Promise<Que
 
 export async function getPatientPortalStatus(patientId: string, tenant: TenantHeaders | null): Promise<PatientPortalStatusDto> {
     return get<PatientPortalStatusDto>(`/portal/status/${patientId}`, tenant)
+}
+
+export async function getPortalBranches(tenant: TenantHeaders | null): Promise<TenantBranchDto[]> {
+    return get<TenantBranchDto[]>('/portal/branches', tenant)
+}
+
+export async function getPortalSlots(branchId: string, date: string, tenant: TenantHeaders | null): Promise<SlotAvailabilityDto[]> {
+    return get<SlotAvailabilityDto[]>(`/portal/slots?branchId=${branchId}&date=${date}`, tenant)
+}
+
+export async function createPortalAppointment(data: CreateAppointmentRequest, tenant: TenantHeaders | null): Promise<AppointmentDto> {
+    return post<AppointmentDto>('/portal/appointments', data, tenant)
+}
+
+export async function registerPortalFcmToken(token: string, deviceType: string, tenant: TenantHeaders | null): Promise<void> {
+    return post<void>('/portal/register-token', { token, deviceType }, tenant)
 }
