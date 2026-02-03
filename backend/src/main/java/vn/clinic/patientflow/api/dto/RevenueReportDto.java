@@ -15,4 +15,13 @@ public class RevenueReportDto {
     private LocalDate toDate;
     private BigDecimal totalRevenue;
     private List<RevenueByDayDto> dailyRevenue;
+    private List<ServiceRevenueDto> topServices;
+
+    @Data
+    @Builder
+    public static class ServiceRevenueDto {
+        private String serviceName;
+        private BigDecimal amount;
+        private Long count;
+    }
 }

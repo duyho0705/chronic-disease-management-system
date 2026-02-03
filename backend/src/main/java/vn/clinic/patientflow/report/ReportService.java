@@ -74,6 +74,18 @@ public class ReportService {
                                         .build());
                 }
 
+                // Top Services
+                List<Object[]> serviceRevenue = invoiceRepository.sumRevenueByService(branchId, from, to);
+                List<vn.clinic.patientflow.api.dto.RevenueReportDto.ServiceRevenueDto> topServices = serviceRevenue
+                                .stream()
+                                .map(row -> vn.clinic.patientflow.api.dto.RevenueReportDto.ServiceRevenueDto.builder()
+                                                .serviceName((String) row[0])
+                                                .amount((java.math.BigDecimal) row[1])
+                                                .count(((Number) row[2]).longValue())
+                                                .build())
+                                .limit(5)
+                                .collect(Collectors.toList());
+
                 return vn.clinic.patientflow.api.dto.RevenueReportDto.builder()
                                 .branchId(branch.getId().toString())
                                 .branchName(branch.getNameVi())
@@ -81,6 +93,7 @@ public class ReportService {
                                 .toDate(toDate)
                                 .totalRevenue(total)
                                 .dailyRevenue(dailyData)
+                                .topServices(topServices)
                                 .build();
         }
 

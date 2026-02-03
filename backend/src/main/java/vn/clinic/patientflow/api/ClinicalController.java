@@ -73,4 +73,11 @@ public class ClinicalController {
     public ConsultationDto completeConsultation(@PathVariable UUID id) {
         return ConsultationDto.fromEntity(clinicalService.completeConsultation(id));
     }
+
+    @PostMapping("/prescriptions")
+    @Operation(summary = "Tạo đơn thuốc")
+    public vn.clinic.patientflow.clinical.domain.Prescription createPrescription(
+            @RequestBody vn.clinic.patientflow.api.dto.CreatePrescriptionRequest request) {
+        return clinicalService.createPrescription(request);
+    }
 }

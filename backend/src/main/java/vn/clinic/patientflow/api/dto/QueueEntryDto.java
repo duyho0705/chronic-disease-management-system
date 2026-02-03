@@ -20,6 +20,7 @@ public class QueueEntryDto {
     private UUID branchId;
     private UUID queueDefinitionId;
     private UUID patientId;
+    private String patientName;
     private UUID triageSessionId;
     private UUID appointmentId;
     private UUID medicalServiceId;
@@ -44,6 +45,7 @@ public class QueueEntryDto {
                 .branchId(e.getBranch() != null ? e.getBranch().getId() : null)
                 .queueDefinitionId(e.getQueueDefinition() != null ? e.getQueueDefinition().getId() : null)
                 .patientId(e.getPatient() != null ? e.getPatient().getId() : null)
+                .patientName(e.getPatient() != null ? e.getPatient().getFullNameVi() : null)
                 .triageSessionId(e.getTriageSession() != null ? e.getTriageSession().getId() : null)
                 .appointmentId(e.getAppointment() != null ? e.getAppointment().getId() : null)
                 .medicalServiceId(e.getMedicalService() != null ? e.getMedicalService().getId() : null)

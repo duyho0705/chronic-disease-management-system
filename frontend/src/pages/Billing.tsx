@@ -207,7 +207,12 @@ export function Billing() {
                                         </div>
                                         <h4 className="font-black text-lg tracking-tight leading-none">{inv.patientName}</h4>
                                     </div>
-                                    <StatusBadge status={inv.status} />
+                                    <div className="flex items-center gap-2">
+                                        <StatusBadge status={inv.status} />
+                                        {inv.consultationId && (
+                                            <span className="bg-blue-50 text-blue-600 text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">Khám bệnh</span>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="flex justify-between items-end">
                                     <div className="text-[10px] font-bold opacity-50 flex items-center gap-1">

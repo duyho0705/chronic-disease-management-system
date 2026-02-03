@@ -278,8 +278,12 @@ export interface QueueEntryDto {
   branchId: string
   queueDefinitionId: string
   patientId: string
+  patientName?: string
   triageSessionId?: string
   appointmentId?: string
+  medicalServiceId?: string
+  medicalServiceName?: string
+  notes?: string
   position?: number
   status: string
   /** Mức ưu tiên từ phiên phân loại (1–5). */
@@ -301,6 +305,7 @@ export interface UpdateQueueEntryRequest {
 export interface ConsultationDto {
   id: string
   patientId: string
+  patientName?: string
   doctorUserId?: string
   doctorName?: string
   status: string
@@ -366,6 +371,11 @@ export interface RevenueReportDto {
   toDate: string
   totalRevenue: number
   dailyRevenue: RevenueByDayDto[]
+  topServices?: {
+    serviceName: string
+    amount: number
+    count: number
+  }[]
 }
 
 export interface InvoiceItemDto {

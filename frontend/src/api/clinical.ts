@@ -42,5 +42,5 @@ export async function createPrescription(
     data: any,
     tenant: TenantHeaders | null
 ): Promise<any> {
-    return post<any>('/clinical/consultations/prescriptions', data, tenant)
+    return post<any>('/prescriptions', data, tenant)
 }

@@ -68,6 +68,9 @@ public class Patient extends BaseAuditableEntity {
     @Builder.Default
     private Boolean isActive = true;
 
+    @Column(name = "identity_user_id")
+    private UUID identityUserId;
+
     public Patient(UUID id) {
         super(id);
     }

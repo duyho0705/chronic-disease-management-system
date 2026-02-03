@@ -22,6 +22,7 @@ import { Admin } from '@/pages/Admin'
 import { PatientPortal } from '@/pages/patient/PatientPortal'
 import { PatientEhr } from '@/pages/admin/PatientEhr'
 import { Reception } from '@/pages/Reception'
+import { Consultation } from '@/pages/Consultation'
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
             <Route path="reception" element={<Reception />} />
             <Route path="patients" element={<Patients />} />
             <Route path="patients/:patientId/ehr" element={<PatientEhr />} />
+            <Route path="consultation" element={<Consultation />} />
             <Route path="triage" element={<Triage />} />
             <Route path="queue" element={<Queue />} />
             <Route path="scheduling" element={<Scheduling />} />

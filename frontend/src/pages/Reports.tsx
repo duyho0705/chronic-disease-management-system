@@ -251,6 +251,62 @@ export function Reports() {
                         })}
                     </div>
                 </div>
+
+                {/* Popular Services Chart */}
+                <div className="bg-slate-50 p-10 rounded-[3.5rem] border border-slate-100 shadow-sm lg:col-span-2">
+                    <div className="flex items-center justify-between mb-10">
+                        <div>
+                            <h3 className="text-2xl font-black text-slate-900">Dịch vụ phổ biến</h3>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Các hạng mục mang lại doanh thu cao nhất</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-6">
+                            {revenueQuery.data?.topServices?.map((s: any, idx: number) => {
+                                const maxAmount = Math.max(...revenueQuery.data!.topServices.map((it: any) => it.amount), 1)
+                                const percent = (s.amount / maxAmount) * 100
+                                return (
+                                    <div key={idx} className="space-y-2">
+                                        <div className="flex justify-between items-end px-1">
+                                            <span className="text-sm font-black text-slate-700 uppercase tracking-tight">{s.serviceName}</span>
+                                            <span className="text-xs font-black text-slate-400">{s.amount.toLocaleString('vi-VN')} đ</span>
+                                        </div>
+                                        <div className="h-3 bg-white rounded-full overflow-hidden border border-slate-100 p-0.5">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                whileInView={{ width: `${percent}%` }}
+                                                className={`h-full rounded-full ${idx === 0 ? 'bg-blue-500' : idx === 1 ? 'bg-emerald-500' : 'bg-slate-400'}`}
+                                            />
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 flex flex-col justify-center space-y-6 shadow-xl shadow-slate-200/50">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-black text-xl">1</div>
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dẫn đầu doanh thu</p>
+                                    <p className="text-lg font-black text-slate-900 uppercase">{revenueQuery.data?.topServices?.[0]?.serviceName || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <div className="h-px bg-slate-50" />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Số lượt sử dụng</p>
+                                    <p className="text-2xl font-black text-slate-900">{revenueQuery.data?.topServices?.[0]?.count || 0}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tỉ trọng (%)</p>
+                                    <p className="text-2xl font-black text-blue-600">
+                                        {revenueQuery.data?.topServices?.[0] ? ((revenueQuery.data.topServices[0].amount / (revenueQuery.data.totalRevenue || 1)) * 100).toFixed(1) : 0}%
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* AI Efficiency Audit Section */}
