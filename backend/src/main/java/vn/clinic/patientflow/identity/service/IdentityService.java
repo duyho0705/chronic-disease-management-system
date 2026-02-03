@@ -9,7 +9,6 @@ import vn.clinic.patientflow.identity.domain.IdentityUserRole;
 import vn.clinic.patientflow.identity.repository.IdentityUserRepository;
 import vn.clinic.patientflow.identity.repository.IdentityUserRoleRepository;
 import vn.clinic.patientflow.identity.repository.IdentityRoleRepository;
-import vn.clinic.patientflow.tenant.domain.TenantBranch;
 import vn.clinic.patientflow.tenant.repository.TenantBranchRepository;
 import vn.clinic.patientflow.tenant.repository.TenantRepository;
 import vn.clinic.patientflow.identity.domain.IdentityRole;

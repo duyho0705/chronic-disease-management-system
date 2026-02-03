@@ -6,7 +6,7 @@ import { listTenants, getBranches } from '@/api/tenants'
 import { useQuery } from '@tanstack/react-query'
 import { X, LogIn, Mail, Lock, Building2, MapPin, AlertCircle, Loader2, Stethoscope, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { LoginRequest, RegisterRequest, TenantDto, TenantBranchDto } from '@/types/api'
+import type { LoginRequest, RegisterRequest } from '@/types/api'
 
 interface LoginFormProps {
   onSuccess: () => void;
