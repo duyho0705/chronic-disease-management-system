@@ -35,6 +35,7 @@ public class AdminService {
     private final IdentityRoleRepository identityRoleRepository;
     private final TenantService tenantService;
     private final PasswordEncoder passwordEncoder;
+    private final vn.clinic.patientflow.common.repository.AuditLogRepository auditLogRepository;
 
     @Transactional(readOnly = true)
     public PagedResponse<AdminUserDto> listUsers(UUID tenantId, Pageable pageable) {
@@ -104,7 +105,8 @@ public class AdminService {
             List<IdentityUserRole> existing = identityUserRoleRepository.findByUserId(userId);
             identityUserRoleRepository.deleteAll(existing);
             for (UpdateUserRequest.UserRoleAssignmentInput ra : request.getRoleAssignments()) {
-                if (ra.getTenantId() == null || ra.getRoleCode() == null) continue;
+                if (ra.getTenantId() == null || ra.getRoleCode() == null)
+                    continue;
                 IdentityRole role = identityRoleRepository.findByCode(ra.getRoleCode())
                         .orElseThrow(() -> new ResourceNotFoundException("IdentityRole", ra.getRoleCode()));
                 Tenant tenant = tenantService.getById(ra.getTenantId());
@@ -139,6 +141,29 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public PagedResponse<AuditLogDto> listAuditLogs(UUID tenantId, Pageable pageable) {
+        if (tenantId == null)
+            tenantId = vn.clinic.patientflow.common.tenant.TenantContext.getTenantId();
+
+        Page<vn.clinic.patientflow.common.domain.AuditLog> page = auditLogRepository
+                .findByTenantIdOrderByCreatedAtDesc(tenantId, pageable);
+
+        List<AuditLogDto> content = page.getContent().stream()
+                .map(l -> AuditLogDto.builder()
+                        .id(l.getId())
+                        .userEmail(l.getUserEmail())
+                        .action(l.getAction())
+                        .resourceType(l.getResourceType())
+                        .resourceId(l.getResourceId())
+                        .details(l.getDetails())
+                        .createdAt(l.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        return PagedResponse.of(page, content);
+    }
+
     private AdminUserDto toAdminUserDto(IdentityUser user) {
         List<IdentityUserRole> roles = identityUserRoleRepository.findByUserId(user.getId());
         List<UserRoleAssignmentDto> assignments = new ArrayList<>();
@@ -149,8 +174,7 @@ public class AdminService {
             UUID tenantId = ur.getTenant() != null ? ur.getTenant().getId() : null;
             assignments.add(new UserRoleAssignmentDto(
                     tenantId, tenantName, branchId, branchName,
-                    ur.getRole() != null ? ur.getRole().getCode() : null
-            ));
+                    ur.getRole() != null ? ur.getRole().getCode() : null));
         }
         return AdminUserDto.fromEntity(user, assignments);
     }

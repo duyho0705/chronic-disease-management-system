@@ -4,9 +4,10 @@ import { UserManagement } from './admin/UserManagement'
 import { AiConfig } from './admin/AiConfig'
 import { BranchManagement } from './admin/BranchManagement'
 import { MasterData } from './admin/MasterData'
-import { Settings, Users, Building2, Layers } from 'lucide-react'
+import { AuditLogs } from './admin/AuditLogs'
+import { Settings, Users, Building2, Layers, History } from 'lucide-react'
 
-type AdminTab = 'users' | 'ai' | 'branches' | 'services'
+type AdminTab = 'users' | 'ai' | 'branches' | 'services' | 'audit'
 
 export function Admin() {
   const { user: authUser } = useAuth()

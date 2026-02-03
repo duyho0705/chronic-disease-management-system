@@ -6,7 +6,21 @@ import type {
   UpdateUserRequest,
   SetPasswordRequest,
   RoleDto,
+  AuditLogDto,
 } from '@/types/api'
+
+export async function getAuditLogs(params: {
+  tenantId?: string | null
+  page?: number
+  size?: number
+}): Promise<PagedResponse<AuditLogDto>> {
+  const sp = new URLSearchParams()
+  if (params.tenantId) sp.set('tenantId', params.tenantId)
+  if (params.page != null) sp.set('page', String(params.page))
+  if (params.size != null) sp.set('size', String(params.size))
+  const q = sp.toString()
+  return get<PagedResponse<AuditLogDto>>(`/admin/audit-logs${q ? `?${q}` : ''}`)
+}
 
 export async function getAdminUsers(params: {
   tenantId?: string | null

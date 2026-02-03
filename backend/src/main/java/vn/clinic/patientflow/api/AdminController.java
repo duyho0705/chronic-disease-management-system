@@ -69,4 +69,13 @@ public class AdminController {
     public List<RoleDto> getRoles() {
         return adminService.getRoles();
     }
+
+    @GetMapping("/audit-logs")
+    @Operation(summary = "Danh sách nhật ký hệ thống (Audit Log)")
+    public PagedResponse<AuditLogDto> listAuditLogs(
+            @RequestParam(required = false) UUID tenantId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return adminService.listAuditLogs(tenantId, PageRequest.of(page, size));
+    }
 }

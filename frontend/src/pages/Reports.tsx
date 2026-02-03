@@ -7,12 +7,11 @@ import {
 } from '@/api/reports'
 import {
     FileDown, FileBarChart, Download, Calendar,
-    ArrowUpRight, ArrowDownRight, Activity, Users,
-    Clock, Brain, DollarSign, TrendingUp, ChevronRight,
-    PieChart, BarChart3, Filter
+    Activity, Users,
+    Clock, Brain, DollarSign, TrendingUp,
+    BarChart3, Filter
 } from 'lucide-react'
-import { toastService } from '@/services/toast'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 export function Reports() {
     const { headers, branchId } = useTenant()

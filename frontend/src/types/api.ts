@@ -495,3 +495,39 @@ export interface KioskRegistrationRequest {
   queueDefinitionId: string
   appointmentId?: string
 }
+
+export interface TriageVitalDto {
+  id: string
+  vitalType: string
+  valueNumeric: number
+  unit: string
+  recordedAt: string
+}
+
+export interface TimelineItemDto {
+  id: string
+  type: 'TRIAGE' | 'CONSULTATION' | 'INVOICE' | 'PRESCRIPTION'
+  timestamp: string
+  title: string
+  subtitle: string
+  content: string
+  status: string
+}
+
+export interface PatientPortalStatusDto {
+  patientName: string
+  queueName?: string
+  status: string
+  peopleAhead: number
+  estimatedWaitMinutes?: number
+}
+
+export interface AuditLogDto {
+  id: string
+  userEmail: string
+  action: string
+  resourceType: string
+  resourceId: string
+  details: string
+  createdAt: string
+}

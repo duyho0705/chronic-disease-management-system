@@ -6,6 +6,8 @@ import type { PatientDto, CreatePatientRequest } from '@/types/api'
 import { toastService } from '@/services/toast'
 import { CheckInModal } from '@/components/CheckInModal'
 import { SkeletonPatientList } from '@/components/Skeleton'
+import { QrCode, ExternalLink, FileText, Activity, Share2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 function PatientForm({
   initial,
@@ -282,23 +284,66 @@ export function Patients() {
                     <th className="table-th hidden md:table-cell">Ngày sinh</th>
                     <th className="table-th hidden sm:table-cell">CCCD</th>
                     <th className="table-th">Liên hệ</th>
+                    <th className="table-th text-right">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.content.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-50/80 transition-colors cursor-pointer" onClick={() => {
-                      setEditingPatient(p)
-                      setShowForm(true)
-                    }}>
-                      <td className="table-td">
+                    <tr key={p.id} className="hover:bg-slate-50/80 transition-colors group">
+                      <td className="table-td" onClick={() => {
+                        setEditingPatient(p)
+                        setShowForm(true)
+                      }}>
                         <div className="font-semibold text-slate-900">{p.fullNameVi}</div>
                         <div className="text-xs text-slate-500 md:hidden">
                           {p.dateOfBirth} {p.cccd ? `· ${p.cccd}` : ''}
                         </div>
                       </td>
-                      <td className="table-td hidden md:table-cell">{p.dateOfBirth}</td>
-                      <td className="table-td hidden sm:table-cell">{p.cccd || '—'}</td>
-                      <td className="table-td text-sm">{p.phone || '—'}</td>
+                      <td className="table-td hidden md:table-cell" onClick={() => {
+                        setEditingPatient(p)
+                        setShowForm(true)
+                      }}>{p.dateOfBirth}</td>
+                      <td className="table-td hidden sm:table-cell" onClick={() => {
+                        setEditingPatient(p)
+                        setShowForm(true)
+                      }}>{p.cccd || '—'}</td>
+                      <td className="table-td text-sm" onClick={() => {
+                        setEditingPatient(p)
+                        setShowForm(true)
+                      }}>{p.phone || '—'}</td>
+                      <td className="table-td text-right">
+                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Link
+                            to={`/patients/${p.id}/ehr`}
+                            title="Hồ sơ EHR"
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                          >
+                            <FileText className="w-4 h-4" />
+                          </Link>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              const url = `${window.location.origin}/portal/${p.id}`
+                              navigator.clipboard.writeText(url)
+                              toastService.success('Đã sao chép link Portal cho BN')
+                            }}
+                            title="Copy Link Portal"
+                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                          >
+                            <Share2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setCheckInPatient(p)
+                            }}
+                            title="Check-in nhanh"
+                            className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                          >
+                            <Activity className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
