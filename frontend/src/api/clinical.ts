@@ -37,3 +37,10 @@ export async function completeConsultation(
 ): Promise<ConsultationDto> {
     return post<ConsultationDto>(`/clinical/consultations/${id}/complete`, undefined, tenant)
 }
+
+export async function createPrescription(
+    data: any,
+    tenant: TenantHeaders | null
+): Promise<any> {
+    return post<any>('/clinical/consultations/prescriptions', data, tenant)
+}

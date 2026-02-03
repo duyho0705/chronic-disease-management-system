@@ -265,6 +265,7 @@ export interface QueueDefinitionDto {
   nameVi: string
   description?: string
   acuityFilter?: string
+  roomOrStation?: string
   displayOrder?: number
   isActive?: boolean
   createdAt?: string

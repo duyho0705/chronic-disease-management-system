@@ -20,19 +20,22 @@ public class QueueDefinitionDto {
     private String code;
     private String nameVi;
     private String acuityFilter;
+    private String roomOrStation;
     private Integer displayOrder;
     private Boolean isActive;
     private Instant createdAt;
     private Instant updatedAt;
 
     public static QueueDefinitionDto fromEntity(QueueDefinition e) {
-        if (e == null) return null;
+        if (e == null)
+            return null;
         return QueueDefinitionDto.builder()
                 .id(e.getId())
                 .branchId(e.getBranch() != null ? e.getBranch().getId() : null)
                 .code(e.getCode())
-                .nameVi(e.getNameVi())
+                .nameVi(e.nameVi)
                 .acuityFilter(e.getAcuityFilter())
+                .roomOrStation(e.getRoomOrStation())
                 .displayOrder(e.getDisplayOrder())
                 .isActive(e.getIsActive())
                 .createdAt(e.getCreatedAt())

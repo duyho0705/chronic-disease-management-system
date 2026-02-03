@@ -22,6 +22,9 @@ public class QueueEntryDto {
     private UUID patientId;
     private UUID triageSessionId;
     private UUID appointmentId;
+    private UUID medicalServiceId;
+    private String medicalServiceName;
+    private String notes;
     private Integer position;
     private String status;
     /** Mức ưu tiên từ phiên phân loại (nếu có). Dùng để hiển thị và sort. */
@@ -33,7 +36,8 @@ public class QueueEntryDto {
     private Instant updatedAt;
 
     public static QueueEntryDto fromEntity(QueueEntry e) {
-        if (e == null) return null;
+        if (e == null)
+            return null;
         return QueueEntryDto.builder()
                 .id(e.getId())
                 .tenantId(e.getTenant() != null ? e.getTenant().getId() : null)
@@ -42,6 +46,9 @@ public class QueueEntryDto {
                 .patientId(e.getPatient() != null ? e.getPatient().getId() : null)
                 .triageSessionId(e.getTriageSession() != null ? e.getTriageSession().getId() : null)
                 .appointmentId(e.getAppointment() != null ? e.getAppointment().getId() : null)
+                .medicalServiceId(e.getMedicalService() != null ? e.getMedicalService().getId() : null)
+                .medicalServiceName(e.getMedicalService() != null ? e.getMedicalService().getNameVi() : null)
+                .notes(e.getNotes())
                 .position(e.getPosition())
                 .status(e.getStatus())
                 .acuityLevel(e.getTriageSession() != null ? e.getTriageSession().getAcuityLevel() : null)

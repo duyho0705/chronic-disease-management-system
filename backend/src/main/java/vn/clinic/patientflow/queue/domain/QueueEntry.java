@@ -49,6 +49,13 @@ public class QueueEntry extends BaseAuditableEntity {
     @JoinColumn(name = "appointment_id")
     private SchedulingAppointment appointment;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "medical_service_id")
+    private vn.clinic.patientflow.masters.domain.MedicalService medicalService;
+
+    @Column(name = "notes", columnDefinition = "text")
+    private String notes;
+
     @Column(name = "position", nullable = false)
     private Integer position;
 

@@ -34,6 +34,7 @@ public class QueueService {
         private final PatientService patientService;
         private final TriageSessionRepository triageSessionRepository;
         private final SchedulingAppointmentRepository schedulingAppointmentRepository;
+        private final vn.clinic.patientflow.masters.repository.MedicalServiceRepository medicalServiceRepository;
         private final QueueBroadcastService queueBroadcastService;
 
         @Transactional(readOnly = true)
@@ -63,7 +64,7 @@ public class QueueService {
 
         @Transactional
         public QueueEntry createEntry(UUID queueDefinitionId, UUID patientId, UUID triageSessionId,
-                        UUID appointmentId, Integer position) {
+                        UUID appointmentId, UUID medicalServiceId, String notes, Integer position) {
                 UUID tenantId = TenantContext.getTenantIdOrThrow();
                 Tenant tenant = tenantService.getById(tenantId);
                 QueueDefinition queueDef = queueDefinitionRepository.findById(queueDefinitionId)
@@ -78,6 +79,9 @@ public class QueueService {
                 SchedulingAppointment appointment = appointmentId != null
                                 ? schedulingAppointmentRepository.findById(appointmentId).orElse(null)
                                 : null;
+                vn.clinic.patientflow.masters.domain.MedicalService medicalService = medicalServiceId != null
+                                ? medicalServiceRepository.findById(medicalServiceId).orElse(null)
+                                : null;
 
                 QueueEntry entry = QueueEntry.builder()
                                 .tenant(tenant)
@@ -86,6 +90,8 @@ public class QueueService {
                                 .patient(patient)
                                 .triageSession(triageSession)
                                 .appointment(appointment)
+                                .medicalService(medicalService)
+                                .notes(notes)
                                 .position(position != null ? position : 0)
                                 .status("WAITING")
                                 .joinedAt(Instant.now())

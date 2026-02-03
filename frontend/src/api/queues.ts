@@ -29,6 +29,8 @@ export async function addQueueEntry(
     queueDefinitionId: string
     patientId: string
     position?: number
+    medicalServiceId?: string
+    notes?: string
     triageSessionId?: string
     appointmentId?: string
   },
@@ -38,6 +40,8 @@ export async function addQueueEntry(
   sp.set('queueDefinitionId', params.queueDefinitionId)
   sp.set('patientId', params.patientId)
   if (params.position != null) sp.set('position', String(params.position))
+  if (params.medicalServiceId) sp.set('medicalServiceId', params.medicalServiceId)
+  if (params.notes) sp.set('notes', params.notes)
   if (params.triageSessionId) sp.set('triageSessionId', params.triageSessionId)
   if (params.appointmentId) sp.set('appointmentId', params.appointmentId)
   return post<QueueEntryDto>(`/queues/entries?${sp}`, undefined, tenant)

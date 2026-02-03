@@ -65,9 +65,11 @@ public class PublicKioskController {
                 QueueEntry entry = queueService.createEntry(
                                 request.getQueueDefinitionId(),
                                 patient.getId(),
-                                null,
+                                (UUID) null,
                                 request.getAppointmentId(),
-                                null // Integer position can be null
+                                (UUID) null,
+                                (String) null,
+                                0 // position
                 );
 
                 return ResponseEntity.ok(QueueEntryDto.fromEntity(entry));

@@ -64,10 +64,12 @@ public class QueueController {
             @RequestParam UUID queueDefinitionId,
             @RequestParam UUID patientId,
             @RequestParam Integer position,
+            @RequestParam(required = false) UUID medicalServiceId,
+            @RequestParam(required = false) String notes,
             @RequestParam(required = false) UUID triageSessionId,
             @RequestParam(required = false) UUID appointmentId) {
         QueueEntry entry = queueService.createEntry(
-                queueDefinitionId, patientId, triageSessionId, appointmentId, position);
+                queueDefinitionId, patientId, triageSessionId, appointmentId, medicalServiceId, notes, position);
         return QueueEntryDto.fromEntity(entry);
     }
 

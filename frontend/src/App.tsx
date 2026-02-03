@@ -21,6 +21,7 @@ import { Reports } from '@/pages/Reports'
 import { Admin } from '@/pages/Admin'
 import { PatientPortal } from '@/pages/patient/PatientPortal'
 import { PatientEhr } from '@/pages/admin/PatientEhr'
+import { Reception } from '@/pages/Reception'
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
           <Route path="/portal/:patientId" element={<PatientPortal />} />
           <Route element={<Layout />}>
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="reception" element={<Reception />} />
             <Route path="patients" element={<Patients />} />
             <Route path="patients/:patientId/ehr" element={<PatientEhr />} />
             <Route path="triage" element={<Triage />} />

@@ -29,6 +29,9 @@ public class QueueDefinition extends BaseAuditableEntity {
     @Column(name = "acuity_filter", length = 255)
     private String acuityFilter;
 
+    @Column(name = "room_or_station", length = 64)
+    private String roomOrStation;
+
     @Column(name = "display_order", nullable = false)
     @Builder.Default
     private Integer displayOrder = 0;

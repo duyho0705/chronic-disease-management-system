@@ -92,9 +92,11 @@ public class SchedulingService {
         queueService.createEntry(
                 queueDefinitionId,
                 saved.getPatient().getId(),
-                null,
+                (UUID) null,
                 saved.getId(),
-                0 // Default position or calculated
+                (UUID) null, // medicalServiceId
+                (String) null, // notes
+                0 // position
         );
 
         return saved;

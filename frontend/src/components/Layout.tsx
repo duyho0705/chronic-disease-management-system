@@ -18,11 +18,13 @@ import {
   Settings,
   LogOut,
   Menu,
+  Sparkles,
 } from 'lucide-react'
 import { useState } from 'react'
 
 const nav = [
   { to: '/dashboard', label: 'Tổng quan', icon: LayoutDashboard },
+  { to: '/reception', label: 'Tiếp đón', icon: Sparkles },
   { to: '/patients', label: 'Bệnh nhân', icon: Users },
   { to: '/triage', label: 'Phân loại', icon: Stethoscope },
   { to: '/queue', label: 'Hàng chờ', icon: ListOrdered },
