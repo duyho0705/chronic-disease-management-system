@@ -6,7 +6,8 @@ import {
     ChevronRight,
     Calendar,
     Search,
-    Filter
+    Filter,
+    History as HistoryIcon
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'

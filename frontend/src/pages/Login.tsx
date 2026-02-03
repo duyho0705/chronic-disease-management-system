@@ -19,6 +19,7 @@ function LoginForm({ onSuccess }: LoginFormProps) {
   const [step, setStep] = useState(1)
   const { login, register } = useAuth()
   const { setTenant } = useTenant()
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullNameVi, setFullNameVi] = useState('')
@@ -84,6 +85,13 @@ function LoginForm({ onSuccess }: LoginFormProps) {
       // Success logic
       const res = await login({ email: email.trim(), password, tenantId, branchId: branchId || undefined })
       setTenant(res.user.tenantId, res.user.branchId ?? undefined)
+
+      const isPatient = res.user.roles.includes('patient');
+      if (isPatient) {
+        navigate('/patient', { replace: true })
+      } else {
+        navigate('/dashboard', { replace: true })
+      }
       onSuccess()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Thao tác thất bại.')
@@ -272,7 +280,6 @@ function LoginForm({ onSuccess }: LoginFormProps) {
 }
 
 export function Login() {
-  const navigate = useNavigate()
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f7f8] px-4 relative overflow-hidden">
       {/* Abstract Background Decorations */}
@@ -292,7 +299,7 @@ export function Login() {
             <h1 className="text-3xl font-black text-[#2d3436] tracking-tight">ModernClinic</h1>
             <p className="text-slate-400 mt-2 font-medium">Hệ thống Phân loại Y tế AI</p>
           </div>
-          <LoginForm onSuccess={() => navigate('/dashboard', { replace: true })} />
+          <LoginForm onSuccess={() => { }} />
         </div>
       </motion.div>
     </div>
@@ -300,7 +307,6 @@ export function Login() {
 }
 
 export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const navigate = useNavigate()
 
   return (
     <AnimatePresence>
@@ -339,7 +345,6 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 
               <LoginForm onSuccess={() => {
                 onClose()
-                navigate('/dashboard', { replace: true })
               }} />
             </div>
           </motion.div>

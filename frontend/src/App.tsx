@@ -49,6 +49,11 @@ function App() {
         <Route path="/kiosk/:branchId" element={<KioskPage />} />
         <Route element={<RequireAuth />}>
           <Route path="/portal/:patientId" element={<PatientPortal />} />
+          <Route path="/patient" element={<PatientLayout><Outlet /></PatientLayout>}>
+            <Route index element={<PatientDashboard />} />
+            <Route path="history" element={<PatientHistory />} />
+            <Route path="history/:id" element={<PatientHistoryDetail />} />
+          </Route>
           <Route element={<Layout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="reception" element={<Reception />} />

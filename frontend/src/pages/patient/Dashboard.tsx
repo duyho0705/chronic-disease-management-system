@@ -5,7 +5,7 @@ import {
     Calendar,
     Clock,
     ArrowRight,
-    History,
+    History as HistoryIcon,
     Activity,
     ChevronRight,
     Users,
@@ -23,7 +23,7 @@ export default function PatientDashboard() {
         enabled: !!headers?.tenantId
     })
 
-    const { data: queues, isLoading: loadingQueues } = useQuery({
+    const { data: queues } = useQuery({
         queryKey: ['portal-queues'],
         queryFn: () => getPortalQueues(headers),
         enabled: !!headers?.tenantId,
@@ -162,7 +162,7 @@ export default function PatientDashboard() {
             <section className="bg-blue-50 rounded-[3rem] p-8 md:p-12 border border-blue-100 flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="flex items-center gap-6">
                     <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-blue-600 shadow-xl shadow-blue-200/50">
-                        <History className="w-8 h-8" />
+                        <HistoryIcon className="w-8 h-8" />
                     </div>
                     <div>
                         <h3 className="text-xl font-black text-blue-900 tracking-tight">Cần xem lại đơn thuốc?</h3>

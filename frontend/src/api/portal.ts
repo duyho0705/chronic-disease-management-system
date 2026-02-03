@@ -1,4 +1,4 @@
-import { get, post } from './client'
+import { get } from './client'
 import type { TenantHeaders } from './client'
 import type {
     PatientPortalStatusDto,

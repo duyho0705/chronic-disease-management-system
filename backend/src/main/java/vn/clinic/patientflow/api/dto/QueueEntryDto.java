@@ -27,7 +27,9 @@ public class QueueEntryDto {
     private String medicalServiceName;
     private String notes;
     private Integer position;
+    private Integer peopleAhead;
     private String status;
+    private String queueName;
     /** Mức ưu tiên từ phiên phân loại (nếu có). Dùng để hiển thị và sort. */
     private String acuityLevel;
     private Instant joinedAt;

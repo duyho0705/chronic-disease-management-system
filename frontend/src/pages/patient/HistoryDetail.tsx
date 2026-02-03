@@ -5,7 +5,6 @@ import { useTenant } from '@/context/TenantContext'
 import {
     ChevronLeft,
     Calendar,
-    User,
     Activity,
     Clipboard,
     FileText,

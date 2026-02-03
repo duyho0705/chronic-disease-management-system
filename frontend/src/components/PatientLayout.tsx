@@ -7,7 +7,6 @@ import {
     History,
     User,
     LogOut,
-    LayoutDashboard,
     Bell
 } from 'lucide-react'
 
@@ -54,8 +53,8 @@ export function PatientLayout({ children }: PatientLayoutProps) {
                                 key={item.path}
                                 to={item.path}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all ${isActive
-                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
-                                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                                     }`}
                             >
                                 <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
