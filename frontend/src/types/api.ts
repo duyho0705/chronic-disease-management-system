@@ -430,6 +430,7 @@ export interface PatientDashboardDto {
 }
 
 export interface LabResultDto {
+  id: string
   testName: string
   value: string
   unit: string
@@ -438,10 +439,31 @@ export interface LabResultDto {
 }
 
 export interface DiagnosticImageDto {
+  id: string
   title: string
   imageUrl: string
   description: string
   recordedAt: string
+}
+
+export interface PatientRelativeDto {
+  id: string
+  fullName: string
+  relationship: string
+  phoneNumber?: string
+  gender?: string
+  age?: number
+  avatarUrl?: string
+}
+
+export interface PatientInsuranceDto {
+  id: string
+  insuranceType: string
+  insuranceNumber: string
+  holderName?: string
+  validFrom?: string
+  validTo?: string
+  isPrimary: boolean
 }
 
 export interface ConsultationDetailDto {

@@ -16,7 +16,9 @@ import type {
     InvoiceDto,
     ChangePasswordRequest,
     AiChatRequest,
-    AiChatResponse
+    AiChatResponse,
+    PatientRelativeDto,
+    PatientInsuranceDto
 } from '@/types/api'
 
 export async function getPortalProfile(tenant: TenantHeaders | null): Promise<PatientDto> {
@@ -103,4 +105,12 @@ export async function uploadPortalAvatar(file: File, tenant: TenantHeaders | nul
     const formData = new FormData()
     formData.append('file', file)
     return post<PatientDto>('/portal/profile/avatar', formData, tenant)
+}
+
+export async function getPortalFamily(tenant: TenantHeaders | null): Promise<PatientRelativeDto[]> {
+    return get<PatientRelativeDto[]>('/portal/family', tenant)
+}
+
+export async function getPortalInsurance(tenant: TenantHeaders | null): Promise<PatientInsuranceDto[]> {
+    return get<PatientInsuranceDto[]>('/portal/insurance', tenant)
 }

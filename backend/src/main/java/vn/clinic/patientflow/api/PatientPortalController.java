@@ -61,6 +61,14 @@ import vn.clinic.patientflow.triage.repository.TriageSessionRepository;
 import vn.clinic.patientflow.triage.repository.TriageVitalRepository;
 import vn.clinic.patientflow.clinical.repository.PrescriptionRepository;
 import vn.clinic.patientflow.triage.service.TriageService;
+import vn.clinic.patientflow.clinical.repository.LabResultRepository;
+import vn.clinic.patientflow.clinical.repository.DiagnosticImageRepository;
+import vn.clinic.patientflow.patient.repository.PatientRelativeRepository;
+import vn.clinic.patientflow.patient.repository.PatientInsuranceRepository;
+import vn.clinic.patientflow.api.dto.LabResultDto;
+import vn.clinic.patientflow.api.dto.DiagnosticImageDto;
+import vn.clinic.patientflow.api.dto.PatientRelativeDto;
+import vn.clinic.patientflow.api.dto.PatientInsuranceDto;
 
 @RestController
 @RequestMapping("/api/portal")
@@ -85,6 +93,10 @@ public class PatientPortalController {
     private final TriageVitalRepository triageVitalRepository;
     private final PrescriptionRepository prescriptionRepository;
     private final IdentityService identityService;
+    private final LabResultRepository labResultRepository;
+    private final DiagnosticImageRepository diagnosticImageRepository;
+    private final PatientRelativeRepository patientRelativeRepository;
+    private final PatientInsuranceRepository patientInsuranceRepository;
 
     @PostMapping("/profile/change-password")
     @PreAuthorize("hasRole('PATIENT')")
@@ -224,24 +236,15 @@ public class PatientPortalController {
                         v.getRecordedAt()))
                 .collect(Collectors.toList());
 
-        // Mock Lab Results for Demo
-        var labResults = java.util.List.of(
-                LabResultDto.builder().testName("Chỉ số đường huyết (Glucose)").value("5.2").unit("mmol/L")
-                        .referenceRange("3.9 - 6.4").status("NORMAL").build(),
-                LabResultDto.builder().testName("Cholesterol toàn phần").value("6.1").unit("mmol/L")
-                        .referenceRange("< 5.2").status("HIGH").build(),
-                LabResultDto.builder().testName("Triglycerides").value("1.8").unit("mmol/L").referenceRange("< 1.7")
-                        .status("HIGH").build());
+        // Real Lab Results from DB
+        var labResults = labResultRepository.findByConsultation(cons).stream()
+                .map(LabResultDto::fromEntity)
+                .collect(Collectors.toList());
 
-        // Mock Diagnostic Images for Demo
-        var images = java.util.List.of(
-                DiagnosticImageDto.builder()
-                        .title("Siêu âm ổ bụng")
-                        .imageUrl(
-                                "https://images.unsplash.com/photo-1579154235828-ac7d759678bb?q=80&w=1000&auto=format&fit=crop")
-                        .description("Hình ảnh gan nhiễm mỡ độ 1, nhu mô gan hơi thô.")
-                        .recordedAt(java.time.Instant.now().toString())
-                        .build());
+        // Real Diagnostic Images from DB
+        var images = diagnosticImageRepository.findByConsultation(cons).stream()
+                .map(DiagnosticImageDto::fromEntity)
+                .collect(Collectors.toList());
 
         return ConsultationDetailDto.builder()
                 .consultation(ConsultationDto.fromEntity(cons))
@@ -251,6 +254,34 @@ public class PatientPortalController {
                 .labResults(labResults)
                 .diagnosticImages(images)
                 .build();
+    }
+
+    @GetMapping("/family")
+    @PreAuthorize("hasRole('PATIENT')")
+    @Operation(summary = "Lấy danh sách người thân")
+    public List<PatientRelativeDto> getFamily() {
+        Patient p = getAuthenticatedPatient();
+        return patientRelativeRepository.findByPatient(p).stream()
+                .map(PatientRelativeDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/insurance")
+    @PreAuthorize("hasRole('PATIENT')")
+    @Operation(summary = "Lấy danh sách bảo hiểm")
+    public List<PatientInsuranceDto> getInsurances() {
+        Patient p = getAuthenticatedPatient();
+        return patientInsuranceRepository.findByPatientIdOrderByIsPrimaryDesc(p.getId()).stream()
+                .map(i -> PatientInsuranceDto.builder()
+                        .id(i.getId())
+                        .insuranceType(i.getInsuranceType())
+                        .insuranceNumber(i.getInsuranceNumber())
+                        .holderName(i.getHolderName())
+                        .validFrom(i.getValidFrom() != null ? i.getValidFrom().toString() : null)
+                        .validTo(i.getValidTo() != null ? i.getValidTo().toString() : null)
+                        .isPrimary(i.getIsPrimary())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/queues")
