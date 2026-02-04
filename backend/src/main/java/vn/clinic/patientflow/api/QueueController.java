@@ -89,4 +89,10 @@ public class QueueController {
         QueueEntry entry = queueService.updateEntryStatus(id, "CALLED", Instant.now(), null, null);
         return QueueEntryDto.fromEntity(entry);
     }
+
+    @GetMapping("/public-status")
+    @Operation(summary = "Lấy trạng thái hàng chờ công khai cho TV")
+    public vn.clinic.patientflow.api.dto.PublicQueueDto getPublicStatus(@RequestParam UUID branchId) {
+        return queueService.getPublicQueueStatus(branchId);
+    }
 }

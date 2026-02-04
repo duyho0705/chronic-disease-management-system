@@ -72,8 +72,9 @@ export default function PatientDashboard() {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Số người phía trước</p>
-                                    <p className="text-3xl font-black text-blue-600">{q.peopleAhead}</p>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Thời gian chờ dự kiến</p>
+                                    <p className="text-2xl font-black text-blue-600">~{q.estimatedWaitMinutes} phút</p>
+                                    <p className="text-[10px] font-bold text-slate-400">({q.peopleAhead} người phía trước)</p>
                                 </div>
                             </motion.div>
                         ))}

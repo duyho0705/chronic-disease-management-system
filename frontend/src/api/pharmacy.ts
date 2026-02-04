@@ -30,3 +30,11 @@ export async function restockInventory(params: { branchId: string; productId: st
 export async function getInventoryTransactions(branchId: string, tenant: TenantHeaders | null): Promise<InventoryTransactionDto[]> {
     return get<InventoryTransactionDto[]>(`/pharmacy/inventory/transactions?branchId=${branchId}`, tenant)
 }
+
+export async function getPendingPrescriptions(branchId: string, tenant: TenantHeaders | null): Promise<import('@/types/api').PrescriptionDto[]> {
+    return get<import('@/types/api').PrescriptionDto[]>(`/prescriptions/pending?branchId=${branchId}`, tenant)
+}
+
+export async function dispensePrescription(id: string, tenant: TenantHeaders | null): Promise<void> {
+    return post<void>(`/prescriptions/${id}/dispense`, {}, tenant)
+}

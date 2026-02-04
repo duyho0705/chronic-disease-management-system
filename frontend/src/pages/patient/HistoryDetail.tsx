@@ -13,6 +13,8 @@ import {
     Download
 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 export default function PatientHistoryDetail() {
     const { id } = useParams()
@@ -24,6 +26,33 @@ export default function PatientHistoryDetail() {
         queryFn: () => getPortalHistoryDetail(id!, headers),
         enabled: !!id && !!headers?.tenantId
     })
+
+    const handleDownload = () => {
+        if (!detail) return
+        const doc = new jsPDF()
+
+        doc.setFontSize(22)
+        doc.text('DON THUOC', 105, 20, { align: 'center' })
+
+        doc.setFontSize(12)
+        doc.text(`Benh nhan: ${detail.consultation.patientName || 'N/A'}`, 14, 40)
+        doc.text(`Bac si: ${detail.consultation.doctorName || 'N/A'}`, 14, 50)
+        doc.text(`Ngay: ${new Date(detail.consultation.startedAt).toLocaleDateString()}`, 14, 60)
+
+        if (detail.prescription) {
+            autoTable(doc, {
+                startY: 70,
+                head: [['Ten thuoc', 'SL', 'Cach dung']],
+                body: detail.prescription.items.map(item => [
+                    item.productName || '',
+                    item.quantity || 0,
+                    item.dosageInstruction || ''
+                ]),
+            })
+        }
+
+        doc.save(`don-thuoc-${id}.pdf`)
+    }
 
     if (isLoading) return <div className="p-12 text-center text-slate-400 font-bold">Đang tải chi tiết...</div>
     if (!detail) return <div className="p-12 text-center text-red-400 font-bold">Không tìm thấy thông tin ca khám.</div>
@@ -56,7 +85,10 @@ export default function PatientHistoryDetail() {
                         <Printer className="w-4 h-4" />
                         In KQ
                     </button>
-                    <button className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-xl shadow-slate-200">
+                    <button
+                        onClick={handleDownload}
+                        className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-xl shadow-slate-200"
+                    >
                         <Download className="w-4 h-4" />
                         Tải về
                     </button>

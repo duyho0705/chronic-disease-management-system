@@ -3,187 +3,259 @@ import { useParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getPublicDisplayData } from '@/api/public'
 import { WebSocketService } from '@/services/websocket'
-import { Volume2, Clock, MapPin } from 'lucide-react'
+import {
+    Clock,
+    Monitor,
+    Volume2,
+    VolumeX,
+    Users,
+    Stethoscope,
+    ArrowRight
+} from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function DisplayPage() {
     const { branchId } = useParams()
     const queryClient = useQueryClient()
-    const [time, setTime] = useState(new Date())
-    const lastCalledRef = useRef<string | null>(null)
+    const [currentTime, setCurrentTime] = useState(new Date())
+    const [isMuted, setIsMuted] = useState(false)
+    const prevCalledNames = useRef<string[]>([])
 
-    const { data, isLoading } = useQuery({
+    const { data: status, isLoading } = useQuery({
         queryKey: ['public-display', branchId],
         queryFn: () => getPublicDisplayData(branchId!),
         enabled: !!branchId,
-        refetchInterval: 30000, // Backup polling every 30s
+        refetchInterval: 10000, // Backup polling
     })
 
+    // Clock update
     useEffect(() => {
-        const timer = setInterval(() => setTime(new Date()), 1000)
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000)
         return () => clearInterval(timer)
     }, [])
 
+    // WebSocket for instant updates
     useEffect(() => {
         if (!branchId) return
         const ws = new WebSocketService((msg) => {
             if (msg.type === 'QUEUE_UPDATE' || msg.type === 'PATIENT_CALLED') {
                 queryClient.invalidateQueries({ queryKey: ['public-display', branchId] })
-                // Trigger sound if it's a new call
-                if (msg.type === 'PATIENT_CALLED') {
-                    playDingDong()
-                }
             }
         })
         ws.connect()
         return () => ws.disconnect()
     }, [branchId, queryClient])
 
-    // Play sound when the "Calling" list changes (new person at top)
+    // Voice Notification
     useEffect(() => {
-        if (data?.calling?.[0]?.patientName && data.calling[0].patientName !== lastCalledRef.current) {
-            lastCalledRef.current = data.calling[0].patientName
-            playDingDong()
+        if (!status?.calling || isMuted) return
+
+        const currentNames = status.calling.map(e => e.patientName)
+        const newEntries = status.calling.filter(e => !prevCalledNames.current.includes(e.patientName))
+
+        if (newEntries.length > 0) {
+            newEntries.forEach(entry => {
+                const text = `Mời bệnh nhân ${entry.patientName} đến ${entry.queueName}`
+                const utterance = new SpeechSynthesisUtterance(text)
+                utterance.lang = 'vi-VN'
+                utterance.rate = 0.9
+                window.speechSynthesis.speak(utterance)
+            })
         }
-    }, [data])
+        prevCalledNames.current = currentNames
+    }, [status?.calling, isMuted])
 
-    const playDingDong = () => {
-        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
-        const osc = audioCtx.createOscillator()
-        const gain = audioCtx.createGain()
-        osc.connect(gain)
-        gain.connect(audioCtx.destination)
-        osc.type = 'sine'
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime) // C5
-        osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5) // A4
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime)
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1)
-        osc.start()
-        osc.stop(audioCtx.currentTime + 1)
-    }
-
-    if (isLoading) return <div className="bg-slate-900 h-screen flex items-center justify-center text-white">Đang tải màn hình...</div>
+    if (isLoading) return (
+        <div className="h-screen bg-[#0f172a] flex items-center justify-center text-white">
+            <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <p className="font-black tracking-widest uppercase text-xs text-slate-500">Đang khởi tạo màn hình...</p>
+            </div>
+        </div>
+    )
 
     return (
-        <div className="h-screen w-screen bg-[#0f172a] text-white flex flex-col overflow-hidden font-sans">
-            {/* Header */}
-            <header className="h-24 bg-slate-800/50 backdrop-blur-md border-b border-slate-700 flex items-center justify-between px-12 shadow-2xl">
+        <div className="h-screen w-screen bg-[#0f172a] text-white flex flex-col overflow-hidden font-sans selection:bg-blue-500">
+            {/* Massive Header */}
+            <header className="flex items-center justify-between p-8 bg-black/20 border-b border-white/5 backdrop-blur-3xl shrink-0">
                 <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <span className="text-3xl font-black italic">PF</span>
+                    <div className="p-4 bg-blue-600 rounded-3xl shadow-2xl shadow-blue-500/40">
+                        <Monitor className="w-10 h-10 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black uppercase tracking-tighter text-blue-400">Patient Flow</h1>
-                        <p className="text-slate-400 font-bold flex items-center gap-2">
-                            <MapPin className="h-4 w-4" /> {data?.branchName}
+                        <h1 className="text-4xl font-black tracking-tighter uppercase whitespace-nowrap">
+                            Hệ thống Điều phối
+                        </h1>
+                        <p className="text-blue-500 font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                            {status?.branchName || 'Chi nhánh'} <span className="text-slate-700">•</span> REAL-TIME MONITOR
                         </p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-10">
                     <div className="text-right">
-                        <div className="text-4xl font-mono font-black text-white">
-                            {time.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                        </div>
-                        <div className="text-slate-400 font-bold uppercase tracking-widest text-sm">
-                            {time.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' })}
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Thời gian hiện tại</p>
+                        <div className="text-4xl font-black tracking-tighter tabular-nums flex items-center gap-3">
+                            <Clock className="w-7 h-7 text-blue-500" />
+                            {currentTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                            <span className="text-slate-700">:</span>
+                            <span className="text-xl text-slate-500 tabular-nums">{currentTime.toLocaleTimeString('vi-VN', { second: '2-digit' })}</span>
                         </div>
                     </div>
-                    <Volume2 className="h-8 w-8 text-slate-500 animate-pulse" />
+
+                    <button
+                        onClick={() => setIsMuted(!isMuted)}
+                        className={`p-5 rounded-3xl border transition-all ${isMuted ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}
+                    >
+                        {isMuted ? <VolumeX className="w-8 h-8" /> : <Volume2 className="w-8 h-8" />}
+                    </button>
                 </div>
             </header>
 
-            {/* Main Content */}
-            <main className="flex-1 flex p-8 gap-8">
-                {/* Left: Calling Now (Dynamic) */}
-                <section className="flex-1 space-y-6">
-                    <h2 className="text-2xl font-black uppercase tracking-widest text-emerald-400 flex items-center gap-3">
-                        <span className="w-3 h-3 bg-emerald-500 rounded-full animate-ping" />
-                        ĐANG MỜI KHÁM (NOW CALLING)
-                    </h2>
+            {/* Main Display Grid */}
+            <main className="flex-1 overflow-hidden p-8 grid grid-cols-12 gap-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-900 to-black">
 
-                    <div className="grid grid-cols-1 gap-6">
+                {/* Current Serving Section (Large) */}
+                <div className="col-span-8 flex flex-col gap-8">
+                    <div className="flex items-center gap-4 px-4">
+                        <div className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+                        <h2 className="text-2xl font-black text-white/40 uppercase tracking-[0.2em]">Đang mời khám • NOW CALLING</h2>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto no-scrollbar grid grid-cols-2 gap-8 pb-10">
                         <AnimatePresence mode="popLayout">
-                            {data?.calling?.length ? (
-                                data.calling.map((entry, idx) => (
-                                    <motion.div
-                                        key={`${entry.patientName}-${idx}`}
-                                        initial={{ x: -100, opacity: 0 }}
-                                        animate={{ x: 0, opacity: 1 }}
-                                        exit={{ x: 100, opacity: 0 }}
-                                        transition={{ type: 'spring', damping: 20 }}
-                                        className={`flex items-center justify-between p-10 rounded-3xl border-2 ${idx === 0 ? 'bg-blue-600/20 border-blue-500 shadow-2xl shadow-blue-500/20' : 'bg-slate-800/30 border-slate-700'}`}
-                                    >
-                                        <div className="space-y-2">
-                                            <span className="text-slate-400 font-bold uppercase text-xl tracking-widest">BỆNH NHÂN</span>
-                                            <div className="text-7xl font-black text-white">{entry.patientName}</div>
+                            {status?.calling?.map((entry, idx) => (
+                                <motion.div
+                                    key={`${entry.patientName}-${idx}`}
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.8, x: 50 }}
+                                    className={`bg-slate-800/40 backdrop-blur-3xl border p-12 rounded-[4.5rem] relative overflow-hidden group shadow-2xl ${idx === 0 ? 'border-blue-500/50 bg-blue-600/5 shadow-blue-500/10' : 'border-white/5'}`}
+                                >
+                                    <div className="absolute -top-10 -right-10 p-10 opacity-[0.03] group-hover:scale-125 transition-transform duration-1000 group-hover:opacity-[0.08]">
+                                        <Stethoscope className="w-64 h-64" />
+                                    </div>
+                                    <div className="relative z-10 space-y-8">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <span className={`inline-block text-[10px] font-black px-5 py-1.5 rounded-full mb-4 uppercase tracking-[0.1em] ${idx === 0 ? 'bg-blue-600' : 'bg-slate-700 text-slate-300'}`}>PHÒNG {idx + 1}</span>
+                                                <h3 className="text-6xl font-black text-white tracking-tightest leading-tight">
+                                                    {entry.patientName}
+                                                </h3>
+                                            </div>
+                                            <div className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center border border-white/5">
+                                                <ArrowRight className="w-8 h-8 text-blue-500" />
+                                            </div>
                                         </div>
-                                        <div className="text-right space-y-2">
-                                            <span className="text-slate-400 font-bold uppercase text-xl tracking-widest">TỚI PHÒNG</span>
-                                            <div className={`text-7xl font-black ${idx === 0 ? 'text-blue-400' : 'text-emerald-400'}`}>{entry.queueName}</div>
+                                        <div className="h-px bg-white/5" />
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Dịch vụ</p>
+                                                <p className="text-2xl font-black uppercase text-blue-400 truncate max-w-[250px]">{entry.queueName}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Trạng thái</p>
+                                                <p className="text-lg font-bold text-emerald-400 uppercase italic">Mời vào</p>
+                                            </div>
                                         </div>
-                                    </motion.div>
-                                ))
-                            ) : (
-                                <div className="h-64 flex items-center justify-center text-slate-600 text-3xl font-bold border-2 border-dashed border-slate-800 rounded-3xl italic">
-                                    Đang chờ bác sĩ gọi...
-                                </div>
-                            )}
+                                    </div>
+                                </motion.div>
+                            ))}
                         </AnimatePresence>
-                    </div>
-                </section>
-
-                {/* Right: Waiting List (Scrolling) */}
-                <section className="w-1/3 bg-slate-900/50 rounded-3xl border border-slate-800 flex flex-col overflow-hidden">
-                    <div className="p-6 border-b border-slate-800 flex items-center justify-between">
-                        <h2 className="text-xl font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                            <Clock className="h-5 w-5" /> CHUẨN BỊ (UPCOMING)
-                        </h2>
-                        <span className="bg-slate-800 px-3 py-1 rounded text-sm font-bold text-slate-300">TOP 10</span>
-                    </div>
-
-                    <div className="flex-1 overflow-hidden p-6 space-y-4">
-                        {data?.waiting?.map((entry, idx) => (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.1 }}
-                                key={idx}
-                                className="flex items-center justify-between p-5 bg-slate-800/30 rounded-2xl border border-slate-700/50"
-                            >
-                                <div>
-                                    <div className="text-2xl font-bold text-slate-100">{entry.patientName}</div>
-                                    <div className="text-sm font-bold text-slate-500 uppercase">{entry.queueName}</div>
+                        {(!status?.calling || status.calling.length === 0) && (
+                            <div className="col-span-2 h-full flex flex-col items-center justify-center p-20 bg-white/[0.02] rounded-[5rem] border-2 border-dashed border-white/5 text-center space-y-6">
+                                <div className="p-8 bg-white/5 rounded-full animate-pulse">
+                                    <Monitor className="w-20 h-20 text-slate-700" />
                                 </div>
-                                {entry.acuityLevel && (
-                                    <div className={`w-3 h-3 rounded-full ${entry.acuityLevel === 'RED' ? 'bg-red-500 box-shadow-red' :
-                                            entry.acuityLevel === 'ORANGE' ? 'bg-orange-500' :
-                                                entry.acuityLevel === 'YELLOW' ? 'bg-yellow-500' :
-                                                    'bg-blue-500'
-                                        }`} />
-                                )}
-                            </motion.div>
-                        ))}
-                        {(!data?.waiting || data.waiting.length === 0) && (
-                            <p className="text-slate-600 text-center py-10 italic">Hết danh sách chờ</p>
+                                <p className="text-slate-600 text-2xl font-black uppercase tracking-[0.3em] flex items-center gap-4">
+                                    Hệ thống đang sẵn sàng
+                                </p>
+                            </div>
                         )}
                     </div>
+                </div>
 
-                    {/* Footer / Scrolling Marquee */}
-                    <div className="bg-blue-600 p-4 overflow-hidden whitespace-nowrap">
-                        <motion.div
-                            animate={{ x: [1000, -2000] }}
-                            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                            className="text-xl font-bold italic"
-                        >
-                            QUÝ KHÁCH VUI LÒNG THEO DÕI MÀN HÌNH VÀ CHUẨN BỊ SẴN GIẤY TỜ TRƯỚC KHI VÀO PHÒNG KHÁM. CHÚC QUÝ KHÁCH MỘT NGÀY TỐT LÀNH!
-                        </motion.div>
+                {/* Queue List Section (Sidebar) */}
+                <div className="col-span-4 flex flex-col gap-8 bg-black/40 rounded-[4rem] p-10 border border-white/5 backdrop-blur-2xl shadow-inner shadow-white/5">
+                    <div className="flex items-center justify-between px-4">
+                        <h2 className="text-xl font-black text-slate-500 uppercase tracking-widest flex items-center gap-3">
+                            <Users className="w-6 h-6" />
+                            Chuẩn bị • UPCOMING
+                        </h2>
+                        <div className="px-4 py-1.5 bg-blue-600/10 border border-blue-500/20 rounded-2xl text-blue-500 text-sm font-black tabular-nums">
+                            {status?.waiting?.length || 0}
+                        </div>
                     </div>
-                </section>
+
+                    <div className="flex-1 overflow-y-auto no-scrollbar space-y-4">
+                        {status?.waiting?.map((entry, idx) => (
+                            <motion.div
+                                key={`${entry.patientName}-${idx}`}
+                                layout
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="bg-white/[0.03] border border-white/5 p-6 rounded-[2.5rem] flex items-center justify-between group hover:bg-white/10 transition-all cursor-default"
+                            >
+                                <div className="flex items-center gap-5">
+                                    <div className="w-14 h-14 bg-slate-900 border border-white/5 rounded-2xl flex items-center justify-center text-slate-600 font-black text-2xl group-hover:text-blue-500 group-hover:border-blue-500/30 transition-all">
+                                        {idx + 1}
+                                    </div>
+                                    <div>
+                                        <p className="text-xl font-black tracking-tighter text-slate-100">{entry.patientName}</p>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-0.5">{entry.queueName}</p>
+                                    </div>
+                                </div>
+                                <div className={`w-3 h-3 rounded-full blur-[2px] ${entry.acuityLevel === 'RED' ? 'bg-red-500' :
+                                    entry.acuityLevel === 'YELLOW' ? 'bg-yellow-500' :
+                                        'bg-blue-500'
+                                    } shadow-[0_0_10px_currentColor]`} />
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    {/* Quick Info */}
+                    <div className="p-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-[3rem] shadow-2xl shadow-blue-500/20 group relative overflow-hidden">
+                        <div className="absolute -bottom-4 -right-4 opacity-10 group-hover:scale-110 transition-transform duration-700">
+                            <Users className="w-32 h-32" />
+                        </div>
+                        <p className="text-blue-100 font-black uppercase tracking-widest text-[10px] mb-2">Thông tin sảnh chờ</p>
+                        <p className="text-4xl font-black text-white tabular-nums">{status?.waiting?.length || 0} <span className="text-sm font-bold opacity-60 ml-1 uppercase">Đang chờ</span></p>
+                        <div className="mt-6 flex gap-1.5 h-1.5">
+                            {[1, 2, 3, 4, 5, 6].map(i => (
+                                <div key={i} className={`flex-1 rounded-full ${i <= 3 ? 'bg-white' : 'bg-white/20'}`} />
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </main>
+
+            {/* News Ticker footer */}
+            <div className="bg-blue-900/40 border-t border-white/5 py-3 overflow-hidden relative backdrop-blur-md">
+                <div className="flex gap-12 whitespace-nowrap text-xs font-black uppercase tracking-[0.2em] text-blue-400/80 animate-marquee">
+                    <span>• VUI LÒNG THEO DÕI MÀN HÌNH VÀ CHUẨN BỊ SẴN GIẤY TỜ •</span>
+                    <span>• HỆ THỐNG ĐIỀU PHỐI BỆNH NHÂN THÔNG MINH SẴN SÀNG PHỤC VỤ •</span>
+                    <span>• CHÚC QUÝ KHÁCH MỘT NGÀY ĐIỀU TRỊ THUẬN LỢI VÀ SỨC KHỎE •</span>
+                    <span>• LIÊN HỆ QUẦY TIẾP ĐÓN NẾU CẦN HỖ TRỢ KHẨN CẤP •</span>
+                    {/* Double for smooth marquee */}
+                    <span>• VUI LÒNG THEO DÕI MÀN HÌNH VÀ CHUẨN BỊ SẴN GIẤY TỜ •</span>
+                    <span>• HỆ THỐNG ĐIỀU PHỐI BỆNH NHÂN THÔNG MINH SẴN SÀNG PHỤC VỤ •</span>
+                </div>
+            </div>
+
             <style>{`
-        .box-shadow-red { box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
-      `}</style>
+                @keyframes marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .animate-marquee {
+                    display: inline-flex;
+                    animation: marquee 40s linear infinite;
+                }
+                .tracking-tightest { letter-spacing: -0.05em; }
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            `}</style>
         </div>
     )
 }

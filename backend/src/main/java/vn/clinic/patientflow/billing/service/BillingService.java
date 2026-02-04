@@ -83,4 +83,33 @@ public class BillingService {
     public Optional<Invoice> getInvoiceByConsultation(UUID consultationId) {
         return invoiceRepository.findByConsultationId(consultationId);
     }
+
+    @Transactional(readOnly = true)
+    public vn.clinic.patientflow.api.dto.RevenueReportDto getRevenueReport(UUID branchId, java.time.LocalDate from,
+            java.time.LocalDate to) {
+        var fromInstant = from.atStartOfDay(java.time.ZoneOffset.UTC).toInstant();
+        var toInstant = to.plusDays(1).atStartOfDay(java.time.ZoneOffset.UTC).toInstant();
+
+        var total = invoiceRepository.sumTotalAmountPaidByBranchAndCreatedAtBetween(branchId, fromInstant, toInstant);
+        var daily = invoiceRepository.sumRevenueByDay(branchId, fromInstant, toInstant);
+        var services = invoiceRepository.sumRevenueByService(branchId, fromInstant, toInstant);
+
+        return vn.clinic.patientflow.api.dto.RevenueReportDto.builder()
+                .branchId(branchId.toString())
+                .fromDate(from)
+                .toDate(to)
+                .totalRevenue(total != null ? total : java.math.BigDecimal.ZERO)
+                .dailyRevenue(daily.stream().map(row -> vn.clinic.patientflow.api.dto.RevenueByDayDto.builder()
+                        .date(((java.sql.Date) row[0]).toLocalDate())
+                        .amount((java.math.BigDecimal) row[1])
+                        .build()).collect(java.util.stream.Collectors.toList()))
+                .topServices(services.stream()
+                        .map(row -> vn.clinic.patientflow.api.dto.RevenueReportDto.ServiceRevenueDto.builder()
+                                .serviceName((String) row[0])
+                                .amount((java.math.BigDecimal) row[1])
+                                .count((Long) row[2])
+                                .build())
+                        .collect(java.util.stream.Collectors.toList()))
+                .build();
+    }
 }

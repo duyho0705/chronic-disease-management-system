@@ -54,3 +54,7 @@ export async function setPassword(id: string, body: SetPasswordRequest): Promise
 export async function getRoles(): Promise<RoleDto[]> {
   return get<RoleDto[]>('/admin/roles')
 }
+
+export async function getRevenueReport(branchId: string, from: string, to: string): Promise<any> {
+  return get<any>(`/admin/revenue-report?branchId=${branchId}&from=${from}&to=${to}`)
+}

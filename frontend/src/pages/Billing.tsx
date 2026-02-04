@@ -137,14 +137,21 @@ export function Billing() {
 
     return (
         <div className="mx-auto max-w-7xl space-y-8 animate-in fade-in duration-700 pb-20">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-100">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Quản lý Viện phí</h1>
-                    <p className="text-slate-500 mt-2 font-medium">Theo dõi, thu phí và quản lý hóa đơn của toàn hệ thống.</p>
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-10 border-b border-slate-100">
+                <div className="space-y-3">
+                    <div className="flex items-center gap-5">
+                        <div className="w-16 h-16 bg-slate-900 rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-slate-200">
+                            <CreditCard className="w-8 h-8" />
+                        </div>
+                        <div>
+                            <h1 className="text-5xl font-black text-slate-900 tracking-tightest leading-none">Thu ngân</h1>
+                            <p className="text-slate-500 font-bold ml-1 mt-1 uppercase tracking-widest text-[10px]">Billing & Revenue Management</p>
+                        </div>
+                    </div>
                 </div>
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-[1.5rem] font-black text-sm tracking-tight hover:bg-[#2b8cee] hover:shadow-2xl hover:shadow-[#2b8cee]/20 transition-all active:scale-95"
+                    className="bg-[#2b8cee] text-white px-10 py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-900 hover:shadow-2xl hover:shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-3 shadow-xl shadow-blue-100"
                 >
                     <Plus className="w-5 h-5" />
                     Tạo Hóa đơn mới
@@ -186,40 +193,38 @@ export function Billing() {
 
                     <section className="space-y-4">
                         {isListLoading ? (
-                            Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-28 bg-white border border-slate-100 rounded-[2rem] animate-pulse" />)
+                            Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-32 bg-white border border-slate-50 rounded-[3rem] animate-pulse" />)
                         ) : filteredInvoices?.length === 0 ? (
-                            <div className="text-center py-20 bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200">
-                                <Receipt className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-                                <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">Trống danh sách</p>
+                            <div className="text-center py-24 bg-white rounded-[4rem] border-2 border-dashed border-slate-100 flex flex-col items-center justify-center">
+                                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                                    <Receipt className="w-10 h-10 text-slate-200" />
+                                </div>
+                                <h4 className="text-xl font-black text-slate-900 mb-2">Trống danh sách</h4>
+                                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest max-w-[180px]">Không tìm thấy hóa đơn nào phù hợp bộ lọc.</p>
                             </div>
                         ) : filteredInvoices?.map((inv) => (
                             <motion.button
                                 layout
                                 key={inv.id}
                                 onClick={() => setSelectedInvoiceId(inv.id)}
-                                className={`w-full text-left p-6 rounded-[2rem] border transition-all ${selectedInvoiceId === inv.id ? 'bg-slate-900 text-white border-slate-900 shadow-2xl shadow-slate-900/20' : 'bg-white text-slate-900 border-slate-100 hover:border-slate-300 shadow-sm'}`}
+                                className={`w-full text-left p-8 rounded-[3.5rem] border transition-all relative overflow-hidden group ${selectedInvoiceId === inv.id ? 'bg-slate-900 text-white border-slate-900 shadow-2xl shadow-slate-900/40' : 'bg-white text-slate-900 border-slate-100 hover:border-blue-100 hover:shadow-xl hover:shadow-blue-500/5'}`}
                             >
-                                <div className="flex justify-between items-start mb-3">
+                                <div className="flex justify-between items-start mb-4">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
                                             <Hash className={`w-3 h-3 ${selectedInvoiceId === inv.id ? 'text-blue-400' : 'text-slate-300'}`} />
-                                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{inv.invoiceNumber}</span>
+                                            <span className={`text-[9px] font-black uppercase tracking-[0.2em] opacity-60 ${selectedInvoiceId === inv.id ? 'text-blue-200' : 'text-slate-400'}`}>{inv.invoiceNumber}</span>
                                         </div>
-                                        <h4 className="font-black text-lg tracking-tight leading-none">{inv.patientName}</h4>
+                                        <h4 className="font-black text-2xl tracking-tightest leading-none uppercase group-hover:text-blue-500 transition-colors">{inv.patientName}</h4>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <StatusBadge status={inv.status} />
-                                        {inv.consultationId && (
-                                            <span className="bg-blue-50 text-blue-600 text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">Khám bệnh</span>
-                                        )}
-                                    </div>
+                                    <StatusBadge status={inv.status} />
                                 </div>
                                 <div className="flex justify-between items-end">
-                                    <div className="text-[10px] font-bold opacity-50 flex items-center gap-1">
-                                        <Clock className="w-3 h-3" />
+                                    <div className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-3 py-1.5 rounded-full ${selectedInvoiceId === inv.id ? 'bg-white/10 text-white/50' : 'bg-slate-50 text-slate-400'}`}>
+                                        <Clock className="w-3.5 h-3.5" />
                                         {new Date(inv.createdAt).toLocaleDateString('vi-VN')}
                                     </div>
-                                    <div className="text-xl font-black">{inv.finalAmount.toLocaleString('vi-VN')} đ</div>
+                                    <div className="text-2xl font-black">{inv.finalAmount.toLocaleString('vi-VN')} <span className="text-sm opacity-50">đ</span></div>
                                 </div>
                             </motion.button>
                         ))}
@@ -266,25 +271,29 @@ export function Billing() {
                                     </div>
                                 </div>
 
-                                <div className="p-10 flex-1 space-y-10">
+                                <div className="p-10 flex-1 space-y-10 overflow-y-auto no-scrollbar">
                                     <section>
-                                        <h4 className="font-black text-slate-900 uppercase tracking-widest text-[10px] mb-6 flex items-center gap-2 text-slate-400">
-                                            Chi tiết các dịch vụ đã sử dụng
+                                        <h4 className="font-black text-slate-900 uppercase tracking-[0.2em] text-[10px] mb-8 flex items-center gap-3">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                            Danh mục dịch vụ & Thuốc ({invoiceDetail.items.length})
                                         </h4>
                                         <div className="space-y-4">
                                             {invoiceDetail.items.map((item, idx) => (
-                                                <div key={idx} className="flex items-center justify-between p-5 bg-slate-50/50 rounded-2xl border border-slate-100/50 group hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 hover:border-blue-100 transition-all duration-300">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 bg-white rounded-xl border border-slate-100 flex items-center justify-center text-[10px] font-black group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                <div key={idx} className="flex items-center justify-between p-6 bg-slate-50/50 rounded-[2.5rem] border border-slate-50 group hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 hover:border-blue-100 transition-all duration-500">
+                                                    <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 bg-white rounded-2xl border border-slate-100 flex items-center justify-center text-[11px] font-black group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all shadow-sm">
                                                             {idx + 1}
                                                         </div>
                                                         <div>
-                                                            <p className="font-black text-slate-900 tracking-tight leading-none mb-1 group-hover:text-blue-600 transition-colors">{item.itemName}</p>
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">SL: {item.quantity} · Đơn giá: {item.unitPrice.toLocaleString('vi-VN')} đ</p>
+                                                            <p className="font-black text-slate-900 text-sm tracking-tight leading-none mb-1.5 group-hover:text-blue-600 transition-colors uppercase">{item.itemName}</p>
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter bg-white px-2 py-0.5 rounded-lg border border-slate-100">SL: {item.quantity}</span>
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter italic">Đơn giá: {item.unitPrice.toLocaleString('vi-VN')}đ</span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div className="text-lg font-black text-slate-900">
-                                                        {item.lineTotal.toLocaleString('vi-VN')} đ
+                                                    <div className="text-xl font-black text-slate-900">
+                                                        {item.lineTotal.toLocaleString('vi-VN')} <span className="text-xs text-slate-400">đ</span>
                                                     </div>
                                                 </div>
                                             ))}
@@ -292,53 +301,59 @@ export function Billing() {
                                     </section>
 
                                     {invoiceDetail.status === 'PENDING' ? (
-                                        <div className="space-y-6 pt-10 border-t border-slate-100">
-                                            <h4 className="font-black text-slate-900 uppercase tracking-widest text-xs flex items-center gap-2">
-                                                <CreditCard className="w-4 h-4 text-blue-600" />
-                                                Lựa chọn phương thức thu phí
+                                        <div className="space-y-8 pt-10 border-t border-slate-100">
+                                            <h4 className="font-black text-slate-900 uppercase tracking-[0.2em] text-xs flex items-center gap-3">
+                                                <CreditCard className="w-5 h-5 text-blue-600" />
+                                                Chọn phương thức thanh toán
                                             </h4>
                                             <div className="grid grid-cols-3 gap-6">
                                                 {[
                                                     { id: 'CASH', label: 'Tiền mặt', icon: CreditCard },
-                                                    { id: 'BANK_TRANSFER', label: 'Chuyển khoản', icon: ArrowRight, rotate: 45 },
+                                                    { id: 'BANK_TRANSFER', label: 'Chuyển khoản', icon: ArrowRight, rotate: -45 },
                                                     { id: 'E_WALLET', label: 'Ví điện tử', icon: CheckCircle }
                                                 ].map(m => (
                                                     <button
                                                         key={m.id}
                                                         onClick={() => pay.mutate(m.id)}
                                                         disabled={pay.isPending}
-                                                        className="flex flex-col items-center gap-4 p-8 rounded-[2rem] border-2 border-slate-50 hover:border-blue-600 hover:bg-blue-50/40 transition-all group active:scale-95"
+                                                        className="flex flex-col items-center gap-6 p-10 rounded-[3rem] border-2 border-slate-50 hover:border-blue-600 hover:bg-blue-50/40 transition-all group active:scale-95 relative overflow-hidden"
                                                     >
-                                                        <div className="w-16 h-16 rounded-[1.2rem] bg-slate-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors shadow-sm group-hover:shadow-blue-200/50 group-hover:shadow-lg">
-                                                            <m.icon className={`w-8 h-8 text-slate-400 group-hover:text-blue-600 transition-all ${m.rotate ? 'rotate-45' : ''}`} />
+                                                        <div className="w-20 h-20 rounded-[1.5rem] bg-white flex items-center justify-center group-hover:bg-blue-600 transition-all shadow-sm group-hover:shadow-blue-200/50 group-hover:shadow-2xl">
+                                                            <m.icon className={`w-10 h-10 text-slate-400 group-hover:text-white transition-all ${m.rotate === -45 ? '-rotate-45' : ''}`} />
                                                         </div>
-                                                        <span className="font-black text-slate-900 text-xs uppercase tracking-widest">{m.label}</span>
+                                                        <span className="font-black text-slate-900 text-[11px] uppercase tracking-[0.2em]">{m.label}</span>
                                                     </button>
                                                 ))}
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="bg-indigo-50/50 border-2 border-indigo-100 rounded-[2.5rem] p-8 flex items-center justify-between mt-10 shadow-lg shadow-indigo-500/5">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-16 h-16 rounded-2xl bg-white border border-indigo-100 flex items-center justify-center shadow-xl shadow-indigo-200/20">
-                                                    <CheckCircle className="w-9 h-9 text-indigo-600" />
+                                        <div className="bg-emerald-50 border-2 border-emerald-100 rounded-[3.5rem] p-10 flex items-center justify-between mt-10 shadow-xl shadow-emerald-200/20 relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:scale-125 transition-transform duration-1000">
+                                                <ShieldCheck className="w-32 h-32" />
+                                            </div>
+                                            <div className="flex items-center gap-8 relative z-10">
+                                                <div className="w-20 h-20 rounded-[2rem] bg-white border border-emerald-100 flex items-center justify-center shadow-xl shadow-emerald-200/20">
+                                                    <CheckCircle className="w-10 h-10 text-emerald-600" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-indigo-900 uppercase tracking-widest text-sm mb-1">Thanh toán hoàn tất</p>
-                                                    <p className="text-xs text-indigo-700/60 font-black uppercase tracking-widest">
-                                                        {invoiceDetail.paymentMethod === 'CASH' && 'Giao dịch tiền mặt'}
-                                                        {invoiceDetail.paymentMethod === 'BANK_TRANSFER' && 'Chuyển khoản liên ngân hàng'}
-                                                        {invoiceDetail.paymentMethod === 'E_WALLET' && 'Ví điện tử liên kết'}
-                                                        {' • '}
-                                                        {invoiceDetail.paidAt && new Date(invoiceDetail.paidAt).toLocaleDateString('vi-VN')}
-                                                    </p>
+                                                    <p className="font-black text-emerald-900 uppercase tracking-[0.2em] text-sm mb-2">Thanh toán thành công</p>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-[10px] font-black text-emerald-600 bg-white px-3 py-1 rounded-full border border-emerald-100 uppercase tracking-widest">
+                                                            {invoiceDetail.paymentMethod === 'CASH' && 'Tiền mặt'}
+                                                            {invoiceDetail.paymentMethod === 'BANK_TRANSFER' && 'Chuyển khoản'}
+                                                            {invoiceDetail.paymentMethod === 'E_WALLET' && 'Ví điện tử'}
+                                                        </span>
+                                                        <span className="text-[10px] font-bold text-emerald-700/50 uppercase tracking-widest">
+                                                            {invoiceDetail.paidAt && new Date(invoiceDetail.paidAt).toLocaleTimeString('vi-VN')} · {invoiceDetail.paidAt && new Date(invoiceDetail.paidAt).toLocaleDateString('vi-VN')}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <button
                                                 onClick={() => window.print()}
-                                                className="bg-white text-slate-900 border border-slate-200 px-8 py-4 rounded-[1.2rem] font-black text-xs uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all flex items-center gap-3 shadow-sm hover:shadow-xl active:scale-95"
+                                                className="bg-slate-900 text-white px-10 py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-emerald-600 hover:shadow-2xl hover:shadow-emerald-500/20 transition-all flex items-center gap-3 shadow-xl relative z-10"
                                             >
-                                                <Receipt className="w-5 h-5" />
+                                                <Printer className="w-5 h-5" />
                                                 In biên lai
                                             </button>
                                         </div>

@@ -48,6 +48,19 @@ public class ClinicalController {
                 .toList();
     }
 
+    @GetMapping("/{id}/vitals")
+    @Operation(summary = "Lấy sinh hiệu của phiên khám")
+    public List<vn.clinic.patientflow.api.dto.TriageVitalDto> getVitals(@PathVariable UUID id) {
+        return clinicalService.getVitals(id).stream()
+                .map(v -> new vn.clinic.patientflow.api.dto.TriageVitalDto(
+                        v.getId(),
+                        v.getVitalType(),
+                        v.getValueNumeric(),
+                        v.getUnit(),
+                        v.getRecordedAt()))
+                .toList();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Bắt đầu phiên khám từ hàng chờ")

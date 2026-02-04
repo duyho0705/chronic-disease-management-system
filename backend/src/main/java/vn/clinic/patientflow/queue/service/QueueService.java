@@ -138,4 +138,22 @@ public class QueueService {
         public long countPeopleAhead(UUID queueDefinitionId, Instant joinedAt) {
                 return queueEntryRepository.countPeopleAhead(queueDefinitionId, joinedAt);
         }
+
+        @Transactional(readOnly = true)
+        public vn.clinic.patientflow.api.dto.PublicQueueDto getPublicQueueStatus(UUID branchId) {
+                List<QueueEntry> called = queueEntryRepository.findByBranch_IdAndStatusOrderByJoinedAtAsc(branchId,
+                                "CALLED");
+                List<QueueEntry> waiting = queueEntryRepository.findByBranch_IdAndStatusOrderByJoinedAtAsc(branchId,
+                                "WAITING");
+
+                // Limited waiting to top 10
+                List<QueueEntry> nextWaiting = waiting.stream().limit(10).toList();
+
+                return vn.clinic.patientflow.api.dto.PublicQueueDto.builder()
+                                .calledEntries(called.stream()
+                                                .map(vn.clinic.patientflow.api.dto.QueueEntryDto::fromEntity).toList())
+                                .waitingEntries(nextWaiting.stream()
+                                                .map(vn.clinic.patientflow.api.dto.QueueEntryDto::fromEntity).toList())
+                                .build();
+        }
 }

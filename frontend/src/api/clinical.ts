@@ -44,3 +44,10 @@ export async function createPrescription(
 ): Promise<any> {
     return post<any>('/prescriptions', data, tenant)
 }
+
+export async function getVitals(
+    consultationId: string,
+    tenant: TenantHeaders | null
+): Promise<any[]> {
+    return get<any[]>(`/clinical/consultations/${consultationId}/vitals`, tenant)
+}

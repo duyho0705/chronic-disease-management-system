@@ -5,9 +5,10 @@ import { AiConfig } from './admin/AiConfig'
 import { BranchManagement } from './admin/BranchManagement'
 import { MasterData } from './admin/MasterData'
 import { AuditLogs } from './admin/AuditLogs'
-import { Settings, Users, Building2, Layers, History } from 'lucide-react'
+import { RevenueAnalytics } from './admin/RevenueAnalytics'
+import { Settings, Users, Building2, Layers, History, BarChart3 } from 'lucide-react'
 
-type AdminTab = 'users' | 'ai' | 'branches' | 'services' | 'audit'
+type AdminTab = 'users' | 'ai' | 'branches' | 'services' | 'audit' | 'revenue'
 
 export function Admin() {
   const { user: authUser } = useAuth()
@@ -72,6 +73,15 @@ export function Admin() {
           <History className={`h-4 w-4 ${activeTab === 'audit' ? 'text-slate-900' : 'text-slate-300 group-hover:text-slate-900'}`} />
           Nhật ký (Audit)
         </button>
+
+        <button
+          onClick={() => setActiveTab('revenue')}
+          className={`group flex items-center gap-2 border-b-2 px-6 py-5 text-xs font-black uppercase tracking-widest transition-all hover:text-blue-600 ${activeTab === 'revenue' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400'
+            }`}
+        >
+          <BarChart3 className={`h-4 w-4 ${activeTab === 'revenue' ? 'text-blue-600' : 'text-slate-300 group-hover:text-blue-600'}`} />
+          Doanh thu
+        </button>
       </div>
 
       <div className="min-h-[500px]">
@@ -80,6 +90,7 @@ export function Admin() {
         {activeTab === 'services' && <MasterData />}
         {activeTab === 'ai' && <AiConfig />}
         {activeTab === 'audit' && <AuditLogs />}
+        {activeTab === 'revenue' && <RevenueAnalytics />}
       </div>
     </div>
   )

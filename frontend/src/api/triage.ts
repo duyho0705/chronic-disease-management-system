@@ -38,3 +38,10 @@ export async function listTriageSessions(
   if (params.size != null) sp.set('size', String(params.size))
   return get<PagedResponse<TriageSessionDto>>(`/triage/sessions?${sp}`, tenant)
 }
+
+export async function getTriageVitals(
+  sessionId: string,
+  tenant: TenantHeaders | null
+): Promise<any[]> {
+  return get<any[]>(`/triage/sessions/${sessionId}/vitals`, tenant)
+}

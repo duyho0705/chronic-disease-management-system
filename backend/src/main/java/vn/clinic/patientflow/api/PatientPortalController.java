@@ -126,8 +126,9 @@ public class PatientPortalController {
                     dto.setStatus(e.getStatus());
                     dto.setJoinedAt(e.getJoinedAt());
                     // Calculate people ahead
-                    dto.setPeopleAhead(
-                            (int) queueService.countPeopleAhead(e.getQueueDefinition().getId(), e.getJoinedAt()));
+                    int ahead = (int) queueService.countPeopleAhead(e.getQueueDefinition().getId(), e.getJoinedAt());
+                    dto.setPeopleAhead(ahead);
+                    dto.setEstimatedWaitMinutes(ahead * 10); // Assume 10 mins per patient
                     return dto;
                 })
                 .collect(Collectors.toList());

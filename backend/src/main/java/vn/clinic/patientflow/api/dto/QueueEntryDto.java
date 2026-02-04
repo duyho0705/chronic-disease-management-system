@@ -28,6 +28,7 @@ public class QueueEntryDto {
     private String notes;
     private Integer position;
     private Integer peopleAhead;
+    private Integer estimatedWaitMinutes;
     private String status;
     private String queueName;
     /** Mức ưu tiên từ phiên phân loại (nếu có). Dùng để hiển thị và sort. */

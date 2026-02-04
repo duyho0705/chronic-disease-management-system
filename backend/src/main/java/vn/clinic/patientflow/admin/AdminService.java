@@ -35,8 +35,9 @@ public class AdminService {
     private final IdentityRoleRepository identityRoleRepository;
     private final TenantService tenantService;
     private final PasswordEncoder passwordEncoder;
-    private final vn.clinic.patientflow.common.repository.AuditLogRepository auditLogRepository;
     private final vn.clinic.patientflow.common.service.AuditLogService auditLogService;
+    private final vn.clinic.patientflow.billing.service.BillingService billingService;
+    private final vn.clinic.patientflow.common.repository.AuditLogRepository auditLogRepository;
 
     @Transactional(readOnly = true)
     public PagedResponse<AdminUserDto> listUsers(UUID tenantId, Pageable pageable) {
@@ -184,5 +185,9 @@ public class AdminService {
                     ur.getRole() != null ? ur.getRole().getCode() : null));
         }
         return AdminUserDto.fromEntity(user, assignments);
+    }
+
+    public RevenueReportDto getRevenueReport(UUID branchId, java.time.LocalDate from, java.time.LocalDate to) {
+        return billingService.getRevenueReport(branchId, from, to);
     }
 }

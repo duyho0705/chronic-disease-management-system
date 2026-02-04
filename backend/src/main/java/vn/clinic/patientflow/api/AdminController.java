@@ -78,4 +78,13 @@ public class AdminController {
             @RequestParam(defaultValue = "20") int size) {
         return adminService.listAuditLogs(tenantId, PageRequest.of(page, size));
     }
+
+    @GetMapping("/revenue-report")
+    @Operation(summary = "Báo cáo doanh thu")
+    public ResponseEntity<RevenueReportDto> getRevenueReport(
+            @RequestParam UUID branchId,
+            @RequestParam @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate from,
+            @RequestParam @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate to) {
+        return ResponseEntity.ok(adminService.getRevenueReport(branchId, from, to));
+    }
 }

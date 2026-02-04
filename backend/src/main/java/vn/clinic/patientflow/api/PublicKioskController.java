@@ -20,6 +20,7 @@ import vn.clinic.patientflow.queue.repository.QueueDefinitionRepository;
 import vn.clinic.patientflow.queue.service.QueueService;
 import vn.clinic.patientflow.tenant.domain.TenantBranch;
 import vn.clinic.patientflow.tenant.repository.TenantBranchRepository;
+import vn.clinic.patientflow.common.tenant.TenantContext;
 
 @RestController
 @RequestMapping("/api/public/kiosk")
@@ -61,17 +62,21 @@ public class PublicKioskController {
                                         return patientRepository.save(newPatient);
                                 });
 
-                // 2. Join queue
-                QueueEntry entry = queueService.createEntry(
-                                request.getQueueDefinitionId(),
-                                patient.getId(),
-                                (UUID) null,
-                                request.getAppointmentId(),
-                                (UUID) null,
-                                (String) null,
-                                0 // position
-                );
-
-                return ResponseEntity.ok(QueueEntryDto.fromEntity(entry));
+                try {
+                        TenantContext.setTenantId(branch.getTenant().getId());
+                        // 2. Join queue
+                        QueueEntry entry = queueService.createEntry(
+                                        request.getQueueDefinitionId(),
+                                        patient.getId(),
+                                        (UUID) null,
+                                        request.getAppointmentId(),
+                                        (UUID) null,
+                                        request.getPhone(), // use phone as notes or identifier
+                                        0 // position
+                        );
+                        return ResponseEntity.ok(QueueEntryDto.fromEntity(entry));
+                } finally {
+                        TenantContext.clear();
+                }
         }
 }
