@@ -21,3 +21,11 @@ export async function listInvoices(params: { branchId: string; status?: string }
     if (params.status) sp.set('status', params.status)
     return get<InvoiceDto[]>(`/billing/invoices?${sp.toString()}`, tenant)
 }
+
+export async function getRevenueReport(params: { branchId: string; from: string; to: string }, tenant: TenantHeaders | null): Promise<import('@/types/api').RevenueReportDto> {
+    const sp = new URLSearchParams()
+    sp.set('branchId', params.branchId)
+    sp.set('from', params.from)
+    sp.set('to', params.to)
+    return get<import('@/types/api').RevenueReportDto>(`/billing/invoices/report/revenue?${sp.toString()}`, tenant)
+}

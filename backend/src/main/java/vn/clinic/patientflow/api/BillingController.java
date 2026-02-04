@@ -18,6 +18,7 @@ import vn.clinic.patientflow.patient.domain.Patient;
 import vn.clinic.patientflow.tenant.domain.TenantBranch;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -77,5 +78,15 @@ public class BillingController {
     @Operation(summary = "Xác nhận thanh toán hóa đơn")
     public InvoiceDto pay(@PathVariable UUID id, @RequestParam String paymentMethod) {
         return InvoiceDto.fromEntity(billingService.markAsPaid(id, paymentMethod));
+    }
+
+    @GetMapping("/report/revenue")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINIC_MANAGER')")
+    @Operation(summary = "Báo cáo doanh thu theo chi nhánh và khoảng thời gian")
+    public vn.clinic.patientflow.api.dto.RevenueReportDto getRevenueReport(
+            @RequestParam UUID branchId,
+            @RequestParam LocalDate from,
+            @RequestParam LocalDate to) {
+        return billingService.getRevenueReport(branchId, from, to);
     }
 }

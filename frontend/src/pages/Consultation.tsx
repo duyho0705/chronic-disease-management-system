@@ -29,7 +29,6 @@ import {
     Trash2,
     Thermometer,
     Heart,
-    Wind,
     Droplets,
     Zap,
     ExternalLink,

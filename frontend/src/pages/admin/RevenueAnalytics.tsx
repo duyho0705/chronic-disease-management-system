@@ -161,7 +161,7 @@ export function RevenueAnalytics() {
                                 />
                                 <Tooltip
                                     contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 50px -10px rgba(0,0,0,0.1)', padding: '15px' }}
-                                    formatter={(value: number) => [formatCurrency(value), 'Doanh thu']}
+                                    formatter={(value: any) => [formatCurrency(value), 'Doanh thu']}
                                 />
                                 <Area type="monotone" dataKey="amount" stroke="#2b8cee" strokeWidth={4} fillOpacity={1} fill="url(#colorRevenue)" />
                             </AreaChart>

@@ -7,7 +7,7 @@ import { findPatientByPhone, findPatientByCccd } from '@/api/patients'
 import { toastService } from '@/services/toast'
 import {
     CreditCard, Receipt, Clock, CheckCircle, Search, ArrowRight, User,
-    Plus, X, Trash2, ShoppingCart, Hash, ShieldCheck
+    Plus, X, Trash2, ShoppingCart, Hash, ShieldCheck, Printer
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { MedicalServiceDto, PatientDto, CreateInvoiceRequest } from '@/types/api'
