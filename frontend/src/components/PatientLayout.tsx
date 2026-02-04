@@ -13,7 +13,9 @@ import {
     Bell,
     X,
     Circle,
-    Wallet
+    Wallet,
+    Users,
+    ShieldCheck
 } from 'lucide-react'
 import { getPortalNotifications, markPortalNotificationAsRead, markPortalAllNotificationsAsRead, getPortalProfile, getPortalInvoices } from '@/api/portal'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -99,6 +101,8 @@ export function PatientLayout({ children }: PatientLayoutProps) {
         { path: '/patient', label: 'Trang chủ', icon: Home },
         { path: '/patient/appointments', label: 'Lịch hẹn', icon: Calendar },
         { path: '/patient/history', label: 'Lịch sử khám', icon: History },
+        { path: '/patient/family', label: 'Người thân', icon: Users },
+        { path: '/patient/insurance', label: 'Bảo hiểm', icon: ShieldCheck },
         { path: '/patient/billing', label: 'Thanh toán', icon: Wallet },
         { path: '/patient/profile', label: 'Cá nhân', icon: User },
     ]

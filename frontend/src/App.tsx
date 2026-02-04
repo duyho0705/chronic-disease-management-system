@@ -31,6 +31,9 @@ import PatientAppointments from '@/pages/patient/Appointments'
 import PatientBooking from '@/pages/patient/Booking'
 import PatientProfile from '@/pages/patient/Profile'
 import PatientBilling from '@/pages/patient/Billing'
+import PatientInsurance from '@/pages/patient/Insurance'
+import PatientChatDoctor from '@/pages/patient/ChatDoctor'
+import PatientFamily from '@/pages/patient/Family'
 import { Outlet } from 'react-router-dom'
 
 function App() {
@@ -60,6 +63,9 @@ function App() {
             <Route path="appointments" element={<PatientAppointments />} />
             <Route path="booking" element={<PatientBooking />} />
             <Route path="billing" element={<PatientBilling />} />
+            <Route path="insurance" element={<PatientInsurance />} />
+            <Route path="chat" element={<PatientChatDoctor />} />
+            <Route path="family" element={<PatientFamily />} />
             <Route path="profile" element={<PatientProfile />} />
           </Route>
           <Route element={<Layout />}>

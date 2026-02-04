@@ -277,9 +277,9 @@ export default function PatientDashboard() {
                 {/* Quick Actions Grid */}
                 <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
-                        { label: 'Chat với Bác sĩ', icon: MessageCircle, color: 'bg-blue-50 text-blue-600', path: '#' },
+                        { label: 'Chat với Bác sĩ', icon: MessageCircle, color: 'bg-blue-50 text-blue-600', path: '/patient/chat' },
                         { label: 'Thanh toán', icon: Wallet, color: 'bg-emerald-50 text-emerald-600', path: '/patient/billing' },
-                        { label: 'Bảo hiểm', icon: ShieldPlus, color: 'bg-orange-50 text-orange-600', path: '#' },
+                        { label: 'Bảo hiểm', icon: ShieldPlus, color: 'bg-orange-50 text-orange-600', path: '/patient/insurance' },
                         { label: 'Lịch sử', icon: HistoryIcon, color: 'bg-purple-50 text-purple-600', path: '/patient/history' },
                     ].map((action, idx) => (
                         <Link
