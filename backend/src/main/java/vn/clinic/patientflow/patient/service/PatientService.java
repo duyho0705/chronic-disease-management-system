@@ -53,6 +53,16 @@ public class PatientService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Patient> findByEmail(String email, UUID tenantId) {
+        return patientRepository.findFirstByTenantIdAndEmail(tenantId, email);
+    }
+
+    @Transactional
+    public Patient save(Patient patient) {
+        return patientRepository.save(patient);
+    }
+
+    @Transactional(readOnly = true)
     public List<PatientInsurance> getInsurances(UUID patientId) {
         getById(patientId);
         return patientInsuranceRepository.findByPatientIdOrderByIsPrimaryDesc(patientId);
@@ -106,11 +116,13 @@ public class PatientService {
             existing.setCccd(updates.getCccd());
         if (updates.getIsActive() != null)
             existing.setIsActive(updates.getIsActive());
+        if (updates.getAvatarUrl() != null)
+            existing.setAvatarUrl(updates.getAvatarUrl());
         return patientRepository.save(existing);
     }
 
     @Transactional(readOnly = true)
     public Optional<Patient> getByIdentityUserId(UUID identityUserId) {
-        return patientRepository.findByIdentityUserId(identityUserId);
+        return patientRepository.findFirstByIdentityUserId(identityUserId);
     }
 }

@@ -14,7 +14,8 @@ import {
     Lock,
     X,
     Eye,
-    EyeOff
+    EyeOff,
+    ChevronDown
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
@@ -22,10 +23,76 @@ import toast from 'react-hot-toast'
 import { UpdatePatientProfileRequest, ChangePasswordRequest } from '@/types/api'
 import { getPortalProfile, updatePortalProfile, changePortalPassword, uploadPortalAvatar } from '@/api/portal'
 
+function CustomSelect({ value, onChange, options, placeholder, className = '' }: {
+    value: string;
+    onChange: (val: string) => void;
+    options: { value: string; label: string }[];
+    placeholder: string;
+    className?: string;
+}) {
+    const [isOpen, setIsOpen] = useState(false)
+    const selectedOption = options.find(o => o.value === value)
+
+    return (
+        <div className={`relative ${className}`}>
+            <button
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className={`w-full flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border transition-all ${isOpen ? 'border-blue-400 bg-white shadow-lg shadow-blue-400/10' : 'border-slate-100'}`}
+            >
+                <span className={`font-bold transition-colors ${selectedOption ? 'text-slate-700' : 'text-slate-400'}`}>
+                    {selectedOption ? selectedOption.label : placeholder}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-slate-300 transition-transform ${isOpen ? 'rotate-180 text-blue-500' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+                {isOpen && (
+                    <>
+                        <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+                        <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            className="absolute z-50 mt-2 w-full max-h-60 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-y-auto scrollbar-hide py-2"
+                        >
+                            {options.map((opt) => (
+                                <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => {
+                                        onChange(opt.value)
+                                        setIsOpen(false)
+                                    }}
+                                    className={`w-full text-left px-5 py-3 text-sm font-bold transition-all ${value === opt.value ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+        </div>
+    )
+}
+
 export default function PatientProfile() {
     const { headers } = useTenant()
     const queryClient = useQueryClient()
-    const [formData, setFormData] = useState<UpdatePatientProfileRequest>({})
+    const [formData, setFormData] = useState<UpdatePatientProfileRequest>({
+        fullNameVi: '',
+        dateOfBirth: '',
+        gender: 'Khác',
+        phone: '',
+        email: '',
+        addressLine: '',
+        city: '',
+        district: '',
+        ward: '',
+        nationality: 'Việt Nam',
+        ethnicity: 'Kinh'
+    })
     const [errors, setErrors] = useState<Record<string, string>>({})
 
     // Password change state
@@ -47,14 +114,14 @@ export default function PatientProfile() {
             setFormData({
                 fullNameVi: profile.fullNameVi || '',
                 dateOfBirth: profile.dateOfBirth || '',
-                gender: profile.gender || 'Other',
+                gender: profile.gender || 'Khác',
                 phone: profile.phone || '',
                 email: profile.email || '',
                 addressLine: profile.addressLine || '',
                 city: profile.city || '',
                 district: profile.district || '',
                 ward: profile.ward || '',
-                nationality: profile.nationality || 'VN',
+                nationality: profile.nationality || 'Việt Nam',
                 ethnicity: profile.ethnicity || 'Kinh'
             })
         }
@@ -168,7 +235,7 @@ export default function PatientProfile() {
     if (isLoading) return <div className="p-12 text-center text-slate-400 font-bold">Đang tải hồ sơ...</div>
 
     return (
-        <div className="max-w-6xl mx-auto space-y-8 pb-12">
+        <div className="px-4 py-8 space-y-8 pb-12">
             <header>
                 <h1 className="text-4xl font-black text-slate-900 tracking-tight">Hồ sơ cá nhân</h1>
                 <p className="text-slate-500 font-medium">Quản lý thông tin và bảo mật tài khoản</p>
@@ -234,32 +301,38 @@ export default function PatientProfile() {
                         </div>
                     </motion.div>
 
-                    <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-lg shadow-slate-200/30">
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Quốc tịch & Dân tộc</h4>
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center">
+                    <div className="bg-slate-50/50 rounded-[2.5rem] p-8 border border-slate-100 shadow-lg shadow-slate-200/20">
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Quốc tịch & Dân tộc</h4>
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4 transition-all hover:translate-x-1 group">
+                                <div className="w-11 h-11 bg-white text-slate-400 rounded-2xl flex items-center justify-center shadow-sm group-hover:text-blue-600 group-hover:shadow-md transition-all">
                                     <Globe className="w-5 h-5" />
                                 </div>
-                                <input
-                                    type="text"
-                                    value={formData.nationality}
-                                    onChange={e => setFormData({ ...formData, nationality: e.target.value })}
-                                    className="flex-1 bg-transparent border-none font-black text-slate-700 focus:outline-none"
-                                    placeholder="Quốc tịch"
-                                />
+                                <div className="flex-1">
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-tighter mb-0.5">Quốc tịch</p>
+                                    <input
+                                        type="text"
+                                        value={formData.nationality}
+                                        onChange={e => setFormData({ ...formData, nationality: e.target.value })}
+                                        className="w-full bg-transparent border-none font-bold text-slate-700 focus:outline-none"
+                                        placeholder="Nhập quốc tịch..."
+                                    />
+                                </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center">
+                            <div className="flex items-center gap-4 transition-all hover:translate-x-1 group">
+                                <div className="w-11 h-11 bg-white text-slate-400 rounded-2xl flex items-center justify-center shadow-sm group-hover:text-blue-600 group-hover:shadow-md transition-all">
                                     <User className="w-5 h-5" />
                                 </div>
-                                <input
-                                    type="text"
-                                    value={formData.ethnicity}
-                                    onChange={e => setFormData({ ...formData, ethnicity: e.target.value })}
-                                    className="flex-1 bg-transparent border-none font-black text-slate-700 focus:outline-none"
-                                    placeholder="Dân tộc"
-                                />
+                                <div className="flex-1">
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-tighter mb-0.5">Dân tộc</p>
+                                    <input
+                                        type="text"
+                                        value={formData.ethnicity}
+                                        onChange={e => setFormData({ ...formData, ethnicity: e.target.value })}
+                                        className="w-full bg-transparent border-none font-bold text-slate-700 focus:outline-none"
+                                        placeholder="Nhập dân tộc..."
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -272,14 +345,21 @@ export default function PatientProfile() {
                         animate={{ opacity: 1, x: 0 }}
                         className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-100 shadow-xl shadow-slate-200/40"
                     >
-                        <div className="flex items-center justify-between mb-8">
-                            <h3 className="text-lg font-black text-slate-900">Thông tin cơ bản</h3>
+                        <div className="flex items-center justify-between mb-10">
+                            <div>
+                                <h3 className="text-xl font-black text-slate-900 tracking-tight">Thông tin cơ bản</h3>
+                                <p className="text-sm text-slate-400 font-medium mt-1">Các thông tin cá nhân dùng cho hồ sơ bệnh án</p>
+                            </div>
                             <button
                                 onClick={handleSave}
                                 disabled={updateMutation.isPending}
-                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 disabled:opacity-50"
+                                className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl shadow-blue-200 active:scale-95 disabled:opacity-50 disabled:active:scale-100 group"
                             >
-                                {updateMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                {updateMutation.isPending ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <Save className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                )}
                                 Lưu thay đổi
                             </button>
                         </div>
@@ -308,33 +388,71 @@ export default function PatientProfile() {
                                 </div>
                                 {errors.fullNameVi && <p className="text-[10px] font-bold text-rose-500 ml-2">{errors.fullNameVi}</p>}
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Ngày sinh</label>
-                                <div className={`flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border transition-all ${errors.dateOfBirth ? 'border-rose-300 bg-rose-50' : 'border-slate-100 focus-within:border-blue-400'}`}>
-                                    <Calendar className={`w-5 h-5 ${errors.dateOfBirth ? 'text-rose-400' : 'text-slate-300'}`} />
-                                    <input
-                                        type="date"
-                                        value={formData.dateOfBirth}
-                                        onChange={e => {
-                                            setFormData({ ...formData, dateOfBirth: e.target.value })
-                                            if (errors.dateOfBirth) setErrors({ ...errors, dateOfBirth: '' })
+                            <div className="space-y-3 group">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-blue-600">Ngày sinh</label>
+                                <div className="flex gap-3">
+                                    {/* Day Custom Select */}
+                                    <CustomSelect
+                                        value={formData.dateOfBirth ? new Date(formData.dateOfBirth).getDate().toString() : ''}
+                                        onChange={(val: string) => {
+                                            const d = new Date(formData.dateOfBirth || new Date());
+                                            d.setDate(parseInt(val));
+                                            setFormData({ ...formData, dateOfBirth: d.toISOString().split('T')[0] });
                                         }}
-                                        className="w-full bg-transparent border-none font-bold text-slate-700 focus:outline-none"
+                                        options={Array.from({ length: 31 }, (_, i) => ({ value: (i + 1).toString(), label: (i + 1).toString() }))}
+                                        placeholder="Ngày"
+                                        className="flex-1"
+                                    />
+
+                                    {/* Month Custom Select */}
+                                    <CustomSelect
+                                        value={formData.dateOfBirth ? (new Date(formData.dateOfBirth).getMonth() + 1).toString() : ''}
+                                        onChange={(val: string) => {
+                                            const d = new Date(formData.dateOfBirth || new Date());
+                                            d.setMonth(parseInt(val) - 1);
+                                            setFormData({ ...formData, dateOfBirth: d.toISOString().split('T')[0] });
+                                        }}
+                                        options={Array.from({ length: 12 }, (_, i) => ({ value: (i + 1).toString(), label: `Tháng ${i + 1}` }))}
+                                        placeholder="Tháng"
+                                        className="flex-[1.5]"
+                                    />
+
+                                    {/* Year Custom Select */}
+                                    <CustomSelect
+                                        value={formData.dateOfBirth ? new Date(formData.dateOfBirth).getFullYear().toString() : ''}
+                                        onChange={(val: string) => {
+                                            const d = new Date(formData.dateOfBirth || new Date());
+                                            d.setFullYear(parseInt(val));
+                                            setFormData({ ...formData, dateOfBirth: d.toISOString().split('T')[0] });
+                                        }}
+                                        options={Array.from({ length: 100 }, (_, i) => ({ value: (new Date().getFullYear() - i).toString(), label: (new Date().getFullYear() - i).toString() }))}
+                                        placeholder="Năm"
+                                        className="flex-[1.2]"
                                     />
                                 </div>
-                                {errors.dateOfBirth && <p className="text-[10px] font-bold text-rose-500 ml-2">{errors.dateOfBirth}</p>}
+                                {errors.dateOfBirth && <p className="text-[10px] font-bold text-rose-500 ml-2 animate-in slide-in-from-left-2">{errors.dateOfBirth}</p>}
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Giới tính</label>
-                                <select
-                                    value={formData.gender}
-                                    onChange={e => setFormData({ ...formData, gender: e.target.value })}
-                                    className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-100 font-bold text-slate-700 focus:outline-none focus:border-blue-400 transition-all appearance-none"
-                                >
-                                    <option value="Male">Nam</option>
-                                    <option value="Female">Nữ</option>
-                                    <option value="Other">Khác</option>
-                                </select>
+
+                            <div className="space-y-3 group">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-blue-600">Giới tính</label>
+                                <div className="flex p-1.5 bg-slate-100/50 rounded-2xl border border-slate-100 relative w-full sm:w-80">
+                                    {['Nam', 'Nữ', 'Khác'].map((option) => (
+                                        <button
+                                            key={option}
+                                            onClick={() => setFormData({ ...formData, gender: option })}
+                                            className={`relative flex-1 py-3 text-sm font-black transition-all z-10 ${formData.gender === option ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                                        >
+                                            {option}
+                                            {formData.gender === option && (
+                                                <motion.div
+                                                    layoutId="activeGender"
+                                                    className="absolute inset-0 bg-white rounded-xl shadow-md border border-slate-200/50 z-[-1]"
+                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                />
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Số điện thoại</label>

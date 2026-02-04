@@ -22,5 +22,7 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
 
     boolean existsByTenantIdAndExternalId(UUID tenantId, String externalId);
 
-    Optional<Patient> findByIdentityUserId(UUID identityUserId);
+    Optional<Patient> findFirstByTenantIdAndEmail(UUID tenantId, String email);
+
+    Optional<Patient> findFirstByIdentityUserId(UUID identityUserId);
 }

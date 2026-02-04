@@ -7,8 +7,7 @@ import {
     Calendar,
     Search,
     Filter,
-    History as HistoryIcon,
-    AlertCircle
+    History as HistoryIcon
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
@@ -30,7 +29,7 @@ export default function PatientHistory() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="space-y-8">
             <header>
                 <h1 className="text-3xl font-black text-slate-900 tracking-tight">Lịch sử Khám bệnh</h1>
                 <p className="text-slate-500 font-medium mt-1">Nơi tập trung toàn bộ dữ liệu y tế cá nhân của bạn.</p>

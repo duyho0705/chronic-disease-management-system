@@ -1,4 +1,4 @@
-import { get, post } from './client'
+import { get, post, put } from './client'
 import type { TenantHeaders } from './client'
 import type {
     PatientPortalStatusDto,
@@ -22,7 +22,7 @@ export async function getPortalProfile(tenant: TenantHeaders | null): Promise<Pa
 }
 
 export async function updatePortalProfile(data: UpdatePatientProfileRequest, tenant: TenantHeaders | null): Promise<PatientDto> {
-    return post<PatientDto>('/portal/profile', data, tenant)
+    return put<PatientDto>('/portal/profile', data, tenant)
 }
 
 export async function changePortalPassword(data: ChangePasswordRequest, tenant: TenantHeaders | null): Promise<void> {

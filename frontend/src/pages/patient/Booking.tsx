@@ -91,7 +91,7 @@ export default function PatientBooking() {
     ]
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 pb-20">
+        <div className="max-w-[1600px] mx-auto space-y-8 pb-20">
             <header className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight">Đặt lịch khám</h1>

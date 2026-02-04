@@ -35,7 +35,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
     const [isNotifOpen, setIsNotifOpen] = useState(false)
 
     const { data: profile } = useQuery({
-        queryKey: ['patient-profile'],
+        queryKey: ['portal-profile'],
         queryFn: () => getPortalProfile(headers),
         enabled: !!user && !!headers?.tenantId
     })
@@ -152,23 +152,12 @@ export function PatientLayout({ children }: PatientLayoutProps) {
                 </nav>
 
                 <div className="pt-6 border-t border-slate-50">
-                    <div className="bg-slate-50 rounded-2xl p-4 mb-4">
-                        <div className="flex items-center gap-3 mb-1">
-                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-black text-xs">
-                                {user?.fullNameVi?.slice(0, 1) || 'P'}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-xs font-black text-slate-900 truncate">{user?.fullNameVi}</p>
-                                <p className="text-[10px] text-slate-400 truncate">{user?.email}</p>
-                            </div>
-                        </div>
-                    </div>
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 font-bold hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
+                        className="flex items-center gap-3 w-full px-4 py-3 text-slate-400 font-bold hover:text-rose-500 hover:bg-rose-50 rounded-2xl transition-all group"
                     >
-                        <LogOut className="w-5 h-5" />
-                        Đăng xuất
+                        <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                        <span className="text-sm">Đăng xuất</span>
                     </button>
                 </div>
             </aside>
@@ -188,7 +177,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
                     {profile?.avatarUrl ? (
                         <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
-                        profile?.fullNameVi?.charAt(0) || 'P'
+                        profile?.fullNameVi?.charAt(0) || user?.fullNameVi?.charAt(0) || 'P'
                     )}
                     {unreadCount > 0 && (
                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-white">

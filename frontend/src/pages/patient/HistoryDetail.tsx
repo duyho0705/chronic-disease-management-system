@@ -65,7 +65,7 @@ export default function PatientHistoryDetail() {
     if (!detail) return <div className="p-12 text-center text-red-400 font-bold">Không tìm thấy thông tin ca khám.</div>
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 pb-12">
+        <div className="max-w-[1600px] mx-auto space-y-8 pb-20">
             <button
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-2 text-slate-400 hover:text-slate-900 font-bold transition-all"

@@ -13,7 +13,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
 
+const isPlaceholder = (val: string) => val.startsWith("YOUR_");
+
 export const requestForToken = async () => {
+    if (isPlaceholder(firebaseConfig.apiKey) || isPlaceholder("YOUR_VAPID_KEY")) {
+        console.warn("FCM placeholders detected. Skipping token request.");
+        return null;
+    }
     try {
         const currentToken = await getToken(messaging, {
             vapidKey: "YOUR_VAPID_KEY",

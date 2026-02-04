@@ -4,7 +4,6 @@ import { useTenant } from '@/context/TenantContext'
 import { usePatientRealtime } from '@/hooks/usePatientRealtime'
 import {
     Calendar,
-    Clock,
     ArrowRight,
     History as HistoryIcon,
     Activity,
@@ -46,7 +45,7 @@ export default function PatientDashboard() {
     if (loadingDash) return <div className="p-8 text-center font-bold text-slate-400">Đang tải...</div>
 
     return (
-        <div className="space-y-10 max-w-4xl mx-auto">
+        <div className="space-y-10">
             {/* Hero Welcome */}
             <header className="relative overflow-hidden bg-slate-900 rounded-[3rem] p-8 md:p-12 text-white">
                 <div className="absolute top-0 right-0 p-12 opacity-10 -mr-20 -mt-20">
@@ -249,7 +248,7 @@ export default function PatientDashboard() {
                         <div className="absolute top-0 right-0 p-8 opacity-10">
                             <Zap className="w-24 h-24" />
                         </div>
-                        <div className="relative z-10 space-y-6">
+                        <div className="space-y-8">
                             <p className="text-sm font-medium leading-relaxed">Bạn cảm thấy không khỏe? Hãy để AI hỗ trợ phân loại mức độ ưu tiên của bạn ngay bây giờ.</p>
                             <Link
                                 to="/patient/booking"

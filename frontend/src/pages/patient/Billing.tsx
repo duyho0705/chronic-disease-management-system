@@ -45,7 +45,7 @@ export default function PatientBilling() {
     if (isLoading) return <div className="p-12 text-center text-slate-400 font-bold">Đang tải hóa đơn...</div>
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8 pb-12">
+        <div className="max-w-[1600px] mx-auto space-y-8 pb-12">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">

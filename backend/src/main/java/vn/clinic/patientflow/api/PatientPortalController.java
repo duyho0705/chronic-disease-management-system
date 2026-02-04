@@ -1,42 +1,68 @@
 package vn.clinic.patientflow.api;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.*;
-import vn.clinic.patientflow.auth.AuthPrincipal;
-import vn.clinic.patientflow.billing.service.BillingService;
-import vn.clinic.patientflow.clinical.service.ClinicalService;
-import vn.clinic.patientflow.common.exception.ResourceNotFoundException;
-import vn.clinic.patientflow.patient.domain.Patient;
-import vn.clinic.patientflow.patient.service.PatientService;
-import vn.clinic.patientflow.scheduling.service.SchedulingService;
-import vn.clinic.patientflow.triage.service.TriageService;
-import vn.clinic.patientflow.queue.service.QueueService;
-import vn.clinic.patientflow.patient.service.PatientNotificationService;
-import vn.clinic.patientflow.triage.ai.AiTriageService;
-import vn.clinic.patientflow.triage.ai.AiTriageService.TriageSuggestionResult;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import vn.clinic.patientflow.tenant.service.TenantService;
-import vn.clinic.patientflow.triage.repository.TriageSessionRepository;
-import vn.clinic.patientflow.billing.repository.InvoiceRepository;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import vn.clinic.patientflow.api.dto.AppointmentDto;
+import vn.clinic.patientflow.api.dto.ChangePasswordRequest;
+import vn.clinic.patientflow.api.dto.ConsultationDetailDto;
+import vn.clinic.patientflow.api.dto.ConsultationDto;
+import vn.clinic.patientflow.api.dto.CreateAppointmentRequest;
+import vn.clinic.patientflow.api.dto.InvoiceDto;
+import vn.clinic.patientflow.api.dto.PatientDashboardDto;
+import vn.clinic.patientflow.api.dto.PatientDto;
+import vn.clinic.patientflow.api.dto.PatientNotificationDto;
+import vn.clinic.patientflow.api.dto.PatientPortalStatusDto;
+import vn.clinic.patientflow.api.dto.QueueEntryDto;
+import vn.clinic.patientflow.api.dto.RegisterFcmTokenRequest;
+import vn.clinic.patientflow.api.dto.SlotAvailabilityDto;
+import vn.clinic.patientflow.api.dto.TenantBranchDto;
+import vn.clinic.patientflow.api.dto.TriageVitalDto;
+import vn.clinic.patientflow.api.dto.UpdatePatientProfileRequest;
+import vn.clinic.patientflow.auth.AuthPrincipal;
+import vn.clinic.patientflow.billing.repository.InvoiceRepository;
+import vn.clinic.patientflow.billing.service.BillingService;
+import vn.clinic.patientflow.clinical.service.ClinicalService;
+import vn.clinic.patientflow.common.exception.ResourceNotFoundException;
 import vn.clinic.patientflow.common.service.FileStorageService;
+import vn.clinic.patientflow.identity.domain.IdentityUser;
+import vn.clinic.patientflow.identity.service.IdentityService;
+import vn.clinic.patientflow.patient.domain.Patient;
+import vn.clinic.patientflow.patient.service.PatientNotificationService;
+import vn.clinic.patientflow.patient.service.PatientService;
+import vn.clinic.patientflow.queue.service.QueueService;
+import vn.clinic.patientflow.scheduling.service.SchedulingService;
+import vn.clinic.patientflow.tenant.service.TenantService;
+import vn.clinic.patientflow.triage.ai.AiTriageService;
+import vn.clinic.patientflow.triage.ai.AiTriageService.TriageSuggestionResult;
+import vn.clinic.patientflow.triage.repository.TriageSessionRepository;
+import vn.clinic.patientflow.triage.service.TriageService;
 
 @RestController
 @RequestMapping("/api/portal")
 @RequiredArgsConstructor
 @Tag(name = "Patient Portal", description = "Cổng thông tin dành cho Bệnh nhân")
-@PreAuthorize("hasRole('PATIENT')")
+@Slf4j
 public class PatientPortalController {
 
     private final PatientService patientService;
@@ -52,8 +78,10 @@ public class PatientPortalController {
     private final InvoiceRepository invoiceRepository;
     private final vn.clinic.patientflow.auth.AuthService authService;
     private final FileStorageService fileStorageService;
+    private final IdentityService identityService;
 
     @PostMapping("/profile/change-password")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Đổi mật khẩu")
     public void changePassword(@RequestBody ChangePasswordRequest request) {
         UUID userId = AuthPrincipal.getCurrentUserId();
@@ -61,6 +89,7 @@ public class PatientPortalController {
     }
 
     @GetMapping("/profile")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Lấy hồ sơ bệnh nhân của user hiện tại")
     public PatientDto getProfile() {
         Patient patient = getAuthenticatedPatient();
@@ -68,6 +97,7 @@ public class PatientPortalController {
     }
 
     @PutMapping("/profile")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Cập nhật hồ sơ bệnh nhân")
     public PatientDto updateProfile(@Valid @RequestBody UpdatePatientProfileRequest request) {
         Patient p = getAuthenticatedPatient();
@@ -88,6 +118,7 @@ public class PatientPortalController {
     }
 
     @PostMapping(value = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Tải ảnh đại diện")
     public PatientDto uploadAvatar(@RequestParam("file") MultipartFile file) {
         Patient p = getAuthenticatedPatient();
@@ -98,6 +129,7 @@ public class PatientPortalController {
     }
 
     @GetMapping("/dashboard")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Dữ liệu tổng quan cho trang chủ bệnh nhân")
     public PatientDashboardDto getDashboard() {
         Patient p = getAuthenticatedPatient();
@@ -134,6 +166,7 @@ public class PatientPortalController {
     }
 
     @GetMapping("/appointments")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Danh sách lịch hẹn của bệnh nhân")
     public List<AppointmentDto> getAppointments() {
         Patient p = getAuthenticatedPatient();
@@ -142,6 +175,7 @@ public class PatientPortalController {
     }
 
     @GetMapping("/medical-history")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Lịch sử khám bệnh")
     public List<ConsultationDto> getHistory() {
         Patient p = getAuthenticatedPatient();
@@ -150,6 +184,7 @@ public class PatientPortalController {
     }
 
     @GetMapping("/medical-history/{id}")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Chi tiết ca khám")
     public ConsultationDetailDto getHistoryDetail(@PathVariable UUID id) {
         Patient p = getAuthenticatedPatient();
@@ -185,6 +220,7 @@ public class PatientPortalController {
     }
 
     @GetMapping("/queues")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Trạng thái hàng chờ hiện tại")
     public List<QueueEntryDto> getActiveQueues() {
         Patient p = getAuthenticatedPatient();
@@ -207,6 +243,7 @@ public class PatientPortalController {
     }
 
     @GetMapping("/branches")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Danh sách chi nhánh đang hoạt động")
     public List<TenantBranchDto> getBranches() {
         UUID tenantId = vn.clinic.patientflow.common.tenant.TenantContext.getTenantIdOrThrow();
@@ -217,12 +254,14 @@ public class PatientPortalController {
     }
 
     @GetMapping("/slots")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Lấy danh sách slot khả dụng")
     public List<SlotAvailabilityDto> getSlots(@RequestParam UUID branchId, @RequestParam LocalDate date) {
         return schedulingService.getAvailableSlots(branchId, date);
     }
 
     @PostMapping("/appointments")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Đặt lịch hẹn mới")
     public AppointmentDto createAppointment(@RequestBody CreateAppointmentRequest request) {
         Patient p = getAuthenticatedPatient();
@@ -241,6 +280,7 @@ public class PatientPortalController {
     }
 
     @GetMapping("/invoices")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Danh sách hóa đơn của bệnh nhận")
     public List<InvoiceDto> getInvoices() {
         Patient p = getAuthenticatedPatient();
@@ -249,6 +289,7 @@ public class PatientPortalController {
     }
 
     @PostMapping("/register-token")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Đăng ký FCM token cho bệnh nhân")
     public void registerToken(@RequestBody RegisterFcmTokenRequest request) {
         Patient p = getAuthenticatedPatient();
@@ -256,6 +297,7 @@ public class PatientPortalController {
     }
 
     @PostMapping("/ai-pre-triage")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Gợi ý phân loại AI dựa trên triệu chứng")
     public TriageSuggestionResult getPreTriage(
             @RequestBody String symptoms) {
@@ -268,6 +310,7 @@ public class PatientPortalController {
     }
 
     @GetMapping("/notifications")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Lấy danh sách thông báo của bệnh nhân")
     public List<PatientNotificationDto> getNotifications() {
         Patient p = getAuthenticatedPatient();
@@ -276,6 +319,7 @@ public class PatientPortalController {
     }
 
     @PostMapping("/notifications/{id}/read")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Đánh dấu thông báo đã đọc")
     public void markAsRead(@PathVariable UUID id) {
         Patient p = getAuthenticatedPatient();
@@ -289,6 +333,7 @@ public class PatientPortalController {
     }
 
     @PostMapping("/notifications/read-all")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Đánh dấu tất cả thông báo đã đọc")
     public void markAllAsRead() {
         Patient p = getAuthenticatedPatient();
@@ -297,10 +342,83 @@ public class PatientPortalController {
         patientNotificationRepository.saveAll(notifications);
     }
 
-    private Patient getAuthenticatedPatient() {
+    @GetMapping("/status/{patientId}")
+    @Operation(summary = "Lấy trạng thái hàng chờ của bệnh nhân (Public/Open)")
+    public PatientPortalStatusDto getStatus(@PathVariable UUID patientId) {
+        var patient = patientService.getById(patientId);
+
+        var activeEntry = queueService.getActiveEntriesByPatient(patientId).stream()
+                .findFirst()
+                .orElse(null);
+
+        if (activeEntry == null) {
+            return PatientPortalStatusDto.builder()
+                    .patientName(patient.getFullNameVi())
+                    .status("NO_ACTIVE_QUEUE")
+                    .build();
+        }
+
+        int ahead = (int) queueService.countPeopleAhead(activeEntry.getQueueDefinition().getId(),
+                activeEntry.getJoinedAt());
+
+        return PatientPortalStatusDto.builder()
+                .patientName(patient.getFullNameVi())
+                .queueName(activeEntry.getQueueDefinition().getNameVi())
+                .status(activeEntry.getStatus())
+                .peopleAhead((long) ahead)
+                .estimatedWaitMinutes(ahead * 10)
+                .build();
+    }
+
+    protected Patient getAuthenticatedPatient() {
         UUID userId = AuthPrincipal.getCurrentUserId();
-        return patientService.getByIdentityUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Patient record not found for this user. Please link your profile in settings."));
+        if (userId == null) {
+            log.warn("getAuthenticatedPatient: No authenticated user found in SecurityContext");
+            throw new ResourceNotFoundException("User not authenticated");
+        }
+
+        try {
+            var patientOpt = patientService.getByIdentityUserId(userId);
+            if (patientOpt.isPresent()) {
+                return patientOpt.get();
+            }
+
+            log.info("getAuthenticatedPatient: Patient record missing for user {}. Attempting auto-provisioning...",
+                    userId);
+
+            IdentityUser user = identityService.getUserById(userId);
+            UUID tenantId = vn.clinic.patientflow.common.tenant.TenantContext.getTenantId().orElse(null);
+
+            if (tenantId == null) {
+                log.error("getAuthenticatedPatient: TenantContext is missing tenantId for user {}", userId);
+                throw new IllegalStateException("Tenant context is required but missing");
+            }
+
+            // 1. Try to link by email
+            var existingByEmail = patientService.findByEmail(user.getEmail(), tenantId);
+            if (existingByEmail.isPresent()) {
+                Patient p = existingByEmail.get();
+                log.info("getAuthenticatedPatient: Found existing patient by email {}. Linking to user {}",
+                        user.getEmail(), userId);
+                p.setIdentityUserId(userId);
+                return patientService.save(p);
+            }
+
+            // 2. Create new
+            log.info("getAuthenticatedPatient: Creating new shell patient for user {} in tenant {}", userId, tenantId);
+            Patient newPatient = Patient.builder()
+                    .tenant(new vn.clinic.patientflow.tenant.domain.Tenant(tenantId))
+                    .fullNameVi(user.getFullNameVi())
+                    .email(user.getEmail())
+                    .dateOfBirth(LocalDate.of(1990, 1, 1))
+                    .identityUserId(userId)
+                    .isActive(true)
+                    .nationality("VN")
+                    .build();
+            return patientService.save(newPatient);
+        } catch (Exception e) {
+            log.error("getAuthenticatedPatient: Error during patient resolution/provisioning for user " + userId, e);
+            throw e;
+        }
     }
 }
