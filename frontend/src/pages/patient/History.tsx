@@ -33,33 +33,32 @@ export default function PatientHistory() {
     if (isLoading) return <div className="p-8 text-center font-bold text-slate-400">Đang tải...</div>
 
     return (
-        <div className="w-full">
-            {/* Header Section - 100% Match */}
-            <div className="flex flex-col md:flex-row md:items-center justify-end gap-3 mb-8">
-                <div className="flex gap-3">
-                    <button
-                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full font-semibold text-sm hover:bg-slate-50 transition-colors shadow-sm"
-                    >
-                        <HistoryIcon className="w-4 h-4" />
-                        Lịch sử
-                    </button>
-                    <button
-                        className="flex items-center gap-2 px-4 py-2 bg-emerald-400 text-slate-900 rounded-full font-bold text-sm shadow-sm shadow-emerald-400/20"
-                    >
-                        <ShoppingCart className="w-4 h-4" />
-                        Yêu cầu cấp lại
-                    </button>
-                </div>
-            </div>
-
+        <div className="w-full py-8">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* Left Column: Active Prescriptions & Table */}
                 <div className="xl:col-span-2 space-y-8">
                     <section>
-                        <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-emerald-500">
-                            <Pill className="w-6 h-6" />
-                            Đang điều trị
-                        </h2>
+                        {/* Header Row: Title on left, Buttons on right */}
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold flex items-center gap-2 text-emerald-500">
+                                <Pill className="w-6 h-6" />
+                                Đang điều trị
+                            </h2>
+                            <div className="flex gap-3">
+                                <button
+                                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full font-semibold text-sm hover:bg-slate-50 transition-colors shadow-sm"
+                                >
+                                    <HistoryIcon className="w-4 h-4" />
+                                    Lịch sử
+                                </button>
+                                <button
+                                    className="flex items-center gap-2 px-4 py-2 bg-emerald-400 text-slate-900 rounded-full font-bold text-sm shadow-sm shadow-emerald-400/20"
+                                >
+                                    <ShoppingCart className="w-4 h-4" />
+                                    Yêu cầu cấp lại
+                                </button>
+                            </div>
+                        </div>
                         <div className="grid gap-4">
                             {/* Card Mapping from dashboard.latestPrescription */}
                             {dashboard?.latestPrescription?.items && dashboard.latestPrescription.items.length > 0 ? (
