@@ -52,7 +52,7 @@ export function UserManagement() {
                 </div>
                 <button
                     type="button"
-                    className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-xs tracking-wide hover:bg-[#2b8cee] transition-all active:scale-95"
+                    className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-xs tracking-wide hover:bg-emerald-600 transition-all active:scale-95"
                     onClick={() => {
                         setEditUser(null)
                         setPasswordUser(null)
@@ -67,7 +67,7 @@ export function UserManagement() {
             <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
                 <div className="px-5 py-3 border-b border-slate-50 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
-                        <Filter className="w-4 h-4 text-[#2b8cee]" />
+                        <Filter className="w-4 h-4 text-emerald-500" />
                         <h2 className="text-sm font-bold text-slate-900">Danh sách tài khoản</h2>
                     </div>
 
@@ -133,7 +133,7 @@ export function UserManagement() {
                                                 <div className="flex gap-2">
                                                     <button
                                                         type="button"
-                                                        className="p-2 text-slate-400 hover:text-[#2b8cee] hover:bg-blue-50 rounded-lg transition-all"
+                                                        className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-all"
                                                         title="Sửa thông tin"
                                                         onClick={() => {
                                                             setCreateOpen(false)
@@ -271,7 +271,7 @@ function CreateUserForm({
             >
                 <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-[#2b8cee]/10 rounded-lg text-[#2b8cee]">
+                        <div className="p-1.5 bg-emerald-600/10 rounded-lg text-emerald-600">
                             <UserPlus className="w-4 h-4" />
                         </div>
                         <h3 className="text-base font-extrabold text-slate-900">Tạo tài khoản mới</h3>
@@ -287,19 +287,19 @@ function CreateUserForm({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email *</label>
-                            <input type="email" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#2b8cee]/20 focus:border-[#2b8cee] outline-none transition-all text-sm" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required />
+                            <input type="email" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none transition-all text-sm" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required />
                         </div>
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Họ tên *</label>
-                            <input className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#2b8cee]/20 focus:border-[#2b8cee] outline-none transition-all text-sm" value={form.fullNameVi} onChange={(e) => setForm((f) => ({ ...f, fullNameVi: e.target.value }))} required />
+                            <input className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none transition-all text-sm" value={form.fullNameVi} onChange={(e) => setForm((f) => ({ ...f, fullNameVi: e.target.value }))} required />
                         </div>
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mật khẩu *</label>
-                            <input type="password" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#2b8cee]/20 focus:border-[#2b8cee] outline-none transition-all text-sm" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} required minLength={6} />
+                            <input type="password" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none transition-all text-sm" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} required minLength={6} />
                         </div>
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">SĐT</label>
-                            <input className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#2b8cee]/20 focus:border-[#2b8cee] outline-none transition-all text-sm" value={form.phone ?? ''} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value || undefined }))} />
+                            <input className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none transition-all text-sm" value={form.phone ?? ''} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value || undefined }))} />
                         </div>
                     </div>
 
@@ -319,7 +319,7 @@ function CreateUserForm({
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                        <button type="submit" disabled={createMutation.isPending} className="flex-1 bg-slate-900 text-white py-2.5 rounded-xl font-bold text-xs tracking-wide hover:bg-[#2b8cee] transition-all disabled:opacity-50">
+                        <button type="submit" disabled={createMutation.isPending} className="flex-1 bg-slate-900 text-white py-2.5 rounded-xl font-bold text-xs tracking-wide hover:bg-emerald-600 transition-all disabled:opacity-50">
                             {createMutation.isPending ? 'Đang xử lý...' : 'Xác nhận tạo'}
                         </button>
                         <button type="button" className="px-5 py-2.5 bg-slate-100 text-slate-500 rounded-xl font-bold text-xs hover:bg-slate-200 transition-all" onClick={onCancel}>Hủy</button>
@@ -407,7 +407,7 @@ function EditUserForm({
             >
                 <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-500/10 rounded-xl text-blue-600">
+                        <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-600">
                             <Pencil className="w-5 h-5" />
                         </div>
                         <div>
@@ -427,7 +427,7 @@ function EditUserForm({
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Họ tên *</label>
                             <input
-                                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
+                                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all"
                                 value={fullNameVi}
                                 onChange={(e) => setFullNameVi(e.target.value)}
                                 required
@@ -458,7 +458,7 @@ function EditUserForm({
                             <button
                                 type="button"
                                 onClick={addAssignment}
-                                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-black text-xs uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-xl transition-all"
+                                className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-black text-xs uppercase tracking-widest bg-emerald-50 px-4 py-2 rounded-xl transition-all"
                             >
                                 <Plus className="w-4 h-4" />
                                 Thêm gán vai trò
@@ -488,7 +488,7 @@ function EditUserForm({
                         <button
                             type="submit"
                             disabled={updateMutation.isPending}
-                            className="flex-1 bg-slate-900 text-white py-5 rounded-[1.5rem] font-black tracking-tight hover:bg-blue-600 shadow-xl hover:shadow-blue-600/20 transition-all disabled:opacity-50"
+                            className="flex-1 bg-slate-900 text-white py-5 rounded-[1.5rem] font-black tracking-tight hover:bg-emerald-600 shadow-xl hover:shadow-emerald-600/20 transition-all disabled:opacity-50"
                         >
                             {updateMutation.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
                         </button>
