@@ -11,6 +11,10 @@ import {
   Calendar,
   MessageSquare,
   Settings,
+  ShieldCheck,
+  History,
+  Lock,
+  Stethoscope
 } from 'lucide-react'
 
 export type StaffNavItem = {
@@ -24,11 +28,16 @@ export type StaffNavItem = {
 
 /** Cấu hình menu staff - Cập nhật giống 100% Dashboard.html cho role Quản lý */
 export const STAFF_NAV: StaffNavItem[] = [
-  // SECTION: CHÍNH
-  { label: 'Chính', type: 'header', roles: ['clinic_manager', 'admin'] },
+  // SECTION: TỔNG QUAN
+  { label: 'Tổng quan', type: 'header', roles: ['clinic_manager', 'admin', 'doctor', 'receptionist'] },
   { to: '/dashboard', label: 'Bảng điều khiển', icon: LayoutDashboard, type: 'link' },
-  { to: '/admin/doctors', label: 'Quản lý Bác sĩ', icon: Users, roles: ['clinic_manager', 'admin'], type: 'link' },
+
+  // SECTION: QUẢN LÝ (Clinic Manager & Admin)
+  { label: 'Quản lý', type: 'header', roles: ['clinic_manager', 'admin'] },
+  { to: '/admin/doctors', label: 'Quản lý Bác sĩ', icon: Stethoscope, roles: ['clinic_manager', 'admin'], type: 'link' },
   { to: '/admin/allocation', label: 'Phân bổ Bệnh nhân', icon: UserPlus, roles: ['clinic_manager', 'admin'], type: 'link' },
+  { to: '/admin/users', label: 'Quản lý Người dùng', icon: Users, roles: ['admin'], type: 'link' },
+  { to: '/admin/audit', label: 'Nhật ký hệ thống', icon: History, roles: ['admin'], type: 'link' },
 
   // Role doctor & receptionist items
   { to: '/patients', label: 'Danh sách bệnh nhân', icon: Users, roles: ['doctor', 'receptionist'], type: 'link' },
@@ -42,7 +51,8 @@ export const STAFF_NAV: StaffNavItem[] = [
   { to: '/reports/monthly', label: 'Báo cáo hàng tháng', icon: FileText, roles: ['clinic_manager', 'admin'], type: 'link' },
   { to: '/reports/performance', label: 'Hiệu suất bác sĩ', icon: Activity, roles: ['clinic_manager', 'admin'], type: 'link' },
 
-  // Admin section
-  { label: 'Hệ thống', type: 'header', roles: ['admin'] },
-  { to: '/admin', label: 'Cấu hình hệ thống', icon: Settings, roles: ['admin'], type: 'link' },
+  // SECTION: HỆ THỐNG
+  { label: 'An ninh & Hệ thống', type: 'header', roles: ['admin'] },
+  { to: '/admin/config', label: 'Cấu hình hệ thống', icon: Settings, roles: ['admin'], type: 'link' },
+  { to: '/admin/roles', label: 'Phân quyền vai trò', icon: ShieldCheck, roles: ['admin'], type: 'link' },
 ]

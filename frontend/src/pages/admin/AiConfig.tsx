@@ -100,10 +100,10 @@ export function AiConfig() {
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-8">
                 <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 rounded-xl text-[#2b8cee]">
+                        <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600">
                             <Cpu className="w-5 h-5" />
                         </div>
-                        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Cấu hình AI <span className="text-[#2b8cee]">(Triage Intelligence)</span></h1>
+                        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Cấu hình AI <span className="text-emerald-600">(Triage Intelligence)</span></h1>
                     </div>
                     <p className="text-slate-500 font-medium">Tùy chỉnh thông số vận hành và engine xử lý phân loại tự động.</p>
                 </div>
@@ -132,7 +132,7 @@ export function AiConfig() {
                 </motion.div>
             ) : isLoading ? (
                 <div className="flex flex-col items-center justify-center py-24">
-                    <RefreshCw className="w-10 h-10 text-[#2b8cee] animate-spin mb-4" />
+                    <RefreshCw className="w-10 h-10 text-emerald-600 animate-spin mb-4" />
                     <p className="text-slate-400 font-black text-xs uppercase tracking-widest">Đang tải cấu hình...</p>
                 </div>
             ) : (
@@ -152,7 +152,7 @@ export function AiConfig() {
                                         checked={settings.enableAi}
                                         onChange={(e) => setSettings({ ...settings, enableAi: e.target.checked })}
                                     />
-                                    <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2b8cee]"></div>
+                                    <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                                     <span className="ml-3 text-xs font-black text-slate-400 uppercase tracking-widest">
                                         {settings.enableAi ? 'Đã bật' : 'Đã tắt'}
                                     </span>
@@ -163,7 +163,7 @@ export function AiConfig() {
                                 {/* AI Provider Section */}
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Sparkles className="w-4 h-4 text-[#2b8cee]" />
+                                        <Sparkles className="w-4 h-4 text-emerald-600" />
                                         <label className="text-sm font-black text-slate-700 uppercase tracking-tight">Bộ não xử lý (AI Provider)</label>
                                     </div>
                                     <CustomSelect
@@ -175,8 +175,8 @@ export function AiConfig() {
                                         placeholder="Chọn bộ não..."
                                         disabled={!settings.enableAi}
                                     />
-                                    <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100/50">
-                                        <p className="text-xs text-blue-700 font-medium leading-relaxed">
+                                    <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/50">
+                                        <p className="text-xs text-emerald-700 font-medium leading-relaxed">
                                             {settings.aiProvider === 'rule-based' && "Engine dựa trên tập hợp quy tắc y tế và Regex. Hoạt động ổn định, không yêu cầu internet."}
                                             {settings.aiProvider === 'http-endpoint' && "Kết nối với mô hình AI tùy chỉnh (Python/PyTorch) qua API. Khuyến nghị cho độ chính xác cao nhất."}
                                             {settings.aiProvider === 'mock-advanced' && "Mô phỏng phản hồi từ mô hình RF nâng cao, phục vụ mục đích kiểm tra giao diện."}
@@ -210,11 +210,11 @@ export function AiConfig() {
                                             onChange={(e) => setSettings({ ...settings, aiConfidenceThreshold: parseFloat(e.target.value) })}
                                         />
                                         <motion.div
-                                            className="absolute h-full bg-gradient-to-r from-[#2b8cee] to-indigo-600 rounded-full"
+                                            className="absolute h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full"
                                             style={{ width: `${settings.aiConfidenceThreshold * 100}%` }}
                                         />
                                         <div
-                                            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-[#2b8cee] rounded-full shadow-lg pointer-events-none"
+                                            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-emerald-600 rounded-full shadow-lg pointer-events-none"
                                             style={{ left: `calc(${settings.aiConfidenceThreshold * 100}% - 12px)` }}
                                         />
                                     </div>
@@ -237,7 +237,7 @@ export function AiConfig() {
                                 type="checkbox"
                                 checked={settings.ruleBasedFallback}
                                 onChange={(e) => setSettings({ ...settings, ruleBasedFallback: e.target.checked })}
-                                className="w-6 h-6 rounded-lg text-[#2b8cee] focus:ring-[#2b8cee] border-slate-300"
+                                className="w-6 h-6 rounded-lg text-emerald-600 focus:ring-emerald-600 border-slate-300"
                             />
                         </div>
                     </motion.div>
@@ -271,7 +271,7 @@ export function AiConfig() {
                                 type="button"
                                 onClick={() => mutation.mutate()}
                                 disabled={mutation.isPending}
-                                className="w-full bg-[#2b8cee] text-white py-4 rounded-2xl font-black text-sm tracking-tight shadow-xl shadow-[#2b8cee]/30 hover:bg-blue-700 hover:shadow-[#2b8cee]/40 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-sm tracking-tight shadow-xl shadow-emerald-600/30 hover:bg-emerald-700 hover:shadow-emerald-600/40 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {mutation.isPending ? (
                                     <RefreshCw className="w-5 h-5 animate-spin" />
