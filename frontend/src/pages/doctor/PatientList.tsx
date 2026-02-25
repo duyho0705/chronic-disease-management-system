@@ -80,7 +80,7 @@ export function PatientList() {
                 <motion.button
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-[13px] font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95 text-sm"
+                    className="flex items-center gap-2 bg-emerald-400 hover:bg-emerald-500 text-slate-900 px-6 py-3 rounded-[13px] font-bold transition-all shadow-lg shadow-emerald-400/20 active:scale-95 text-sm"
                 >
                     <UserPlus className="w-4 h-4" />
                     Thêm bệnh nhân mới
@@ -93,10 +93,10 @@ export function PatientList() {
                     <div className="flex-1 min-w-[300px]">
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Tìm kiếm</label>
                         <div className="relative group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-blue-600 transition-colors" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-emerald-500 transition-colors" />
                             <input
                                 type="text"
-                                className="w-full pl-12 pr-4 py-3 rounded-[13px] border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all text-sm font-bold"
+                                className="w-full pl-12 pr-4 py-3 rounded-[13px] border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-bold"
                                 placeholder="Tìm theo tên hoặc mã bệnh nhân..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -105,7 +105,7 @@ export function PatientList() {
                     </div>
                     <div className="w-60">
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Loại bệnh</label>
-                        <select className="w-full px-5 py-3 rounded-[13px] border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all text-xs font-bold appearance-none cursor-pointer">
+                        <select className="w-full px-5 py-3 rounded-[13px] border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-xs font-bold appearance-none cursor-pointer">
                             <option>Tất cả loại bệnh</option>
                             <option>Tiểu đường</option>
                             <option>Huyết áp</option>
@@ -115,14 +115,14 @@ export function PatientList() {
                     </div>
                     <div className="w-60">
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Mức độ nguy cơ</label>
-                        <select className="w-full px-5 py-3 rounded-[13px] border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all text-xs font-bold appearance-none cursor-pointer">
+                        <select className="w-full px-5 py-3 rounded-[13px] border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-xs font-bold appearance-none cursor-pointer">
                             <option>Tất cả mức độ</option>
                             <option>Bình thường</option>
                             <option>Theo dõi</option>
                             <option>Nguy cơ cao</option>
                         </select>
                     </div>
-                    <button className="w-12 h-12 flex items-center justify-center rounded-[13px] border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-400 hover:text-blue-600 shadow-sm bg-white">
+                    <button className="w-12 h-12 flex items-center justify-center rounded-[13px] border border-slate-200 dark:border-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-all text-slate-400 hover:text-emerald-500 shadow-sm bg-white">
                         <Filter className="w-5 h-5" />
                     </button>
                 </div>
@@ -154,7 +154,7 @@ export function PatientList() {
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-4">
                                             <div className="relative">
-                                                <img src={patient.avatar} alt="" className="w-12 h-12 rounded-[13px] object-cover shadow-sm ring-4 ring-slate-50 dark:ring-slate-800 group-hover:ring-blue-100 transition-all" />
+                                                <img src={patient.avatar} alt="" className="w-12 h-12 rounded-[13px] object-cover shadow-sm ring-4 ring-slate-50 dark:ring-slate-800 group-hover:ring-emerald-100 transition-all" />
                                                 <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-4 border-white dark:border-slate-900 ${patient.statusColor === 'emerald' ? 'bg-emerald-500' :
                                                     patient.statusColor === 'amber' ? 'bg-amber-500' : 'bg-rose-500'
                                                     }`}></div>
@@ -167,9 +167,9 @@ export function PatientList() {
                                     </td>
                                     <td className="px-8 py-5 text-sm font-bold text-slate-400">{patient.id}</td>
                                     <td className="px-8 py-5">
-                                        <span className={`text-[10px] font-black px-3 py-1.5 rounded-[13px] uppercase tracking-wider ${patient.disease.includes('Tiểu đường') ? 'bg-blue-50 text-blue-600' :
+                                        <span className={`text-[10px] font-black px-3 py-1.5 rounded-[13px] uppercase tracking-wider ${patient.disease.includes('Tiểu đường') ? 'bg-emerald-50 text-emerald-600' :
                                             patient.disease.includes('Tăng huyết áp') ? 'bg-rose-50 text-rose-600' :
-                                                patient.disease.includes('Hen suyễn') ? 'bg-indigo-50 text-indigo-600' :
+                                                patient.disease.includes('Hen suyễn') ? 'bg-teal-50 text-teal-600' :
                                                     'bg-emerald-50 text-emerald-600'
                                             }`}>
                                             {patient.disease}
@@ -177,7 +177,7 @@ export function PatientList() {
                                     </td>
                                     <td className="px-8 py-5">
                                         <div className="text-sm font-black text-slate-700 dark:text-slate-200">
-                                            {patient.metric.split(':')[0]}: <span className="text-blue-600">{patient.metric.split(':')[1]}</span>
+                                            {patient.metric.split(':')[0]}: <span className="text-emerald-500">{patient.metric.split(':')[1]}</span>
                                         </div>
                                         <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Cập nhật: {patient.updated}</div>
                                     </td>
@@ -193,13 +193,13 @@ export function PatientList() {
                                     </td>
                                     <td className="px-8 py-5 text-right">
                                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                                            <button className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[13px] transition-all" title="Xem chi tiết">
+                                            <button className="p-2.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-[13px] transition-all" title="Xem chi tiết">
                                                 <Eye className="w-5 h-5" />
                                             </button>
-                                            <button className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[13px] transition-all" title="Nhắn tin">
+                                            <button className="p-2.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-[13px] transition-all" title="Nhắn tin">
                                                 <MessageSquare className="w-5 h-5" />
                                             </button>
-                                            <button className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[13px] transition-all" title="Tạo đơn thuốc">
+                                            <button className="p-2.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-[13px] transition-all" title="Tạo đơn thuốc">
                                                 <ClipboardList className="w-5 h-5" />
                                             </button>
                                         </div>
@@ -216,15 +216,15 @@ export function PatientList() {
                         Hiển thị <span className="text-slate-900 dark:text-white">1 - 4</span> trên tổng số <span className="text-slate-900 dark:text-white">128</span> bệnh nhân
                     </div>
                     <div className="flex items-center gap-2">
-                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 transition-all disabled:opacity-30" disabled>
+                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] border border-slate-200 dark:border-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-slate-400 hover:text-emerald-600 transition-all disabled:opacity-30" disabled>
                             <ChevronLeft className="w-5 h-5" />
                         </button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] bg-blue-600 text-white font-black text-sm shadow-lg shadow-blue-600/20">1</button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-bold transition-all text-slate-500">2</button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-bold transition-all text-slate-500">3</button>
+                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] bg-emerald-400 text-slate-900 font-black text-sm shadow-lg shadow-emerald-400/20">1</button>
+                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-sm font-bold transition-all text-slate-500 hover:text-emerald-600">2</button>
+                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-sm font-bold transition-all text-slate-500 hover:text-emerald-600">3</button>
                         <span className="px-2 text-slate-300 font-bold">...</span>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-bold transition-all text-slate-500">32</button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 transition-all text-slate-500">
+                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-sm font-bold transition-all text-slate-500 hover:text-emerald-600">32</button>
+                        <button className="w-10 h-10 flex items-center justify-center rounded-[13px] border border-slate-200 dark:border-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-all text-slate-500 hover:text-emerald-600">
                             <ChevronRight className="w-5 h-5" />
                         </button>
                     </div>

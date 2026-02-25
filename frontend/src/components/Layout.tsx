@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useTenant } from '@/context/TenantContext'
 import { TenantSelect } from './TenantSelect'
 
-import { LogOut, Menu, HeartPulse, Plus, X, Search, Bell, Settings } from 'lucide-react'
+import { LogOut, Menu, Plus, X, Search, Bell, Settings, BriefcaseMedical } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { STAFF_NAV } from '@/routes/staffNav'
 import { motion } from 'framer-motion'
@@ -45,10 +45,8 @@ export function Layout() {
       {/* Sidebar - Desktop matching Dashboard.html */}
       <aside className="hidden w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 md:flex md:flex-col md:fixed md:inset-y-0 shadow-xl shadow-slate-200/20 z-40">
         <div className="p-8 flex items-center gap-3">
-          <div className="bg-blue-600 rounded-xl p-2.5 text-white shadow-lg shadow-blue-600/20">
-            <HeartPulse className="w-6 h-6" />
-          </div>
-          <h2 className="text-xl font-black text-blue-600 tracking-tightest">ChronicCare</h2>
+          <BriefcaseMedical className="h-9 w-9 text-emerald-500" strokeWidth={2.5} />
+          <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tightest">Sống Khỏe</h2>
         </div>
 
         <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto">
@@ -60,16 +58,16 @@ export function Layout() {
                 key={to}
                 to={to}
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold text-sm transition-all group relative ${isActive
-                  ? 'bg-blue-600/10 text-blue-600'
+                  ? 'bg-emerald-400/10 text-emerald-600'
                   : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                   }`}
               >
-                <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-500'}`} />
+                <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-emerald-600' : 'text-slate-400 group-hover:text-slate-500'}`} />
                 <span className="flex-1">{label}</span>
                 {isActive && (
                   <motion.div
                     layoutId="activeNav"
-                    className="absolute left-0 w-1.5 h-6 bg-blue-600 rounded-r-full"
+                    className="absolute left-0 w-1.5 h-6 bg-emerald-400 rounded-r-full"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
@@ -101,7 +99,7 @@ export function Layout() {
             </div>
             <button
               onClick={() => navigate('/consultation')}
-              className="w-full bg-blue-600 text-white py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center justify-center gap-2"
+              className="w-full bg-emerald-400 text-slate-900 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-400/20 active:scale-95 flex items-center justify-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Tạo toa thuốc
@@ -129,10 +127,8 @@ export function Layout() {
       >
         <div className="flex h-20 items-center justify-between px-8 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 rounded-lg p-2 text-white">
-              <HeartPulse className="w-5 h-5" />
-            </div>
-            <span className="font-black text-blue-600 text-lg tracking-tightest">ChronicCare</span>
+            <BriefcaseMedical className="h-7 w-7 text-emerald-500" strokeWidth={2.5} />
+            <span className="font-black text-slate-800 dark:text-slate-100 text-lg tracking-tightest">Sống Khỏe</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors">
             <X className="w-6 h-6" />
@@ -145,7 +141,7 @@ export function Layout() {
               to={item.to}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-4 rounded-2xl px-5 py-4 text-sm font-bold transition-all ${location.pathname === item.to
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                ? 'bg-emerald-400 text-slate-900 shadow-lg shadow-emerald-400/20'
                 : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
             >
@@ -162,7 +158,7 @@ export function Layout() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col md:pl-72 min-h-screen bg-[#f8fafc] dark:bg-[#0f172a]">
+      <div className="flex-1 flex flex-col md:pl-72 min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] relative">
         <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200/60 bg-white/80 dark:bg-slate-900/80 px-8 backdrop-blur-md">
           <div className="flex flex-1 items-center gap-8">
             <button
@@ -174,11 +170,11 @@ export function Layout() {
 
             {/* Global Search Bar */}
             <div className="relative flex-1 max-w-2xl group hidden md:block">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-blue-600 transition-colors" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-emerald-500 transition-colors" />
               <input
                 type="text"
                 placeholder="Tìm kiếm bệnh nhân bằng tên, ID hoặc số điện thoại..."
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-none rounded-[13px] text-sm font-medium focus:ring-2 focus:ring-blue-600/20 shadow-sm transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-none rounded-[13px] text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 shadow-sm transition-all"
               />
             </div>
           </div>
@@ -186,11 +182,11 @@ export function Layout() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <button className="p-2.5 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-[13px] transition-all relative group">
-                <Bell className="w-5 h-5 group-hover:text-blue-600" />
+                <Bell className="w-5 h-5 group-hover:text-emerald-500" />
                 <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm"></span>
               </button>
               <button className="p-2.5 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-[13px] transition-all group">
-                <Settings className="w-5 h-5 group-hover:text-blue-600" />
+                <Settings className="w-5 h-5 group-hover:text-emerald-500" />
               </button>
             </div>
 
@@ -203,7 +199,7 @@ export function Layout() {
           </div>
         </header>
 
-        <main className="flex-1 p-8 overflow-y-auto w-full max-w-[1600px] mx-auto">
+        <main className={`flex-1 flex flex-col min-h-0 w-full ${location.pathname.includes('/chat') ? '' : 'p-8 max-w-[1600px] mx-auto'}`}>
           {location.pathname === '/' ? (
             <Outlet />
           ) : location.pathname === '/dashboard' && !tenantId ? (
@@ -211,8 +207,8 @@ export function Layout() {
           ) : !tenantId ? (
             <div className="flex h-[50vh] flex-col items-center justify-center">
               <div className="card w-full max-w-md text-center p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xl">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-                  <HeartPulse className="h-6 w-6" />
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                  <BriefcaseMedical className="h-6 w-6" strokeWidth={2.5} />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tight">Chọn cơ sở y tế</h3>
                 <p className="mt-2 text-sm text-slate-500 mb-8 font-medium">Vui lòng lựa chọn tổ chức và chi nhánh để tiếp tục làm việc.</p>

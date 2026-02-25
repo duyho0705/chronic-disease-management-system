@@ -343,7 +343,7 @@ export function Consultation() {
                             </div>
                             <div className="flex items-center gap-6">
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    <Activity className="w-3.5 h-3.5 text-blue-500" />
+                                    <Activity className="w-3.5 h-3.5 text-emerald-500" />
                                     Lý do: <span className="text-slate-600 italic font-black">{activeConsultation.chiefComplaintSummary || 'Khám tổng quát'}</span>
                                 </p>
                                 <div className="flex items-center gap-2">
@@ -367,7 +367,7 @@ export function Consultation() {
                         <button
                             onClick={() => completeMutation.mutate()}
                             disabled={completeMutation.isPending}
-                            className="bg-blue-600 text-white px-10 py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-900 hover:shadow-2xl hover:shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50"
+                            className="bg-emerald-400 text-slate-900 px-10 py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-900 hover:shadow-2xl hover:shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50"
                         >
                             {completeMutation.isPending ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -427,7 +427,7 @@ export function Consultation() {
                                         >
                                             <div className="space-y-6">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                                                    <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
                                                         <ClipboardList className="w-5 h-5" />
                                                     </div>
                                                     <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Chẩn đoán chuyên môn</h3>
@@ -436,7 +436,7 @@ export function Consultation() {
                                                     value={diagnosis}
                                                     onChange={e => setDiagnosis(e.target.value)}
                                                     placeholder="Khám lâm sàng, kết luận chẩn đoán và ghi chú điều trị..."
-                                                    className="w-full bg-slate-50 border-none rounded-[2.5rem] p-8 font-medium text-slate-700 h-56 focus:bg-white focus:ring-8 focus:ring-blue-500/5 transition-all outline-none resize-none leading-relaxed text-lg shadow-inner"
+                                                    className="w-full bg-slate-50 border-none rounded-[2.5rem] p-8 font-medium text-slate-700 h-56 focus:bg-white focus:ring-8 focus:ring-emerald-500/5 transition-all outline-none resize-none leading-relaxed text-lg shadow-inner"
                                                 />
                                             </div>
 
@@ -463,7 +463,7 @@ export function Consultation() {
                                                                 placeholder="Tìm tên thuốc hoặc mã dược..."
                                                                 value={drugSearch}
                                                                 onChange={e => setDrugSearch(e.target.value)}
-                                                                className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-black focus:bg-white focus:ring-8 focus:ring-blue-500/5 outline-none transition-all shadow-inner"
+                                                                className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-black focus:bg-white focus:ring-8 focus:ring-emerald-500/5 outline-none transition-all shadow-inner"
                                                             />
                                                             {drugSearch && filteredDrugs && (
                                                                 <div className="absolute top-full left-0 right-0 mt-3 bg-white border border-slate-100 rounded-[2rem] shadow-2xl z-50 overflow-hidden ring-1 ring-slate-200">
@@ -556,7 +556,7 @@ export function Consultation() {
                                                         <div className="h-px bg-slate-100" />
 
                                                         {cdsAdvice && (
-                                                            <div className="bg-blue-50/50 p-6 rounded-3xl space-y-4">
+                                                            <div className="bg-emerald-50/50 p-6 rounded-3xl space-y-4">
                                                                 <div className="flex items-center gap-2">
                                                                     <BrainCircuit className="w-4 h-4 text-blue-600" />
                                                                     <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">CDS Suggestions</span>
@@ -564,7 +564,7 @@ export function Consultation() {
                                                                 <ul className="space-y-2">
                                                                     {cdsAdvice.suggestions.map((s: any, idx: number) => (
                                                                         <li key={idx} className="text-xs font-bold text-slate-700 flex items-start gap-2">
-                                                                            <span className="text-blue-500">•</span>
+                                                                            <span className="text-emerald-500">•</span>
                                                                             {s.title}
                                                                         </li>
                                                                     ))}
@@ -586,7 +586,7 @@ export function Consultation() {
                                                                 <button
                                                                     onClick={fetchSuggestedTemplates}
                                                                     disabled={isSuggestingTemplates}
-                                                                    className="mt-6 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center gap-2"
+                                                                    className="mt-6 px-6 py-2.5 bg-emerald-400 text-slate-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all flex items-center gap-2"
                                                                 >
                                                                     {isSuggestingTemplates ? <Activity className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
                                                                     Gợi ý Phác đồ (AI)
@@ -597,18 +597,18 @@ export function Consultation() {
                                                                 <motion.div
                                                                     initial={{ opacity: 0, y: 10 }}
                                                                     animate={{ opacity: 1, y: 0 }}
-                                                                    className="bg-blue-50 border border-blue-100 rounded-[2.5rem] p-8"
+                                                                    className="bg-emerald-50 border border-emerald-100 rounded-[2.5rem] p-8"
                                                                 >
                                                                     <div className="flex items-center gap-3 mb-6">
-                                                                        <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                                                                        <div className="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
                                                                             <BrainCircuit className="w-5 h-5" />
                                                                         </div>
                                                                         <div>
-                                                                            <h4 className="text-sm font-black text-blue-900 uppercase">Phác đồ đề xuất</h4>
-                                                                            <p className="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Dựa trên chẩn đoán & phác đồ mẫu</p>
+                                                                            <h4 className="text-sm font-black text-emerald-900 uppercase">Phác đồ đề xuất</h4>
+                                                                            <p className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">Dựa trên chẩn đoán & phác đồ mẫu</p>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="prose prose-sm max-w-none text-blue-900 font-medium leading-relaxed whitespace-pre-wrap">
+                                                                    <div className="prose prose-sm max-w-none text-emerald-900 font-medium leading-relaxed whitespace-pre-wrap">
                                                                         {suggestedTemplates}
                                                                     </div>
                                                                 </motion.div>
@@ -621,9 +621,9 @@ export function Consultation() {
                                                                     initial={{ opacity: 0, x: -10 }}
                                                                     animate={{ opacity: 1, x: 0 }}
                                                                     key={idx}
-                                                                    className="bg-white border border-slate-100 p-6 rounded-[2rem] flex gap-6 hover:shadow-lg hover:border-blue-100 transition-all group"
+                                                                    className="bg-white border border-slate-100 p-6 rounded-[2rem] flex gap-6 hover:shadow-lg hover:border-emerald-100 transition-all group"
                                                                 >
-                                                                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 font-black text-xs group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 font-black text-xs group-hover:bg-emerald-600 group-hover:text-white transition-all">
                                                                         {idx + 1}
                                                                     </div>
                                                                     <div className="flex-1 grid grid-cols-12 gap-8">
@@ -641,7 +641,7 @@ export function Consultation() {
                                                                                     newItems[idx].quantity = parseInt(e.target.value) || 0
                                                                                     setPrescriptionItems(newItems)
                                                                                 }}
-                                                                                className="w-full bg-slate-50 p-3 rounded-xl text-sm font-black outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all text-center"
+                                                                                className="w-full bg-slate-50 p-3 rounded-xl text-sm font-black outline-none focus:bg-white focus:ring-4 focus:ring-emerald-500/5 transition-all text-center"
                                                                             />
                                                                         </div>
                                                                         <div className="col-span-5">
@@ -654,7 +654,7 @@ export function Consultation() {
                                                                                     newItems[idx].dosageInstruction = e.target.value
                                                                                     setPrescriptionItems(newItems)
                                                                                 }}
-                                                                                className="w-full bg-slate-50 p-3 rounded-xl text-sm font-bold outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all italic"
+                                                                                className="w-full bg-slate-50 p-3 rounded-xl text-sm font-bold outline-none focus:bg-white focus:ring-4 focus:ring-emerald-500/5 transition-all italic"
                                                                             />
                                                                         </div>
                                                                         <div className="col-span-1 flex items-end justify-end">
@@ -736,7 +736,7 @@ export function Consultation() {
                                             {/* Labs Section */}
                                             <div className="space-y-6">
                                                 <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
-                                                    <FlaskConical className="w-4 h-4 text-blue-500" />
+                                                    <FlaskConical className="w-4 h-4 text-emerald-500" />
                                                     Kết quả Xét nghiệm Máu / Sinh hóa
                                                 </h4>
                                                 <div className="bg-slate-50/50 rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-inner">
@@ -833,9 +833,9 @@ export function Consultation() {
                                 <div className="grid grid-cols-1 gap-4">
                                     {[
                                         { label: 'Nhiệt độ', value: '37.2', unit: '°C', icon: Thermometer, color: 'text-orange-500', bg: 'bg-orange-50' },
-                                        { label: 'Huyết áp', value: '120/80', unit: 'mmHg', icon: Activity, color: 'text-blue-500', bg: 'bg-blue-50' },
+                                        { label: 'Huyết áp', value: '120/80', unit: 'mmHg', icon: Activity, color: 'text-emerald-500', bg: 'bg-emerald-50' },
                                         { label: 'Nhịp tim', value: '82', unit: 'bpm', icon: Heart, color: 'text-red-500', bg: 'bg-red-50' },
-                                        { label: 'SpO2', value: '98', unit: '%', icon: Droplets, color: 'text-blue-600', bg: 'bg-blue-50' }
+                                        { label: 'SpO2', value: '98', unit: '%', icon: Droplets, color: 'text-emerald-600', bg: 'bg-emerald-50' }
                                     ].map((v, i) => (
                                         <div key={i} className="flex justify-between items-center bg-slate-50/50 hover:bg-white hover:shadow-md p-4 rounded-3xl transition-all border border-transparent hover:border-slate-100">
                                             <div className="flex items-center gap-4">
@@ -884,11 +884,11 @@ export function Consultation() {
                                         <p className="text-[9px] font-black text-white/30 uppercase tracking-widest">Gợi ý lâm sàng</p>
                                         {cdsAdvice.suggestions.map((s, i) => (
                                             <div key={i} className="flex gap-4 items-start group cursor-pointer hover:bg-white/5 p-2 rounded-xl transition-all">
-                                                <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                                                <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
                                                     <Zap className="w-4 h-4" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[11px] font-black text-white group-hover:text-blue-400">{s.title}</p>
+                                                    <p className="text-[11px] font-black text-white group-hover:text-emerald-400">{s.title}</p>
                                                     <p className="text-[9px] text-white/40 font-bold mt-0.5">{s.reason}</p>
                                                 </div>
                                             </div>
@@ -910,7 +910,7 @@ export function Consultation() {
 
                             {/* AI Warning / EHR Notes */}
                             <div className="bg-slate-900 rounded-[3.5rem] p-10 text-white shadow-2xl relative overflow-hidden group flex-1">
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-transparent pointer-events-none" />
                                 <div className="absolute bottom-10 right-10 opacity-[0.03] group-hover:scale-125 transition-transform duration-1000">
                                     <AlertCircle className="w-48 h-48" />
                                 </div>
@@ -930,7 +930,7 @@ export function Consultation() {
                                         <button
                                             onClick={() => cdsMutation.mutate()}
                                             disabled={cdsMutation.isPending}
-                                            className="py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50"
+                                            className="py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50"
                                         >
                                             {cdsMutation.isPending ? '...' : 'CDS Signals'}
                                         </button>
@@ -946,7 +946,7 @@ export function Consultation() {
                                                 )}
                                                 {aiChatHistory.map((h, i) => (
                                                     <div key={i} className={`flex ${h.sender === 'doctor' ? 'justify-end' : 'justify-start'}`}>
-                                                        <div className={`max-w-[85%] p-4 rounded-2xl text-xs font-medium ${h.sender === 'doctor' ? 'bg-blue-600 text-white' : 'bg-white/10 text-slate-300 border border-white/10'}`}>
+                                                        <div className={`max-w-[85%] p-4 rounded-2xl text-xs font-medium ${h.sender === 'doctor' ? 'bg-emerald-400 text-slate-900' : 'bg-white/10 text-slate-300 border border-white/10'}`}>
                                                             {h.message}
                                                         </div>
                                                     </div>
@@ -963,7 +963,7 @@ export function Consultation() {
                                                 />
                                                 <button
                                                     onClick={handleAiChat}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-all"
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-emerald-400 text-slate-900 rounded-xl hover:bg-emerald-500 transition-all"
                                                 >
                                                     <Zap className="w-4 h-4" />
                                                 </button>
@@ -971,7 +971,7 @@ export function Consultation() {
                                         </div>
                                     ) : (
                                         <div className="p-6 bg-white/5 border border-white/5 rounded-[2.5rem] space-y-3">
-                                            <h4 className="text-[10px] font-black uppercase text-blue-400">Trạng thái</h4>
+                                            <h4 className="text-[10px] font-black uppercase text-emerald-400">Trạng thái</h4>
                                             <p className="text-xs font-bold text-slate-500 leading-relaxed italic">
                                                 "Bấm nút ở trên để AI phân tích triệu chứng và tiền sử nệnh nhân này."
                                             </p>
@@ -992,7 +992,7 @@ export function Consultation() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-10 border-b border-slate-100">
                 <div className="space-y-3">
                     <div className="flex items-center gap-5">
-                        <div className="w-16 h-16 bg-[#2b8cee] rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-blue-200">
+                        <div className="w-16 h-16 bg-[#2b8cee] rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-emerald-200">
                             <Stethoscope className="w-8 h-8" />
                         </div>
                         <div>
@@ -1021,7 +1021,7 @@ export function Consultation() {
                 <div className="xl:col-span-8 space-y-8">
                     <div className="flex items-center justify-between px-4">
                         <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-4">
-                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             Đang chờ trong hàng ({waitingEntries?.length || 0})
                         </h3>
                     </div>
@@ -1039,22 +1039,22 @@ export function Consultation() {
                                         layout
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        className="bg-white p-8 rounded-[3.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-100 transition-all group flex items-center justify-between relative overflow-hidden"
+                                        className="bg-white p-8 rounded-[3.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-100 transition-all group flex items-center justify-between relative overflow-hidden"
                                     >
                                         <div className="absolute -right-6 -bottom-6 p-8 opacity-[0.02] group-hover:scale-125 transition-transform duration-1000 group-hover:opacity-[0.05]">
                                             <User className="w-32 h-32" />
                                         </div>
                                         <div className="flex items-center gap-8 relative z-10">
-                                            <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center text-slate-300 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-inner relative">
+                                            <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center text-slate-300 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-inner relative">
                                                 <User className="w-8 h-8" />
                                                 {e.acuityLevel && (
-                                                    <div className={`absolute -top-2 -right-2 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center text-[10px] font-black text-white shadow-lg ${e.acuityLevel === '1' ? 'bg-red-500' : e.acuityLevel === '2' ? 'bg-orange-500' : 'bg-blue-500'}`}>
+                                                    <div className={`absolute -top-2 -right-2 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center text-[10px] font-black text-white shadow-lg ${e.acuityLevel === '1' ? 'bg-red-500' : e.acuityLevel === '2' ? 'bg-orange-500' : 'bg-emerald-500'}`}>
                                                         {e.acuityLevel}
                                                     </div>
                                                 )}
                                             </div>
                                             <div>
-                                                <h4 className="text-2xl font-black text-slate-900 tracking-tightest leading-none mb-3 group-hover:text-blue-600 transition-colors uppercase">
+                                                <h4 className="text-2xl font-black text-slate-900 tracking-tightest leading-none mb-3 group-hover:text-emerald-600 transition-colors uppercase">
                                                     {e.patientName || 'ANONYMOUS BN'}
                                                 </h4>
                                                 <div className="flex items-center gap-6">
@@ -1062,7 +1062,7 @@ export function Consultation() {
                                                         <Clock className="w-3.5 h-3.5" />
                                                         Đợi: {new Date(e.joinedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                                                     </div>
-                                                    <div className="text-[10px] font-black text-blue-500 bg-blue-50 px-4 py-1.5 rounded-full uppercase tracking-[0.1em]">
+                                                    <div className="text-[10px] font-black text-emerald-500 bg-emerald-50 px-4 py-1.5 rounded-full uppercase tracking-[0.1em]">
                                                         DỊCH VỤ: {e.medicalServiceName || 'KHÁM CHUYÊN KHOA'}
                                                     </div>
                                                 </div>
@@ -1079,7 +1079,7 @@ export function Consultation() {
                                             </button>
                                             <button
                                                 onClick={() => startMutation.mutate(e.id)}
-                                                className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] hover:bg-blue-600 hover:shadow-2xl hover:shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-3"
+                                                className="px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] hover:bg-emerald-600 hover:shadow-2xl hover:shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-3"
                                             >
                                                 Vào Khám
                                                 <ChevronRight className="w-5 h-5" />
@@ -1105,12 +1105,12 @@ export function Consultation() {
                 {/* Right: Daily Insights & Stats */}
                 <div className="xl:col-span-4 space-y-10">
                     <div className="bg-slate-900 rounded-[4rem] p-12 text-white shadow-2xl relative overflow-hidden">
-                        <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-600/10 blur-3xl rounded-full" />
+                        <div className="absolute -top-20 -right-20 w-64 h-64 bg-emerald-400/10 blur-3xl rounded-full" />
                         <h3 className="text-[11px] font-black uppercase tracking-[0.3em] mb-12 text-slate-500">Hiệu suất Clinical hôm nay</h3>
                         <div className="space-y-12">
                             {[
                                 { label: 'Tổng ca hoàn tất', value: '24', icon: CheckCircle2, sub: '+4 so với KPI', color: 'text-emerald-400' },
-                                { label: 'TG khám trung bình', value: '14ph', icon: Clock, sub: 'Đang duy trì ổn định', color: 'text-blue-400' },
+                                { label: 'TG khám trung bình', value: '14ph', icon: Clock, sub: 'Đang duy trì ổn định', color: 'text-emerald-400' },
                                 { label: 'Độ hài lòng BN', value: '4.9/5', icon: Activity, sub: 'Dựa trên khảo sát thực tế', color: 'text-amber-400' }
                             ].map((s, i) => (
                                 <div key={i} className="flex items-start gap-6 group">
@@ -1169,10 +1169,10 @@ function PatientHistory({ patientId }: { patientId: string }) {
                     <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Hồ sơ bệnh án trống</p>
                 </div>
             ) : history?.map((item: any) => (
-                <div key={item.id} className="bg-white border border-slate-100 p-8 rounded-[3rem] hover:shadow-xl hover:border-blue-100 transition-all group">
+                <div key={item.id} className="bg-white border border-slate-100 p-8 rounded-[3rem] hover:shadow-xl hover:border-emerald-100 transition-all group">
                     <div className="flex justify-between items-start mb-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-inner">
+                            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shadow-inner">
                                 <FileText className="w-6 h-6" />
                             </div>
                             <div>
@@ -1183,7 +1183,7 @@ function PatientHistory({ patientId }: { patientId: string }) {
                                         {new Date(item.startedAt).toLocaleDateString('vi-VN')}
                                     </p>
                                     <div className="w-1 h-1 rounded-full bg-slate-200" />
-                                    <p className="text-[10px] font-black text-blue-500 uppercase tracking-tighter">Bác sĩ: {item.doctorName || 'Hệ thống'}</p>
+                                    <p className="text-[10px] font-black text-emerald-500 uppercase tracking-tighter">Bác sĩ: {item.doctorName || 'Hệ thống'}</p>
                                 </div>
                             </div>
                         </div>

@@ -72,7 +72,7 @@ export function Reports() {
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
             {/* Header with Date Filter */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-slate-100">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 borderbg-emerald-50 border-emerald-100">
                 <div className="space-y-2">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
@@ -132,45 +132,45 @@ export function Reports() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-blue-50 border border-blue-100 rounded-[3.5rem] p-10 lg:p-14 text-slate-900 shadow-sm overflow-hidden relative"
+                            className="bg-emerald-50 border border-emerald-100 rounded-[3.5rem] p-10 lg:p-14 text-slate-900 shadow-sm overflow-hidden relative"
                         >
 
                             <div className="relative z-10 space-y-12">
                                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
                                     <div className="space-y-4 max-w-2xl">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-white border border-blue-200 rounded-2xl flex items-center justify-center shadow-sm">
-                                                <Activity className="w-5 h-5 text-blue-600" />
+                                            <div className="w-10 h-10 bg-white border border-emerald-200 rounded-2xl flex items-center justify-center shadow-sm">
+                                                <Activity className="w-5 h-5 text-emerald-600" />
                                             </div>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Dự báo Vận hành Chi nhánh</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Dự báo Vận hành Chi nhánh</span>
                                         </div>
                                         <h2 className="text-3xl lg:text-4xl font-black tracking-tightest leading-tight text-slate-900">
                                             {aiInsightsQuery.data.executiveSummary}
                                         </h2>
                                     </div>
-                                    <div className="flex bg-white border border-blue-100 rounded-3xl p-6 shadow-sm shrink-0">
-                                        <div className="text-center px-8 border-r border-blue-100">
+                                    <div className="flex bg-white border border-emerald-100 rounded-3xl p-6 shadow-sm shrink-0">
+                                        <div className="text-center px-8 border-r border-emerald-100">
                                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Mức độ rủi ro</p>
                                             <p className="text-xl font-black text-emerald-600 uppercase">THẤP</p>
                                         </div>
                                         <div className="text-center px-8">
                                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Độ chính xác</p>
-                                            <p className="text-xl font-black text-blue-600">94%</p>
+                                            <p className="text-xl font-black text-emerald-600">94%</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {aiInsightsQuery.data.recommendations?.map((rec: any, i: number) => (
-                                        <div key={i} className="bg-white border border-blue-100 rounded-[2.5rem] p-8 hover:shadow-xl transition-all group">
+                                        <div key={i} className="bg-white border border-emerald-100 rounded-[2.5rem] p-8 hover:shadow-xl transition-all group">
                                             <div className="flex items-center justify-between mb-6">
-                                                <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${rec.priority === 'HIGH' ? 'bg-rose-500 text-white' : 'bg-blue-600 text-white'
+                                                <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${rec.priority === 'HIGH' ? 'bg-rose-500 text-white' : 'bg-emerald-600 text-white'
                                                     }`}>
                                                     {rec.priority === 'HIGH' ? 'Ưu tiên CAO' : 'Ưu tiên THƯỜNG'}
                                                 </span>
-                                                <Target className="w-5 h-5 text-slate-200 group-hover:text-blue-400 transition-all" />
+                                                <Target className="w-5 h-5 text-slate-200 group-hover:text-emerald-400 transition-all" />
                                             </div>
-                                            <h4 className="text-lg font-black mb-2 text-slate-900 group-hover:text-blue-600 transition-all">{rec.title}</h4>
+                                            <h4 className="text-lg font-black mb-2 text-slate-900 group-hover:text-emerald-600 transition-all">{rec.title}</h4>
                                             <p className="text-sm font-medium text-slate-500 leading-relaxed mb-6">{rec.description}</p>
                                             <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
                                                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Dự kiến tác động</span>
@@ -181,7 +181,7 @@ export function Reports() {
                                 </div>
 
                                 {aiInsightsQuery.data.forecasts && (
-                                    <div className="bg-white border border-blue-100 rounded-[3rem] p-8 lg:p-12 shadow-sm">
+                                    <div className="bg-white border border-emerald-100 rounded-[3rem] p-8 lg:p-12 shadow-sm">
                                         <div className="flex items-center justify-between mb-8">
                                             <h3 className="text-xl font-black flex items-center gap-3 text-slate-900">
                                                 <TrendingUp className="w-6 h-6 text-emerald-500" />
@@ -253,9 +253,9 @@ export function Reports() {
                         </motion.div>
 
                         {/* Wait Time Stats */}
-                        <motion.div whileHover={{ y: -5 }} className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm group hover:shadow-2xl hover:shadow-blue-100/50 hover:border-blue-100 transition-all">
+                        <motion.div whileHover={{ y: -5 }} className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm group hover:shadow-2xl hover:shadow-emerald-100/50 hover:border-emerald-100 transition-all">
                             <div className="flex justify-between items-start mb-6">
-                                <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-[1.5rem] flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-[1.5rem] flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
                                     <Clock className="w-7 h-7" />
                                 </div>
                                 <div className="flex items-center gap-1 text-rose-500 bg-rose-50 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
@@ -348,7 +348,7 @@ export function Reports() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="w-full bg-blue-100 rounded-t-lg group-hover:bg-blue-600 transition-all" style={{ height: `${h1}%` }} />
+                                            <div className="w-full bg-blue-100 rounded-t-lg group-hover:bg-emerald-600 transition-all" style={{ height: `${h1}%` }} />
                                             <div className="w-full bg-slate-100 rounded-t-lg group-hover:bg-emerald-500 transition-all" style={{ height: `${h2}%` }} />
                                         </div>
                                     )
@@ -409,7 +409,7 @@ export function Reports() {
                                                     <motion.div
                                                         initial={{ width: 0 }}
                                                         whileInView={{ width: `${percent}%` }}
-                                                        className={`h-full rounded-full ${idx === 0 ? 'bg-blue-500' : idx === 1 ? 'bg-emerald-500' : 'bg-slate-400'}`}
+                                                        className={`h-full rounded-full ${idx === 0 ? 'bg-emerald-500' : idx === 1 ? 'bg-emerald-500' : 'bg-slate-400'}`}
                                                     />
                                                 </div>
                                             </div>
@@ -418,7 +418,7 @@ export function Reports() {
                                 </div>
                                 <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 flex flex-col justify-center space-y-6 shadow-xl shadow-slate-200/50">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-black text-xl">1</div>
+                                        <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-black text-xl">1</div>
                                         <div>
                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dẫn đầu doanh thu</p>
                                             <p className="text-lg font-black text-slate-900 uppercase">
@@ -436,7 +436,7 @@ export function Reports() {
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tỉ trọng (%)</p>
-                                            <p className="text-2xl font-black text-blue-600">
+                                            <p className="text-2xl font-black text-emerald-600">
                                                 {revenueQuery.data?.topServices && revenueQuery.data.topServices.length > 0 && revenueQuery.data.totalRevenue
                                                     ? ((revenueQuery.data.topServices[0].amount / revenueQuery.data.totalRevenue) * 100).toFixed(1)
                                                     : 0}%
@@ -453,13 +453,13 @@ export function Reports() {
                         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                             <div>
                                 <div className="flex items-center gap-2 mb-6">
-                                    <div className="w-10 h-10 bg-slate-50 border border-blue-100 rounded-xl flex items-center justify-center">
-                                        <ShieldCheck className="w-5 h-5 text-blue-600" />
+                                    <div className="w-10 h-10 bg-slate-50 border border-emerald-100 rounded-xl flex items-center justify-center">
+                                        <ShieldCheck className="w-5 h-5 text-emerald-600" />
                                     </div>
                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Báo cáo Đảm bảo Chất lượng</span>
                                 </div>
                                 <h2 className="text-4xl lg:text-5xl font-black tracking-tightest leading-none mb-6 text-slate-900 uppercase">
-                                    Độ phù hợp <br />Lâm sàng: <span className="text-blue-600">{aiEffQuery.data?.matchRate ? (aiEffQuery.data.matchRate * 100).toFixed(1) : 0}%</span>
+                                    Độ phù hợp <br />Lâm sàng: <span className="text-emerald-600">{aiEffQuery.data?.matchRate ? (aiEffQuery.data.matchRate * 100).toFixed(1) : 0}%</span>
                                 </h2>
                                 <p className="text-slate-500 font-bold mb-10 max-w-sm">
                                     Chỉ số đo lường sự tương đồng giữa kết quả phân loại từ hệ thống và nhận định chuyên môn của đội ngũ y tá.
@@ -467,7 +467,7 @@ export function Reports() {
                                 <div className="flex gap-4">
                                     <button
                                         onClick={() => exportAiEffectivenessPdf(commonParams, headers)}
-                                        className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl"
+                                        className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl"
                                     >
                                         <div className="flex items-center gap-2">
                                             <FileDown className="w-4 h-4" />
@@ -488,13 +488,13 @@ export function Reports() {
                                     <h5 className="text-4xl font-black text-rose-500 mb-2">{aiEffQuery.data?.overrideCount ?? 0}</h5>
                                     <p className="text-[10px] text-slate-400 font-bold">Số ca nhân viên y tế thay đổi kết quả</p>
                                 </div>
-                                <div className="col-span-2 bg-blue-50 border border-blue-100 p-8 rounded-[2.5rem]">
+                                <div className="col-span-2 bg-emerald-50 border border-emerald-100 p-8 rounded-[2.5rem]">
                                     <div className="flex justify-between items-center">
                                         <div>
-                                            <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-2">Hỗ trợ Vận hành</p>
+                                            <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-2">Hỗ trợ Vận hành</p>
                                             <h5 className="text-xl font-black text-slate-900 uppercase">Chất lượng Tiếp nhận</h5>
                                         </div>
-                                        <Activity className="w-10 h-10 text-blue-600/30" />
+                                        <Activity className="w-10 h-10 text-emerald-600/30" />
                                     </div>
                                 </div>
                             </div>

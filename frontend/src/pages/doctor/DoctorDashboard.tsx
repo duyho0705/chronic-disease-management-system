@@ -32,10 +32,10 @@ export function DoctorDashboard() {
     }
 
     const stats = [
-        { label: 'Tổng bệnh nhân', value: '1,250', trend: '+12%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { label: 'Tổng bệnh nhân', value: '1,250', trend: '+12%', icon: Users, color: 'text-emerald-600', bg: 'bg-emerald-50' },
         { label: 'Nguy cơ cao', value: '42', trend: '+5%', icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50' },
         { label: 'Lịch khám', value: '15', trend: 'Hôm nay', icon: ClipboardList, color: 'text-amber-600', bg: 'bg-amber-50' },
-        { label: 'Tỷ lệ tuân thủ', value: '88.5%', trend: '+3%', icon: CheckCircle2, color: 'text-green-600', bg: 'bg-green-50' }
+        { label: 'Tỷ lệ tuân thủ', value: '88.5%', trend: '+3%', icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50' }
     ]
 
     const criticalInsights = [
@@ -114,7 +114,7 @@ export function DoctorDashboard() {
                                 </span>
                                 Phân tích & Cảnh báo thời gian thực
                             </h3>
-                            <button className="text-xs font-black text-blue-600 uppercase tracking-widest hover:text-blue-700 transition-colors">Xem tất cả</button>
+                            <button className="text-xs font-black text-emerald-600 uppercase tracking-widest hover:text-emerald-700 transition-colors">Xem tất cả</button>
                         </div>
 
                         <div className="p-8 space-y-4 flex-1">
@@ -141,7 +141,7 @@ export function DoctorDashboard() {
                                         </div>
                                         <p className="text-xs text-slate-600 font-medium leading-relaxed">{alert.message}</p>
                                     </div>
-                                    <button className="bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0">
+                                    <button className="bg-emerald-400 text-slate-900 p-3 rounded-2xl shadow-lg shadow-emerald-400/20 hover:bg-emerald-500 transition-all opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0">
                                         <ChevronRight className="w-5 h-5" />
                                     </button>
                                 </motion.div>
@@ -155,7 +155,7 @@ export function DoctorDashboard() {
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Xu hướng chỉ số huyết áp (Tuần này)</p>
                                     <div className="flex gap-2">
                                         <div className="flex items-center gap-1.5">
-                                            <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                                            <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
                                             <span className="text-[9px] font-bold text-slate-400 uppercase">Bình thường</span>
                                         </div>
                                         <div className="flex items-center gap-1.5">
@@ -171,7 +171,7 @@ export function DoctorDashboard() {
                                             initial={{ height: 0 }}
                                             animate={{ height: `${h}%` }}
                                             transition={{ delay: 0.5 + (i * 0.05), duration: 0.8 }}
-                                            className={`flex-1 rounded-t-xl transition-all duration-500 ${i > 4 ? 'bg-gradient-to-t from-red-400 to-red-500' : 'bg-gradient-to-t from-blue-400 to-blue-500 opacity-40 hover:opacity-100'}`}
+                                            className={`flex-1 rounded-t-xl transition-all duration-500 ${i > 4 ? 'bg-gradient-to-t from-red-400 to-red-500' : 'bg-gradient-to-t from-emerald-300 to-emerald-400 opacity-40 hover:opacity-100'}`}
                                         ></motion.div>
                                     ))}
                                 </div>
@@ -186,16 +186,16 @@ export function DoctorDashboard() {
                 {/* Right Column */}
                 <div className="space-y-8">
                     {/* Quick Actions Card */}
-                    <div className="bg-blue-600 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-blue-600/30 relative overflow-hidden group">
+                    <div className="bg-emerald-400 rounded-[2.5rem] p-8 text-slate-900 shadow-2xl shadow-emerald-400/30 relative overflow-hidden group">
                         <div className="relative z-10">
                             <h3 className="font-black text-xl mb-2 tracking-tight">Thao tác nhanh</h3>
-                            <p className="text-blue-100 text-xs font-medium mb-8 leading-relaxed">Gửi thông báo sức khỏe và hướng dẫn cho nhóm bệnh nhân mục tiêu</p>
+                            <p className="text-slate-900/60 text-xs font-medium mb-8 leading-relaxed">Gửi thông báo sức khỏe và hướng dẫn cho nhóm bệnh nhân mục tiêu</p>
                             <div className="space-y-4">
-                                <button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 border border-white/10">
+                                <button className="w-full bg-slate-900/10 hover:bg-slate-900/20 backdrop-blur-md text-slate-900 py-4 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 border border-slate-900/5">
                                     <Megaphone className="w-5 h-5" />
                                     Gửi cảnh báo khẩn
                                 </button>
-                                <button className="w-full bg-white hover:bg-blue-50 text-blue-600 py-4 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl shadow-blue-800/20">
+                                <button className="w-full bg-slate-900 hover:bg-slate-800 text-emerald-400 py-4 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl shadow-slate-900/20">
                                     <MessageCircle className="w-5 h-5" />
                                     Khuyến nghị sức khỏe
                                 </button>
@@ -221,12 +221,12 @@ export function DoctorDashboard() {
                                     transition={{ delay: 0.6 + (i * 0.1) }}
                                     className="flex items-center gap-4 group cursor-pointer"
                                 >
-                                    <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex flex-col items-center justify-center border border-blue-100 dark:border-blue-900/30 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex flex-col items-center justify-center border border-emerald-100 dark:border-emerald-900/30 group-hover:bg-emerald-400 group-hover:text-slate-900 transition-all duration-300">
                                         <span className="text-[8px] font-black uppercase tracking-tighter opacity-60">{apt.month}</span>
                                         <span className="text-sm font-black tracking-tighter">{apt.date}</span>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-black text-slate-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">{apt.name}</p>
+                                        <p className="text-sm font-black text-slate-900 dark:text-white truncate group-hover:text-emerald-600 transition-colors">{apt.name}</p>
                                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{apt.disease} <span className="mx-1">•</span> {apt.time}</p>
                                     </div>
                                     <button className="p-2 text-slate-300 hover:text-slate-600">
@@ -235,7 +235,7 @@ export function DoctorDashboard() {
                                 </motion.div>
                             ))}
                         </div>
-                        <button className="w-full mt-8 py-3 rounded-2xl border-2 border-dashed border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:border-blue-200 hover:text-blue-600 transition-all">Xem toàn bộ lịch</button>
+                        <button className="w-full mt-8 py-3 rounded-2xl border-2 border-dashed border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:border-emerald-200 hover:text-emerald-600 transition-all">Xem toàn bộ lịch</button>
                     </div>
                 </div>
             </div>
@@ -288,9 +288,9 @@ export function DoctorDashboard() {
                                         <div className="flex flex-col gap-1.5">
                                             <div className="flex flex-wrap gap-2">
                                                 {Array.isArray(patient.disease) ? patient.disease.map((d, idx) => (
-                                                    <span key={idx} className="text-[9px] font-black uppercase tracking-wider px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-lg">{d}</span>
+                                                    <span key={idx} className="text-[9px] font-black uppercase tracking-wider px-2 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 rounded-lg">{d}</span>
                                                 )) : (
-                                                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-lg">{patient.disease}</span>
+                                                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 rounded-lg">{patient.disease}</span>
                                                 )}
                                             </div>
                                             <p className="text-xs font-bold text-slate-600 dark:text-slate-300">{patient.metric}</p>
@@ -318,13 +318,13 @@ export function DoctorDashboard() {
                                     </td>
                                     <td className="px-10 py-6 text-right">
                                         <div className="flex justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
-                                            <button className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-600 hover:bg-white rounded-2xl shadow-sm transition-all" title="Phân tích">
+                                            <button className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-emerald-600 hover:bg-white rounded-2xl shadow-sm transition-all" title="Phân tích">
                                                 <BarChart3 className="w-5 h-5" />
                                             </button>
-                                            <button className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-600 hover:bg-white rounded-2xl shadow-sm transition-all" title="Nhắn tin">
+                                            <button className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-emerald-600 hover:bg-white rounded-2xl shadow-sm transition-all" title="Nhắn tin">
                                                 <MessageSquare className="w-5 h-5" />
                                             </button>
-                                            <button className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-600 hover:bg-white rounded-2xl shadow-sm transition-all" title="Xử lý hồ sơ">
+                                            <button className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-emerald-600 hover:bg-white rounded-2xl shadow-sm transition-all" title="Xử lý hồ sơ">
                                                 <FileText className="w-5 h-5" />
                                             </button>
                                         </div>
@@ -339,10 +339,10 @@ export function DoctorDashboard() {
                 <div className="p-10 bg-slate-50/30 dark:bg-slate-800/30 flex justify-between items-center">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Trang 1 / 125</p>
                     <div className="flex gap-2">
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center font-black text-slate-400 hover:text-blue-600 transition-all shadow-sm active:scale-95">1</button>
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center font-black text-slate-400 hover:text-blue-600 transition-all shadow-sm active:scale-95">2</button>
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center font-black text-slate-400 hover:text-blue-600 transition-all shadow-sm active:scale-95">3</button>
-                        <button className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white shadow-lg shadow-blue-600/20 active:scale-95 relative z-10">4</button>
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center font-black text-slate-400 hover:text-emerald-600 transition-all shadow-sm active:scale-95">1</button>
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center font-black text-slate-400 hover:text-emerald-600 transition-all shadow-sm active:scale-95">2</button>
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center font-black text-slate-400 hover:text-emerald-600 transition-all shadow-sm active:scale-95">3</button>
+                        <button className="w-10 h-10 rounded-xl bg-emerald-400 flex items-center justify-center font-black text-slate-900 shadow-lg shadow-emerald-400/20 active:scale-95 relative z-10">4</button>
                     </div>
                 </div>
             </div>

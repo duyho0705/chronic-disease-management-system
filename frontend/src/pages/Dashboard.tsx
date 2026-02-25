@@ -18,17 +18,17 @@ import { DoctorDashboard } from './doctor/DoctorDashboard'
 /* ─── role-based quick actions ─── */
 const ROLE_ACTIONS: Record<Role, { to: string; label: string; desc: string; icon: any; color: string }[]> = {
   admin: [
-    { to: '/reception', label: 'Tiếp nhận', desc: 'Đăng ký và check-in', icon: Users, color: 'blue' },
+    { to: '/reception', label: 'Tiếp nhận', desc: 'Đăng ký và check-in', icon: Users, color: 'emerald' },
     { to: '/consultation', label: 'Khám & Điều trị', desc: 'Phiên khám & kê đơn', icon: Stethoscope, color: 'emerald' },
     { to: '/analytics', label: 'Thống kê', desc: 'Xu hướng & chỉ số KPI', icon: BarChart2, color: 'indigo' },
     { to: '/admin', label: 'Quản trị', desc: 'Quản trị hệ thống', icon: Settings, color: 'slate' },
   ],
   receptionist: [
-    { to: '/reception', label: 'Tiếp nhận', desc: 'Đăng ký và check-in', icon: Users, color: 'blue' },
+    { to: '/reception', label: 'Tiếp nhận', desc: 'Đăng ký và check-in', icon: Users, color: 'emerald' },
     { to: '/scheduling', label: 'Lịch hẹn', desc: 'Quản lý lịch hẹn', icon: Calendar, color: 'amber' },
   ],
   triage_nurse: [
-    { to: '/reception', label: 'Tiếp nhận', desc: 'Đăng ký bệnh nhân', icon: Users, color: 'blue' },
+    { to: '/reception', label: 'Tiếp nhận', desc: 'Đăng ký bệnh nhân', icon: Users, color: 'emerald' },
   ],
   doctor: [
     { to: '/consultation', label: 'Khám & Điều trị', desc: 'Khám & kê đơn', icon: Stethoscope, color: 'emerald' },
@@ -43,7 +43,7 @@ const ROLE_ACTIONS: Record<Role, { to: string; label: string; desc: string; icon
     { to: '/consultation', label: 'Đơn thuốc', desc: 'Quản lý đơn thuốc', icon: Pill, color: 'purple' },
   ],
   patient: [
-    { to: '/patient', label: 'Sức khỏe', desc: 'Theo dõi sinh hiệu', icon: Activity, color: 'rose' },
+    { to: '/patient', label: 'Sức khỏe', desc: 'Theo dõi sinh hiệu', icon: Activity, color: 'emerald' },
     { to: '/patient/appointments', label: 'Lịch hẹn', desc: 'Đặt hẹn bác sĩ', icon: Calendar, color: 'amber' },
     { to: '/patient/chat', label: 'Tư vấn BS', desc: 'Hỏi đáp trực tuyến', icon: MessageSquare, color: 'indigo' },
   ],
@@ -100,7 +100,7 @@ function ActionTile({ to, label, desc, icon: Icon, color, index }: {
   to: string; label: string; desc: string; icon: any; color: string; index: number
 }) {
   const colorMap: Record<string, string> = {
-    blue: 'from-blue-500 to-indigo-600 shadow-blue-500/20 text-blue-600 bg-blue-50',
+    blue: 'from-emerald-500 to-teal-600 shadow-emerald-500/20 text-emerald-600 bg-emerald-50',
     emerald: 'from-emerald-500 to-teal-600 shadow-emerald-500/20 text-emerald-600 bg-emerald-50',
     indigo: 'from-indigo-500 to-purple-600 shadow-indigo-500/20 text-indigo-600 bg-indigo-50',
     amber: 'from-amber-500 to-orange-600 shadow-amber-500/20 text-amber-600 bg-amber-50',
@@ -123,11 +123,11 @@ function ActionTile({ to, label, desc, icon: Icon, color, index }: {
           <div className={`w-14 h-14 rounded-2xl mb-4 flex items-center justify-center transition-all group-hover:scale-110 group-hover:-rotate-3 ${colorStyles.split(' ').slice(-2).join(' ')} group-hover:bg-gradient-to-br ${colorStyles.split(' ').slice(0, 2).join(' ')} group-hover:text-white`}>
             <Icon className="w-7 h-7" />
           </div>
-          <h5 className="font-black text-slate-800 tracking-tight text-sm mb-1 group-hover:text-blue-600 transition-colors">{label}</h5>
+          <h5 className="font-black text-slate-800 tracking-tight text-sm mb-1 group-hover:text-emerald-600 transition-colors">{label}</h5>
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 line-clamp-1">
             {desc}
           </p>
-          <div className="mt-4 w-6 h-1 bg-slate-100 group-hover:bg-blue-500 group-hover:w-10 rounded-full transition-all" />
+          <div className="mt-4 w-6 h-1 bg-slate-100 group-hover:bg-emerald-500 group-hover:w-10 rounded-full transition-all" />
         </div>
       </Link>
     </motion.div>
@@ -163,8 +163,8 @@ export function Dashboard() {
 
       {/* ── Premium Hero Header ── */}
       <div className="bg-slate-900 -mx-4 sm:-mx-6 lg:-mx-8 p-10 lg:p-14 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-600/20 to-transparent skew-x-12 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2" />
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-emerald-600/20 to-transparent skew-x-12 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2" />
 
         <div className="relative z-10 max-w-[1600px] mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-10">
           <div className="space-y-4">
@@ -172,8 +172,8 @@ export function Dashboard() {
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
               className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/5 backdrop-blur-md"
             >
-              <Sparkles className="w-3 h-3 text-blue-400" />
-              <span className="text-[10px] font-black text-blue-100 uppercase tracking-widest">{greeting}</span>
+              <Sparkles className="w-3 h-3 text-emerald-400" />
+              <span className="text-[10px] font-black text-emerald-100 uppercase tracking-widest">{greeting}</span>
             </motion.div>
 
             <div className="flex items-center gap-6">
@@ -224,7 +224,7 @@ export function Dashboard() {
                 <StatCard
                   label="Lượt tiếp nhận hôm nay"
                   value={todayStats?.triageCount ?? 0}
-                  icon={UserCheck} color="text-blue-600" bgColor="bg-blue-50"
+                  icon={UserCheck} color="text-emerald-600" bgColor="bg-blue-50"
                   trend={weekStats ? `${weekStats.avgPerDay?.toFixed(0) ?? 0}/ngày` : '—'}
                   trendUp
                 />
@@ -247,7 +247,7 @@ export function Dashboard() {
               </>
             ) : (
               <>
-                <StatCard label="Tiếp nhận" value="—" icon={UserCheck} color="text-blue-600" bgColor="bg-blue-50" />
+                <StatCard label="Tiếp nhận" value="—" icon={UserCheck} color="text-emerald-600" bgColor="bg-blue-50" />
                 <StatCard label="Đang chờ" value="—" icon={Clock} color="text-amber-600" bgColor="bg-amber-50" />
                 <StatCard label="Hoàn tất" value="—" icon={CheckCircle2} color="text-emerald-600" bgColor="bg-emerald-50" />
               </>
@@ -283,7 +283,7 @@ export function Dashboard() {
                 <Bell className="w-4 h-4 text-rose-500" />
                 Hoạt động gần đây
               </h3>
-              <button className="text-[10px] font-black text-blue-600 hover:text-blue-700 uppercase tracking-widest">
+              <button className="text-[10px] font-black text-emerald-600 hover:text-emerald-500 uppercase tracking-widest">
                 Xem tất cả
               </button>
             </div>
@@ -293,7 +293,7 @@ export function Dashboard() {
                 title="Bệnh nhân mới tiếp nhận"
                 desc="Bệnh nhân Nguyễn Văn A vừa được check-in tại chi nhánh"
                 time="5 phút trước"
-                color="blue"
+                color="emerald"
               />
               <ActivityItem
                 icon={<CheckCircle2 className="w-5 h-5" />}
@@ -319,7 +319,7 @@ export function Dashboard() {
             </div>
 
             <h3 className="font-black text-white tracking-tight flex items-center gap-3 uppercase text-xs mb-8">
-              <Globe className="w-4 h-4 text-blue-400" />
+              <Globe className="w-4 h-4 text-emerald-400" />
               Thông số vận hành
             </h3>
 
@@ -333,7 +333,7 @@ export function Dashboard() {
             <div className="mt-12 pt-8 border-t border-white/5 space-y-4">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center">
-                  <Monitor className="w-5 h-5 text-blue-400" />
+                  <Monitor className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Thiết bị</p>
@@ -354,7 +354,7 @@ function ActivityItem({ icon, title, desc, time, color }: {
   icon: any; title: string; desc: string; time: string; color: string
 }) {
   const colors: Record<string, string> = {
-    blue: 'bg-blue-50 text-blue-600',
+    blue: 'bg-blue-50 text-emerald-600',
     emerald: 'bg-emerald-50 text-emerald-600',
     amber: 'bg-amber-50 text-amber-600',
   }

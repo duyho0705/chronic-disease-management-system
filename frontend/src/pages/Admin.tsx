@@ -30,12 +30,12 @@ export function Admin() {
     <div className="pb-12 space-y-4 animate-in fade duration-700">
       <div className="flex flex-wrap items-center gap-1 border-b border-slate-100">
         {[
-          { key: 'users' as AdminTab, label: 'Nhân sự', icon: Users, color: 'blue' },
+          { key: 'users' as AdminTab, label: 'Nhân sự', icon: Users, color: 'emerald' },
           { key: 'branches' as AdminTab, label: 'Chi nhánh', icon: Building2, color: 'emerald' },
           { key: 'services' as AdminTab, label: 'Dịch vụ', icon: Layers, color: 'amber' },
           { key: 'ai' as AdminTab, label: 'Cấu hình', icon: Settings, color: 'purple' },
           { key: 'audit' as AdminTab, label: 'Nhật ký', icon: History, color: 'slate' },
-          { key: 'revenue' as AdminTab, label: 'Doanh thu', icon: BarChart3, color: 'blue' },
+          { key: 'revenue' as AdminTab, label: 'Doanh thu', icon: BarChart3, color: 'emerald' },
         ].map(tab => (
           <button
             key={tab.key}

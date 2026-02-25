@@ -36,18 +36,18 @@ export function RiskAnalysis() {
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        <select className="rounded-[13px] border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-blue-600/20 focus:border-blue-600 shadow-sm">
+                        <select className="rounded-[13px] border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm">
                             <option>Tất cả khoa</option>
                             <option>Khoa Tim mạch</option>
                             <option>Khoa Nội tiết</option>
                         </select>
-                        <select className="rounded-[13px] border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-blue-600/20 focus:border-blue-600 shadow-sm">
+                        <select className="rounded-[13px] border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm">
                             <option>Tất cả loại bệnh</option>
                             <option>Tiểu đường Type 2</option>
                             <option>Cao huyết áp</option>
                             <option>Suy thận mạn</option>
                         </select>
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded-[13px] text-sm font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-sm">
+                        <button className="bg-emerald-400 text-slate-900 px-4 py-2 rounded-[13px] text-sm font-bold flex items-center gap-2 hover:bg-emerald-500 transition-all shadow-sm active:scale-95">
                             <Filter className="w-4 h-4" /> Lọc dữ liệu
                         </button>
                     </div>
@@ -159,7 +159,7 @@ export function RiskAnalysis() {
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 {[
-                                                    { icon: Send, color: 'text-blue-600', bg: 'hover:bg-blue-50', title: 'Gửi cảnh báo' },
+                                                    { icon: Send, color: 'text-emerald-600', bg: 'hover:bg-emerald-50', title: 'Gửi cảnh báo' },
                                                     { icon: PhoneCall, color: 'text-red-500', bg: 'hover:bg-red-50', title: 'Gọi khẩn cấp' },
                                                     { icon: ClipboardList, color: 'text-slate-600', bg: 'hover:bg-slate-100', title: 'Sửa toa thuốc' }
                                                 ].map((action, idx) => (
@@ -201,7 +201,7 @@ export function RiskAnalysis() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button className="p-2 rounded-[10px] text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all">
+                                                <button className="p-2 rounded-[10px] text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-800 transition-all">
                                                     <Send className="w-4 h-4" />
                                                 </button>
                                                 <button className="p-2 rounded-[10px] text-red-500 hover:bg-red-500/10 dark:hover:bg-slate-800 transition-all">
@@ -240,7 +240,7 @@ export function RiskAnalysis() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button className="p-2 rounded-[10px] text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all">
+                                                <button className="p-2 rounded-[10px] text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-800 transition-all">
                                                     <Send className="w-4 h-4" />
                                                 </button>
                                                 <button className="p-2 rounded-[10px] text-red-500 hover:bg-red-500/10 dark:hover:bg-slate-800 transition-all">
@@ -256,7 +256,7 @@ export function RiskAnalysis() {
                             </table>
                         </div>
                         <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-800 text-center">
-                            <button className="text-blue-600 text-[10px] font-black uppercase tracking-widest hover:text-blue-700 transition-all">
+                            <button className="text-emerald-600 text-[10px] font-black uppercase tracking-widest hover:text-emerald-700 transition-all">
                                 Xem tất cả bệnh nhân rủi ro
                             </button>
                         </div>
@@ -266,7 +266,7 @@ export function RiskAnalysis() {
                     <section className="bg-white dark:bg-slate-900 rounded-[13px] border border-slate-200 dark:border-slate-800 shadow-sm p-8">
                         <div className="flex justify-between items-center mb-10">
                             <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <BarChart3 className="w-5 h-5 text-blue-600" /> Xu hướng rủi ro (7 ngày qua)
+                                <BarChart3 className="w-5 h-5 text-emerald-600" /> Xu hướng rủi ro (7 ngày qua)
                             </h3>
                             <div className="flex gap-4">
                                 <div className="flex items-center gap-2">
@@ -274,7 +274,7 @@ export function RiskAnalysis() {
                                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Nguy cấp</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-sm"></div>
+                                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-600 shadow-sm"></div>
                                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Theo dõi</span>
                                 </div>
                             </div>
@@ -284,9 +284,9 @@ export function RiskAnalysis() {
                         <div className="h-64 w-full relative group">
                             <div className="absolute inset-x-0 bottom-0 top-0 flex items-end justify-between px-2 gap-4">
                                 {[40, 55, 45, 70, 60, 50, 80].map((h, i) => (
-                                    <div key={i} className="flex-1 bg-blue-600/10 dark:bg-blue-600/5 rounded-t-[10px] relative transition-all duration-700 ease-out" style={{ height: `${h}%` }}>
+                                    <div key={i} className="flex-1 bg-emerald-600/10 dark:bg-emerald-600/5 rounded-t-[10px] relative transition-all duration-700 ease-out" style={{ height: `${h}%` }}>
                                         <div className="absolute top-0 inset-x-0 bg-red-500/30 dark:bg-red-500/20 rounded-t-[10px]" style={{ height: `${h * 0.4}%` }}></div>
-                                        {i === 6 && <div className="absolute inset-x-0 bottom-0 bg-blue-600 rounded-t-[10px] shadow-lg shadow-blue-600/20" style={{ height: '100%' }}>
+                                        {i === 6 && <div className="absolute inset-x-0 bottom-0 bg-emerald-500 rounded-t-[10px] shadow-lg shadow-emerald-500/20" style={{ height: '100%' }}>
                                             <div className="absolute top-0 inset-x-0 bg-red-500 rounded-t-[10px]" style={{ height: '50%' }}></div>
                                         </div>}
                                     </div>
@@ -296,7 +296,7 @@ export function RiskAnalysis() {
                         </div>
                         <div className="flex justify-between mt-4 px-2">
                             {['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map((day, i) => (
-                                <span key={i} className={`text-[10px] font-black uppercase tracking-widest ${i === 6 ? 'text-blue-600' : 'text-slate-400'}`}>
+                                <span key={i} className={`text-[10px] font-black uppercase tracking-widest ${i === 6 ? 'text-emerald-600' : 'text-slate-400'}`}>
                                     {day} {i === 6 && '(Hôm nay)'}
                                 </span>
                             ))}
@@ -307,14 +307,14 @@ export function RiskAnalysis() {
                 {/* Sidebar: AI Insights & Quick Actions */}
                 <div className="flex flex-col gap-8">
                     {/* AI Insights */}
-                    <section className="bg-blue-50/50 dark:bg-blue-900/10 rounded-[13px] border border-blue-100 dark:border-blue-900/30 p-8 flex flex-col gap-6 relative overflow-hidden group">
-                        <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-200/20 dark:bg-blue-900/20 rounded-full blur-3xl transition-all group-hover:scale-110"></div>
+                    <section className="bg-emerald-50/50 dark:bg-emerald-900/10 rounded-[13px] border border-emerald-100 dark:border-emerald-900/30 p-8 flex flex-col gap-6 relative overflow-hidden group">
+                        <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-200/20 dark:bg-emerald-900/20 rounded-full blur-3xl transition-all group-hover:scale-110"></div>
 
                         <div className="flex items-center gap-3 relative z-10">
-                            <div className="p-2 bg-blue-600 rounded-[10px] shadow-lg shadow-blue-600/20">
-                                <Sparkles className="w-5 h-5 text-white" />
+                            <div className="p-2 bg-emerald-400 rounded-[10px] shadow-lg shadow-emerald-400/20">
+                                <Sparkles className="w-5 h-5 text-slate-900" />
                             </div>
-                            <h3 className="font-bold text-blue-600 tracking-tight">AI Insights</h3>
+                            <h3 className="font-bold text-emerald-600 tracking-tight">AI Insights</h3>
                         </div>
 
                         <div className="space-y-4 relative z-10">
@@ -335,7 +335,7 @@ export function RiskAnalysis() {
                             ))}
                         </div>
 
-                        <button className="w-full mt-2 py-3 bg-blue-600 text-white rounded-[13px] text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 relative z-10 active:scale-[0.98]">
+                        <button className="w-full mt-2 py-3 bg-emerald-400 text-slate-900 rounded-[13px] text-xs font-black uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-400/20 relative z-10 active:scale-[0.98]">
                             Gửi tất cả thông báo AI
                         </button>
                     </section>
@@ -348,7 +348,7 @@ export function RiskAnalysis() {
                                 <LifeBuoy className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 <span className="text-[10px] font-black uppercase tracking-tighter">Cấp cứu</span>
                             </button>
-                            <button className="flex flex-col items-center justify-center gap-3 p-5 rounded-[13px] bg-blue-50 dark:bg-blue-900/10 text-blue-600 border border-blue-100 dark:border-blue-900/30 hover:bg-blue-100/50 transition-all group scale-100 active:scale-95">
+                            <button className="flex flex-col items-center justify-center gap-3 p-5 rounded-[13px] bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 border border-emerald-100 dark:border-emerald-900/30 hover:bg-emerald-100/50 transition-all group scale-100 active:scale-95">
                                 <Video className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 <span className="text-[10px] font-black uppercase tracking-tighter">Tele-Health</span>
                             </button>

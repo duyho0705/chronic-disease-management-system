@@ -81,7 +81,7 @@ export function DoctorConsultation() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${consultation.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${consultation.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-emerald-100 text-emerald-700'}`}>
                         {consultation.status === 'COMPLETED' ? 'HOÀN TẤT' : 'ĐANG KHÁM'}
                     </span>
                 </div>
@@ -95,7 +95,7 @@ export function DoctorConsultation() {
                     {/* Thông tin Hành chính */}
                     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                         <h3 className="mb-3 flex items-center gap-2 font-bold text-slate-900">
-                            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
                                 <FileText className="h-4 w-4" />
                             </span>
                             Hành chính
@@ -172,14 +172,14 @@ export function DoctorConsultation() {
                     <section className="h-full rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col">
                         <div className="mb-6 flex border-b border-slate-200">
                             <button
-                                className={`flex items-center gap-2 border-b-2 px-6 py-3 font-medium transition ${activeTab === 'evaluation' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+                                className={`flex items-center gap-2 border-b-2 px-6 py-3 font-medium transition ${activeTab === 'evaluation' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
                                 onClick={() => setActiveTab('evaluation')}
                             >
                                 <Stethoscope className="h-5 w-5" />
                                 Khám bệnh
                             </button>
                             <button
-                                className={`flex items-center gap-2 border-b-2 px-6 py-3 font-medium transition ${activeTab === 'history' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+                                className={`flex items-center gap-2 border-b-2 px-6 py-3 font-medium transition ${activeTab === 'history' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
                                 onClick={() => setActiveTab('history')}
                             >
                                 <HistoryIcon className="h-5 w-5" />
@@ -192,7 +192,7 @@ export function DoctorConsultation() {
                                 <div>
                                     <label className="mb-2 block font-semibold text-slate-700">Chẩn đoán / Bệnh án</label>
                                     <textarea
-                                        className="w-full rounded-xl border-slate-200 bg-slate-50 p-4 text-slate-900 focus:border-blue-500 focus:ring-blue-500 min-h-[150px]"
+                                        className="w-full rounded-xl border-slate-200 bg-slate-50 p-4 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 min-h-[150px]"
                                         placeholder="Nhập chẩn đoán bệnh..."
                                         value={diagnosis}
                                         onChange={(e) => setDiagnosis(e.target.value)}
@@ -202,7 +202,7 @@ export function DoctorConsultation() {
                                 <div>
                                     <label className="mb-2 block font-semibold text-slate-700">Hướng xử trí / Toa thuốc</label>
                                     <textarea
-                                        className="w-full rounded-xl border-slate-200 bg-slate-50 p-4 text-slate-900 focus:border-blue-500 focus:ring-blue-500 min-h-[150px]"
+                                        className="w-full rounded-xl border-slate-200 bg-slate-50 p-4 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 min-h-[150px]"
                                         placeholder="Kê toa thuốc hoặc chỉ định cận lâm sàng..."
                                         value={prescription}
                                         onChange={(e) => setPrescription(e.target.value)}
@@ -250,7 +250,7 @@ export function DoctorConsultation() {
                             <button
                                 onClick={() => completeMutation.mutate()}
                                 disabled={completeMutation.isPending || consultation.status === 'COMPLETED'}
-                                className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 disabled:opacity-50"
+                                className="flex items-center gap-2 rounded-lg bg-emerald-400 px-6 py-2.5 font-bold text-slate-900 shadow-lg shadow-emerald-400/20 hover:bg-emerald-500 disabled:opacity-50"
                             >
                                 <CheckCircle className="h-5 w-5" />
                                 {completeMutation.isPending ? 'Đang xử lý...' : 'Hoàn Tất Khám'}

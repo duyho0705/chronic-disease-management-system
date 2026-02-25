@@ -98,7 +98,7 @@ export function PrescriptionList() {
                 </div>
                 <Link
                     to="/consultation"
-                    className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-[13px] font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                    className="flex items-center justify-center gap-2 px-6 py-3 bg-emerald-400 text-slate-900 rounded-[13px] font-bold hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-400/20 active:scale-95"
                 >
                     <PlusCircle className="w-5 h-5" />
                     <span>Tạo toa thuốc mới</span>
@@ -115,12 +115,12 @@ export function PrescriptionList() {
                             placeholder="Tìm theo tên BN, tên thuốc, chẩn đoán..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-[10px] text-sm focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 outline-none transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-[10px] text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                         />
                     </div>
                     <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-                        <select className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-[10px] text-sm appearance-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 outline-none cursor-pointer">
+                        <select className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-[10px] text-sm appearance-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none cursor-pointer">
                             <option>Tất cả thời gian</option>
                             <option>7 ngày qua</option>
                             <option>30 ngày qua</option>
@@ -129,7 +129,7 @@ export function PrescriptionList() {
                     </div>
                     <div className="relative">
                         <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-                        <select className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-[10px] text-sm appearance-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 outline-none cursor-pointer">
+                        <select className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-[10px] text-sm appearance-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none cursor-pointer">
                             <option>Tất cả trạng thái</option>
                             <option>Đang hiệu lực</option>
                             <option>Đã hết hạn</option>
@@ -189,7 +189,7 @@ export function PrescriptionList() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-1">
-                                            <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-[10px] transition-all" title="Xem chi tiết">
+                                            <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-[10px] transition-all" title="Xem chi tiết">
                                                 <Eye className="w-5 h-5" />
                                             </button>
                                             <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-[10px] transition-all" title="Tái bản đơn">
@@ -212,10 +212,10 @@ export function PrescriptionList() {
                         Hiển thị <span className="text-slate-900 dark:text-white">1-4</span> trong <span className="text-slate-900 dark:text-white">48</span> đơn thuốc
                     </p>
                     <div className="flex gap-2">
-                        <button className="p-2 rounded-[10px] border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-900 disabled:opacity-30 transition-all" disabled>
+                        <button className="p-2 rounded-[10px] border border-slate-200 dark:border-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-slate-400 hover:text-emerald-600 disabled:opacity-30 transition-all" disabled>
                             <ChevronLeft className="w-4 h-4" />
                         </button>
-                        <button className="p-2 rounded-[10px] border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-900 transition-all">
+                        <button className="p-2 rounded-[10px] border border-slate-200 dark:border-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-slate-400 hover:text-emerald-600 transition-all">
                             <ChevronRight className="w-4 h-4" />
                         </button>
                     </div>

@@ -28,7 +28,7 @@ export function CommandCenter({ fromDate, toDate }: { fromDate: string, toDate: 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <div className="lg:col-span-3 bg-white p-10 rounded-[3.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-10 opacity-[0.03] group-hover:scale-125 transition-transform duration-1000">
-                        <Activity className="w-64 h-64 text-blue-600" />
+                        <Activity className="w-64 h-64 text-emerald-600" />
                     </div>
                     <div className="relative z-10">
                         <div className="flex items-center justify-between mb-10">
@@ -55,12 +55,12 @@ export function CommandCenter({ fromDate, toDate }: { fromDate: string, toDate: 
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
-                                    className="p-6 bg-slate-50/50 rounded-[2.5rem] border border-transparent hover:border-blue-100 hover:bg-white hover:shadow-xl transition-all group/card"
+                                    className="p-6 bg-slate-50/50 rounded-[2.5rem] border border-transparent hover:border-emerald-100 hover:bg-white hover:shadow-xl transition-all group/card"
                                 >
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 truncate">{name}</p>
                                     <div className="flex items-end justify-between">
                                         <h4 className="text-4xl font-black text-slate-900 leading-none">{count}</h4>
-                                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${count > 10 ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-blue-600'}`}>
+                                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${count > 10 ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-emerald-600'}`}>
                                             <Users className="w-5 h-5" />
                                         </div>
                                     </div>
@@ -68,7 +68,7 @@ export function CommandCenter({ fromDate, toDate }: { fromDate: string, toDate: 
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${Math.min((count / 20) * 100, 100)}%` }}
-                                            className={`h-full rounded-full ${count > 15 ? 'bg-rose-500' : count > 8 ? 'bg-amber-500' : 'bg-blue-500'}`}
+                                            className={`h-full rounded-full ${count > 15 ? 'bg-rose-500' : count > 8 ? 'bg-amber-500' : 'bg-emerald-500'}`}
                                         />
                                     </div>
                                 </motion.div>
@@ -78,12 +78,12 @@ export function CommandCenter({ fromDate, toDate }: { fromDate: string, toDate: 
                 </div>
 
                 <div className="bg-slate-900 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-transparent" />
                     <div className="relative z-10">
                         <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-8">
-                            <Activity className="w-7 h-7 text-blue-400" />
+                            <Activity className="w-7 h-7 text-emerald-400" />
                         </div>
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-4">Dự báo Vận hành Tự động</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-4">Dự báo Vận hành Tự động</h4>
                         <p className="text-sm font-bold leading-relaxed italic text-slate-300">
                             "{loadData?.predictiveInsight || "Đang phân tích dữ liệu vận hành..."}"
                         </p>
@@ -144,13 +144,13 @@ export function CommandCenter({ fromDate, toDate }: { fromDate: string, toDate: 
                                             </div>
                                         </td>
                                         <td className="px-10 py-8">
-                                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black text-white ${log.aiSuggestedAcuity === '1' ? 'bg-rose-500' : log.aiSuggestedAcuity === '2' ? 'bg-orange-500' : 'bg-blue-500'
+                                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black text-white ${log.aiSuggestedAcuity === '1' ? 'bg-rose-500' : log.aiSuggestedAcuity === '2' ? 'bg-orange-500' : 'bg-emerald-500'
                                                 }`}>
                                                 {log.aiSuggestedAcuity}
                                             </span>
                                         </td>
                                         <td className="px-10 py-8">
-                                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black text-white ${log.humanAcuity === '1' ? 'bg-rose-500' : log.humanAcuity === '2' ? 'bg-orange-500' : 'bg-blue-500'
+                                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black text-white ${log.humanAcuity === '1' ? 'bg-rose-500' : log.humanAcuity === '2' ? 'bg-orange-500' : 'bg-emerald-500'
                                                 }`}>
                                                 {log.humanAcuity}
                                             </span>

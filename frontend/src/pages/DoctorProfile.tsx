@@ -34,7 +34,7 @@ export function DoctorProfile() {
     return (
         <div className="mx-auto max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header / Banner */}
-            <div className="relative h-48 rounded-[3rem] bg-gradient-to-r from-blue-600 to-indigo-700 overflow-hidden shadow-2xl">
+            <div className="relative h-48 rounded-[3rem] bg-gradient-to-r from-emerald-500 to-emerald-700 overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-white/10 backdrop-blur-3xl" />
                 <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
             </div>
@@ -53,7 +53,7 @@ export function DoctorProfile() {
                             {displayProfile.online ? 'Trực tuyến' : 'Ngoại tuyến'}
                         </span>
                     </div>
-                    <p className="text-xl font-bold text-blue-600 tracking-tight">{displayProfile.specialty}</p>
+                    <p className="text-xl font-bold text-emerald-600 tracking-tight">{displayProfile.specialty}</p>
                 </div>
                 <button className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform shadow-xl">
                     Chỉnh sửa hồ sơ
@@ -65,7 +65,7 @@ export function DoctorProfile() {
                 <div className="md:col-span-1 space-y-6">
                     <section className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/40">
                         <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-3">
-                            <Shield className="w-4 h-4 text-blue-500" />
+                            <Shield className="w-4 h-4 text-emerald-500" />
                             Thông tin định danh
                         </h3>
                         <div className="space-y-6">
@@ -92,7 +92,7 @@ export function DoctorProfile() {
 
                     <section className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden">
                         <div className="relative z-10">
-                            <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest mb-6">Trạng thái làm việc</h3>
+                            <h3 className="text-xs font-black text-emerald-400 uppercase tracking-widest mb-6">Trạng thái làm việc</h3>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
                                     <span className="text-xs font-bold text-slate-400">Ca làm việc</span>
@@ -104,7 +104,7 @@ export function DoctorProfile() {
                                 </div>
                             </div>
                         </div>
-                        <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-blue-600/20 blur-3xl" />
+                        <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-emerald-600/20 blur-3xl" />
                     </section>
                 </div>
 
@@ -127,7 +127,7 @@ export function DoctorProfile() {
                             </div>
 
                             <div className="flex items-start gap-6 group">
-                                <div className="w-14 h-14 bg-blue-50 rounded-[1.5rem] flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-inner">
+                                <div className="w-14 h-14 bg-blue-50 rounded-[1.5rem] flex items-center justify-center text-emerald-500 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-inner">
                                     <Clock className="w-7 h-7" />
                                 </div>
                                 <div>
@@ -139,7 +139,7 @@ export function DoctorProfile() {
 
                         <div className="mt-12 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
                             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Mô tả chi tiết</h4>
-                            <p className="text-sm font-medium text-slate-600 leading-relaxed italic border-l-4 border-blue-500 pl-6 py-2">
+                            <p className="text-sm font-medium text-slate-600 leading-relaxed italic border-l-4 border-emerald-500 pl-6 py-2">
                                 "Tận tâm chăm sóc sức khỏe cộng đồng bằng việc ứng dụng các công nghệ y học hiện đại và chuẩn mực quản lý bệnh lý mãn tính. Luôn hướng tới sự an tâm và chính xác tuyệt đối trong mọi lộ trình điều trị."
                             </p>
                         </div>

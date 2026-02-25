@@ -217,7 +217,7 @@ export function ChronicDiseasePanel({ patientId, consultationId }: ChronicDiseas
                     <div className="space-y-4">
                         <div className="flex items-center justify-between px-2">
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tuân thủ điều trị (Adherence)</p>
-                            <div className="flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full border border-blue-100">
+                            <div className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-100">
                                 <Info className="w-2.5 h-2.5" />
                                 <span className="text-[8px] font-black uppercase">Omni-channel Active</span>
                             </div>
@@ -226,7 +226,7 @@ export function ChronicDiseasePanel({ patientId, consultationId }: ChronicDiseas
                             {reminders?.map((r: any) => (
                                 <div key={r.id} className="bg-white border border-slate-100 p-4 rounded-2xl flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                                        <div className="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
                                             <Pill className="w-4 h-4" />
                                         </div>
                                         <div>
@@ -256,7 +256,7 @@ export function ChronicDiseasePanel({ patientId, consultationId }: ChronicDiseas
                                             <button
                                                 onClick={() => recordDoseMutation.mutate(r.id)}
                                                 disabled={recordDoseMutation.isPending}
-                                                className="px-2 py-1 bg-blue-50 text-blue-600 rounded-lg text-[8px] font-black uppercase tracking-tight hover:bg-blue-600 hover:text-white transition-all disabled:opacity-50"
+                                                className="px-2 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[8px] font-black uppercase tracking-tight hover:bg-emerald-600 hover:text-white transition-all disabled:opacity-50"
                                             >
                                                 {recordDoseMutation.isPending ? '...' : 'Đã uống'}
                                             </button>
@@ -523,7 +523,7 @@ export function ChronicDiseasePanel({ patientId, consultationId }: ChronicDiseas
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                        <div className={`p-8 rounded-[2.5rem] flex flex-col items-center justify-center text-center shadow-lg ${riskData.riskLevel === 'CRITICAL' || riskData.riskLevel === 'HIGH' ? 'bg-rose-600 text-white' :
+                        <div className={`p-8 rounded-[2.5rem] flex flex-col items-center justify-center text-center shadow-lg ${riskData.riskLevel === 'CRITICAL' || riskData.riskLevel === 'HIGH' ? 'bg-emerald-400 text-slate-900' :
                             riskData.riskLevel === 'MEDIUM' ? 'bg-amber-500 text-white' : 'bg-emerald-500 text-white'
                             }`}>
                             <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">Mức độ nguy cơ</p>
@@ -594,7 +594,7 @@ export function ChronicDiseasePanel({ patientId, consultationId }: ChronicDiseas
             {consultationId && standardizedNote && (
                 <div className="pt-10 border-t border-slate-100 space-y-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
                             <ClipboardCheck className="w-5 h-5" />
                         </div>
                         <div>

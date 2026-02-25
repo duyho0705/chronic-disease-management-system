@@ -28,7 +28,7 @@ export function Reception() {
     })
 
     const stats = [
-        { label: 'Tiếp đón', value: '42', icon: User, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { label: 'Tiếp đón', value: '42', icon: User, color: 'text-emerald-600', bg: 'bg-emerald-50' },
         { label: 'Chờ khám', value: '12', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
         { label: 'Hoàn tất', value: '28', icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     ]
@@ -41,8 +41,8 @@ export function Reception() {
         <div className="pb-20 space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* ── Premium Hero Header ── */}
             <div className="bg-slate-900 -mx-4 sm:-mx-6 lg:-mx-8 p-10 lg:p-14 relative overflow-hidden shadow-2xl">
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-600/20 to-transparent skew-x-12 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2" />
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-emerald-600/20 to-transparent skew-x-12 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2" />
 
                 <div className="relative z-10 max-w-[1600px] mx-auto">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 mb-10">
@@ -51,8 +51,8 @@ export function Reception() {
                                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                                 className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/5 backdrop-blur-md"
                             >
-                                <Sparkles className="w-3 h-3 text-blue-400" />
-                                <span className="text-[10px] font-black text-blue-100 uppercase tracking-widest">Tiếp đón & Vận hành</span>
+                                <Sparkles className="w-3 h-3 text-emerald-400" />
+                                <span className="text-[10px] font-black text-emerald-100 uppercase tracking-widest">Tiếp đón & Vận hành</span>
                             </motion.div>
 
                             <div className="flex items-center gap-6">
@@ -91,14 +91,14 @@ export function Reception() {
                     <div className="flex flex-col md:flex-row gap-4 max-w-4xl">
                         <div className="flex-1 relative group">
                             <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                                <Search className="h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                                <Search className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
                             </div>
                             <input
                                 type="text"
                                 placeholder="Tìm theo tên đầy đủ (Không dấu), Số điện thoại hoặc CCCD..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-white/10 border border-white/10 pl-16 pr-6 py-5 rounded-2xl text-base font-bold text-white placeholder:text-slate-500 focus:bg-white/20 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all outline-none"
+                                className="w-full bg-white/10 border border-white/10 pl-16 pr-6 py-5 rounded-2xl text-base font-bold text-white placeholder:text-slate-500 focus:bg-white/20 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-all outline-none"
                             />
                             {searchQuery && (
                                 <button onClick={() => setSearchQuery('')} className="absolute inset-y-0 right-6 flex items-center">
@@ -108,7 +108,7 @@ export function Reception() {
                         </div>
                         <button
                             onClick={() => setIsRegisterModalOpen(true)}
-                            className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl shadow-blue-500/20"
+                            className="bg-emerald-400 text-slate-900 shadow-emerald-400/20 hover:bg-emerald-500"
                         >
                             <UserPlus className="w-5 h-5" />
                             Khai báo BN mới
@@ -152,7 +152,7 @@ export function Reception() {
                             <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform duration-1000">
                                 <Star className="w-20 h-20" />
                             </div>
-                            <h3 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            <h3 className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
                                 <Sparkles className="w-4 h-4" />
                                 Gói dịch vụ Hot
                             </h3>
@@ -163,7 +163,7 @@ export function Reception() {
                                 ].map((p, i) => (
                                     <div key={i} className="p-5 bg-white/5 border border-white/5 rounded-2xl group/card hover:bg-white/10 transition-all cursor-pointer">
                                         <div className="flex justify-between items-start mb-2">
-                                            <p className="text-xs font-black text-white group-hover/card:text-blue-400 transition-colors uppercase leading-tight">{p.title}</p>
+                                            <p className="text-xs font-black text-white group-hover/card:text-emerald-400 transition-colors uppercase leading-tight">{p.title}</p>
                                             <span className="text-[8px] font-black bg-blue-500 px-2 py-0.5 rounded-full uppercase">{p.tag}</span>
                                         </div>
                                         <p className="text-lg font-black text-blue-300">{p.price} <span className="text-[10px] text-slate-500 italic">VNĐ</span></p>
@@ -177,12 +177,12 @@ export function Reception() {
                     <main className="xl:col-span-6 space-y-6">
                         <div className="flex items-center justify-between px-2">
                             <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-3 uppercase">
-                                <div className="p-2 bg-blue-100 rounded-xl">
-                                    <Filter className="w-4 h-4 text-blue-600" />
+                                <div className="p-2 bg-emerald-100 rounded-xl">
+                                    <Filter className="w-4 h-4 text-emerald-600" />
                                 </div>
                                 Hồ sơ Bệnh nhân ({patients?.content?.length ?? 0})
                             </h3>
-                            {isLoading && <Loader2 className="w-5 h-5 animate-spin text-blue-500" />}
+                            {isLoading && <Loader2 className="w-5 h-5 animate-spin text-emerald-500" />}
                         </div>
 
                         {isLoading ? (
@@ -202,16 +202,16 @@ export function Reception() {
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 exit={{ opacity: 0, scale: 0.95 }}
                                                 key={p.id}
-                                                className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-blue-200 transition-all group flex flex-col md:flex-row md:items-center justify-between gap-6"
+                                                className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-emerald-200 transition-all group flex flex-col md:flex-row md:items-center justify-between gap-6"
                                             >
                                                 <div className="flex items-start gap-6">
-                                                    <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-inner shrink-0 group-hover:rotate-3">
+                                                    <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-emerald-600 transition-all shadow-inner shrink-0 group-hover:rotate-3">
                                                         <User className="w-8 h-8" />
                                                     </div>
                                                     <div className="space-y-2">
                                                         <div className="flex items-center gap-3">
-                                                            <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight group-hover:text-blue-600 transition-colors">{p.fullNameVi}</h4>
-                                                            <div className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${p.gender === 'MALE' ? 'bg-blue-50 text-blue-600' : 'bg-rose-50 text-rose-600'}`}>
+                                                            <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">{p.fullNameVi}</h4>
+                                                            <div className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${p.gender === 'MALE' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                                                                 {p.gender === 'MALE' ? 'Nam' : 'Nữ'}
                                                             </div>
                                                         </div>
@@ -252,7 +252,7 @@ export function Reception() {
                                             <p className="text-slate-400 text-sm max-w-sm font-medium mb-8 italic">Rất tiếc, chúng tôi không tìm thấy kết quả nào trùng khớp. Bạn có thể kiểm tra lại thông tin tìm kiếm.</p>
                                             <button
                                                 onClick={() => setIsRegisterModalOpen(true)}
-                                                className="flex items-center gap-3 bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-slate-900/20 active:scale-95"
+                                                className="flex items-center gap-3 bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-slate-900/20 active:scale-95"
                                             >
                                                 <UserPlus className="w-5 h-5" />
                                                 Khai báo ngay
@@ -270,7 +270,7 @@ export function Reception() {
                             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600 rounded-full blur-[100px] opacity-10 -mr-16 -mt-16" />
                             <div className="relative z-10">
                                 <h3 className="text-xs font-black text-white tracking-[0.2em] mb-1 flex items-center gap-3 uppercase">
-                                    <Star className="w-4 h-4 text-blue-400" />
+                                    <Star className="w-4 h-4 text-emerald-400" />
                                     Lịch hẹn Priority
                                 </h3>
                                 <p className="text-slate-500 font-bold text-[9px] uppercase tracking-widest mb-6">Ưu tiên tiếp đón ngày hôm nay</p>
@@ -283,7 +283,7 @@ export function Reception() {
                                     ].map((app, i) => (
                                         <div key={i} className="bg-white/5 border border-white/5 p-4 rounded-2xl hover:bg-white/10 transition-all cursor-pointer group/row flex items-center justify-between">
                                             <div className="min-w-0">
-                                                <p className="font-black text-sm text-slate-200 truncate group-hover/row:text-blue-400 transition-colors uppercase">{app.name}</p>
+                                                <p className="font-black text-sm text-slate-200 truncate group-hover/row:text-emerald-400 transition-colors uppercase">{app.name}</p>
                                                 <p className="text-[10px] font-bold text-slate-500 flex items-center gap-1.5 uppercase mt-1">
                                                     <Clock className="w-3 h-3" /> {app.time} · {app.type}
                                                 </p>
@@ -415,7 +415,7 @@ function RegisterPatientModal({ onClose, onSuccess }: { onClose: () => void, onS
                                     required
                                     value={form.fullNameVi}
                                     onChange={e => setForm({ ...form, fullNameVi: e.target.value.toUpperCase() })}
-                                    className="w-full px-8 py-5 bg-white border border-slate-100 rounded-3xl font-black text-2xl text-slate-900 placeholder:text-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all uppercase"
+                                    className="w-full px-8 py-5 bg-white border border-emerald-100 rounded-xl font-black text-2xl text-slate-900 placeholder:text-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all uppercase"
                                     placeholder="NGUYỄN VĂN A"
                                 />
                             </div>
@@ -427,7 +427,7 @@ function RegisterPatientModal({ onClose, onSuccess }: { onClose: () => void, onS
                                     type="date"
                                     value={form.dateOfBirth}
                                     onChange={e => setForm({ ...form, dateOfBirth: e.target.value })}
-                                    className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-black text-lg text-slate-800 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
+                                    className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-black text-lg text-slate-800 outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
                                 />
                             </div>
 
@@ -439,7 +439,7 @@ function RegisterPatientModal({ onClose, onSuccess }: { onClose: () => void, onS
                                             key={g}
                                             type="button"
                                             onClick={() => setForm({ ...form, gender: g })}
-                                            className={`flex-1 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${form.gender === g ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}
+                                            className={`flex-1 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${form.gender === g ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-400 hover:text-slate-600'}`}
                                         >
                                             {g === 'MALE' ? 'Nam' : g === 'FEMALE' ? 'Nữ' : 'Khác'}
                                         </button>
@@ -449,13 +449,13 @@ function RegisterPatientModal({ onClose, onSuccess }: { onClose: () => void, onS
 
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 flex items-center gap-2">
-                                    <Smartphone className="w-3 h-3 text-blue-500" /> Số điện thoại *
+                                    <Smartphone className="w-3 h-3 text-emerald-500" /> Số điện thoại *
                                 </label>
                                 <input
                                     required
                                     value={form.phone}
                                     onChange={e => setForm({ ...form, phone: e.target.value })}
-                                    className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-black text-lg outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
+                                    className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-black text-lg outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
                                     placeholder="09xxx..."
                                 />
                             </div>
@@ -467,7 +467,7 @@ function RegisterPatientModal({ onClose, onSuccess }: { onClose: () => void, onS
                                 <input
                                     value={form.cccd ?? ''}
                                     onChange={e => setForm({ ...form, cccd: e.target.value })}
-                                    className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-black text-lg outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
+                                    className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-black text-lg outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
                                     placeholder="Số định danh..."
                                 />
                             </div>
@@ -480,7 +480,7 @@ function RegisterPatientModal({ onClose, onSuccess }: { onClose: () => void, onS
                                     value={form.addressLine ?? ''}
                                     onChange={e => setForm({ ...form, addressLine: e.target.value })}
                                     rows={2}
-                                    className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all resize-none"
+                                    className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all resize-none"
                                     placeholder="Số nhà, đường, phường/xã, quận/huyện..."
                                 />
                             </div>
@@ -490,7 +490,7 @@ function RegisterPatientModal({ onClose, onSuccess }: { onClose: () => void, onS
                             <button
                                 type="submit"
                                 disabled={isPending}
-                                className="flex-1 bg-slate-900 text-white py-6 rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-blue-600 transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl shadow-slate-900/20 disabled:opacity-50"
+                                className="flex-1 bg-emerald-600 text-white py-6 rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl shadow-emerald-600/20 disabled:opacity-50"
                             >
                                 {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Xác nhận Lưu hồ sơ <CheckCircle2 className="w-5 h-5" /></>}
                             </button>
