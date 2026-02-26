@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import vn.clinic.patientflow.api.dto.PatientCrmInsightDto;
 import vn.clinic.patientflow.clinical.repository.ClinicalConsultationRepository;
 import vn.clinic.patientflow.patient.domain.Patient;
+import vn.clinic.patientflow.patient.repository.PatientVitalLogRepository;
 import vn.clinic.patientflow.scheduling.repository.SchedulingAppointmentRepository;
-import vn.clinic.patientflow.triage.repository.TriageVitalRepository;
 
 import java.util.stream.Collectors;
 
@@ -21,7 +21,7 @@ public class PatientCrmService {
 
     private final ClinicalConsultationRepository consultationRepository;
     private final SchedulingAppointmentRepository appointmentRepository;
-    private final TriageVitalRepository vitalsRepository;
+    private final PatientVitalLogRepository vitalsRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired(required = false)
@@ -33,10 +33,10 @@ public class PatientCrmService {
         }
 
         try {
-            // Build a multi-dimensional view of the patient
             var history = consultationRepository.findByPatientIdOrderByStartedAtDesc(patient.getId());
             var appointments = appointmentRepository.findByPatientIdOrderByAppointmentDateDesc(patient.getId());
-            var vitals = vitalsRepository.findTop5ByPatientIdOrderByRecordedAtDesc(patient.getId());
+            var vitals = vitalsRepository.findByPatientIdOrderByRecordedAtDesc(patient.getId())
+                    .stream().limit(5).collect(Collectors.toList());
 
             String context = String.format(
                     "PATIENT: %s (DOB: %s, Gender: %s)\n" +

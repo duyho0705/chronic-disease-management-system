@@ -10,7 +10,6 @@ import vn.clinic.patientflow.clinical.domain.PrescriptionTemplateItem;
 import vn.clinic.patientflow.clinical.repository.PrescriptionTemplateRepository;
 import vn.clinic.patientflow.tenant.domain.Tenant;
 import vn.clinic.patientflow.tenant.repository.TenantRepository;
-import vn.clinic.patientflow.pharmacy.repository.PharmacyProductRepository;
 import vn.clinic.patientflow.common.tenant.TenantContext;
 
 import java.util.List;
@@ -23,7 +22,6 @@ public class PrescriptionTemplateService {
 
         private final PrescriptionTemplateRepository templateRepository;
         private final TenantRepository tenantRepository;
-        private final PharmacyProductRepository productRepository;
 
         @Transactional
         @org.springframework.cache.annotation.CacheEvict(value = "prescription_templates", key = "T(vn.clinic.patientflow.common.tenant.TenantContext).getTenantIdOrThrow()")
@@ -41,7 +39,9 @@ public class PrescriptionTemplateService {
                 List<PrescriptionTemplateItem> items = request.getItems().stream()
                                 .map(i -> PrescriptionTemplateItem.builder()
                                                 .template(template)
-                                                .product(productRepository.findById(i.getProductId()).orElse(null))
+                                                .productNameCustom(i.getProductNameCustom() != null
+                                                                ? i.getProductNameCustom()
+                                                                : "Unknown")
                                                 .quantity(i.getQuantity())
                                                 .dosageInstruction(i.getDosageInstruction())
                                                 .build())
@@ -66,9 +66,8 @@ public class PrescriptionTemplateService {
                                 .nameVi(t.getNameVi())
                                 .description(t.getDescription())
                                 .items(t.getItems().stream().map(i -> PrescriptionTemplateDto.Item.builder()
-                                                .productId(i.getProduct() != null ? i.getProduct().getId() : null)
-                                                .productName(i.getProduct() != null ? i.getProduct().getNameVi()
-                                                                : i.getProductNameCustom())
+                                                .productId(null)
+                                                .productName(i.getProductNameCustom())
                                                 .quantity(i.getQuantity())
                                                 .dosageInstruction(i.getDosageInstruction())
                                                 .build()).collect(Collectors.toList()))

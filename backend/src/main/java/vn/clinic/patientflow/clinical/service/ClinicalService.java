@@ -18,7 +18,6 @@ import vn.clinic.patientflow.common.exception.ResourceNotFoundException;
 import vn.clinic.patientflow.common.service.AuditLogService;
 import vn.clinic.patientflow.common.tenant.TenantContext;
 import vn.clinic.patientflow.identity.service.IdentityService;
-import vn.clinic.patientflow.scheduling.service.SchedulingService;
 
 import java.math.BigDecimal;
 import java.time.Instant;
