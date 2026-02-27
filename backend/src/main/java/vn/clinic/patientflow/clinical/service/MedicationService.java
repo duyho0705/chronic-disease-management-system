@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.clinic.patientflow.clinical.domain.Medication;
 import vn.clinic.patientflow.clinical.domain.MedicationSchedule;
-import vn.clinic.patientflow.clinical.repository.MedicationRepository;
+
 import vn.clinic.patientflow.clinical.repository.MedicationScheduleRepository;
 import vn.clinic.patientflow.common.exception.ResourceNotFoundException;
 
@@ -21,7 +21,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MedicationService {
 
-    private final MedicationRepository medicationRepository;
     private final MedicationScheduleRepository scheduleRepository;
 
     @Transactional

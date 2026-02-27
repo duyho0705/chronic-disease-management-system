@@ -9,7 +9,6 @@ import vn.clinic.patientflow.clinical.domain.HealthMetric;
 import vn.clinic.patientflow.patient.domain.Patient;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Phân tích rủi ro bằng AI (Role 2).

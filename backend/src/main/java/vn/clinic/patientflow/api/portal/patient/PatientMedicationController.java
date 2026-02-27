@@ -15,7 +15,7 @@ import vn.clinic.patientflow.patient.service.PatientPortalService;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.UUID;
+
 import java.util.stream.Collectors;
 
 @RestController

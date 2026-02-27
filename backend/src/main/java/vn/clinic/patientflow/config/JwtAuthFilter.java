@@ -2,7 +2,7 @@ package vn.clinic.patientflow.config;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -42,7 +41,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         Claims claims = jwtUtil.validateAndParse(token);
 
         if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UUID userId = jwtUtil.getUserId(claims);
             String email = jwtUtil.getEmail(claims);
             UUID tenantId = jwtUtil.getTenantId(claims);
             UUID branchId = jwtUtil.getBranchId(claims);
