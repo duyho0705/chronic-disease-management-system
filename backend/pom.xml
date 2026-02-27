@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>vn.clinic</groupId>
-    <artifactId>patient-flow-triage</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-    <name>patient-flow-triage</name>
-    <description>AI-powered patient flow and triage system for clinics (Vietnam)</description>
+    <artifactId>ai-chronic-disease-management</artifactId>
+    <version>1.0.0</version>
+    <name>AI Chronic Disease Management System</name>
+    <description>Hệ thống Quản lý Bệnh Mãn tính tích hợp AI (CDM)</description>
     <packaging>jar</packaging>
 
     <properties>

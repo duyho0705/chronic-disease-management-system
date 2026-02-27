@@ -1,14 +1,15 @@
 package vn.clinic.patientflow.api.staff;
 
+// Unused wildcard imports removed
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.ApiResponse;
-import vn.clinic.patientflow.api.dto.CreatePrescriptionRequest;
-import vn.clinic.patientflow.api.dto.PrescriptionDto;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.medication.CreatePrescriptionRequest;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionDto;
 import vn.clinic.patientflow.clinical.domain.Prescription;
 import vn.clinic.patientflow.clinical.service.ClinicalService;
 

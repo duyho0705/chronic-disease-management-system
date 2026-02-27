@@ -1,5 +1,16 @@
 package vn.clinic.patientflow.api.staff;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,7 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.*;
+
 import vn.clinic.patientflow.common.tenant.TenantContext;
 import vn.clinic.patientflow.identity.domain.IdentityUser;
 import vn.clinic.patientflow.identity.service.IdentityService;

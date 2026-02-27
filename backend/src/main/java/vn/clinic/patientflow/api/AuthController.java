@@ -1,5 +1,6 @@
 package vn.clinic.patientflow.api;
 
+// DTO imports are handled specifically below
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -9,10 +10,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.ApiResponse;
-import vn.clinic.patientflow.api.dto.AuthUserDto;
-import vn.clinic.patientflow.api.dto.LoginRequest;
-import vn.clinic.patientflow.api.dto.LoginResponse;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.auth.AuthUserDto;
+import vn.clinic.patientflow.api.dto.auth.LoginRequest;
+import vn.clinic.patientflow.api.dto.auth.LoginResponse;
 import vn.clinic.patientflow.auth.AuthPrincipal;
 import vn.clinic.patientflow.auth.AuthService;
 import vn.clinic.patientflow.identity.domain.IdentityUser;
@@ -51,7 +52,7 @@ public class AuthController {
         @PostMapping("/register")
         @Operation(summary = "Đăng ký", description = "Tự đăng ký tài khoản mới và đặt JWT Cookie.")
         public ResponseEntity<ApiResponse<LoginResponse>> register(
-                        @Valid @RequestBody vn.clinic.patientflow.api.dto.RegisterRequest request) {
+                        @Valid @RequestBody vn.clinic.patientflow.api.dto.auth.RegisterRequest request) {
                 LoginResponse response = authService.register(request);
 
                 ResponseCookie cookie = ResponseCookie.from("jwt", response.getToken())

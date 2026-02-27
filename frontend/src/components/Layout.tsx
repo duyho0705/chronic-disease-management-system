@@ -53,7 +53,7 @@ export function Layout() {
           <div className="bg-emerald-500 text-white p-2 rounded-lg">
             <BriefcaseMedical className="h-6 w-6" strokeWidth={2.5} />
           </div>
-          <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tightest uppercase">Sống Khỏe</h2>
+          <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tightest uppercase">AI CDM System</h2>
         </div>
 
         <nav className="flex-1 px-4 space-y-1 overflow-y-auto overflow-x-hidden">
@@ -135,7 +135,7 @@ export function Layout() {
             <div className="bg-emerald-500 text-white p-1.5 rounded-lg">
               <BriefcaseMedical className="h-6 w-6" strokeWidth={2.5} />
             </div>
-            <span className="font-black text-slate-800 dark:text-slate-100 text-lg tracking-tightest uppercase">Sống Khỏe</span>
+            <span className="font-black text-slate-800 dark:text-slate-100 text-lg tracking-tightest uppercase">AI CDM System</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors">
             <X className="w-6 h-6" />

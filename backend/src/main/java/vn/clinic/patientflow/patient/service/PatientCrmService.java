@@ -1,15 +1,26 @@
 package vn.clinic.patientflow.patient.service;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vn.clinic.patientflow.api.dto.PatientCrmInsightDto;
+import vn.clinic.patientflow.api.dto.patient.PatientCrmInsightDto;
 import vn.clinic.patientflow.clinical.repository.ClinicalConsultationRepository;
+import vn.clinic.patientflow.clinical.repository.HealthMetricRepository;
 import vn.clinic.patientflow.patient.domain.Patient;
-import vn.clinic.patientflow.patient.repository.PatientVitalLogRepository;
 import vn.clinic.patientflow.scheduling.repository.SchedulingAppointmentRepository;
 
 import java.util.stream.Collectors;
@@ -21,7 +32,7 @@ public class PatientCrmService {
 
     private final ClinicalConsultationRepository consultationRepository;
     private final SchedulingAppointmentRepository appointmentRepository;
-    private final PatientVitalLogRepository vitalsRepository;
+    private final HealthMetricRepository healthMetricRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired(required = false)
@@ -35,7 +46,7 @@ public class PatientCrmService {
         try {
             var history = consultationRepository.findByPatientIdOrderByStartedAtDesc(patient.getId());
             var appointments = appointmentRepository.findByPatientIdOrderByAppointmentDateDesc(patient.getId());
-            var vitals = vitalsRepository.findByPatientIdOrderByRecordedAtDesc(patient.getId())
+            var vitals = healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(patient.getId())
                     .stream().limit(5).collect(Collectors.toList());
 
             String context = String.format(
@@ -49,7 +60,7 @@ public class PatientCrmService {
                     history.isEmpty() ? "None" : history.get(0).getStartedAt(),
                     appointments.size(),
                     appointments.stream().filter(a -> "CANCELLED".equals(a.getStatus())).count(),
-                    vitals.stream().map(v -> v.getVitalType() + ":" + v.getValueNumeric())
+                    vitals.stream().map(v -> v.getMetricType() + ":" + v.getValue())
                             .collect(Collectors.joining(", ")));
 
             String prompt = String.format(

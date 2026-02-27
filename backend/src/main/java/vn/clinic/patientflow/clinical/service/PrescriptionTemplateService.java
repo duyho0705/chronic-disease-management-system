@@ -1,10 +1,21 @@
 package vn.clinic.patientflow.clinical.service;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.clinic.patientflow.api.dto.CreatePrescriptionTemplateRequest;
-import vn.clinic.patientflow.api.dto.PrescriptionTemplateDto;
+import vn.clinic.patientflow.api.dto.medication.CreatePrescriptionTemplateRequest;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionTemplateDto;
 import vn.clinic.patientflow.clinical.domain.PrescriptionTemplate;
 import vn.clinic.patientflow.clinical.domain.PrescriptionTemplateItem;
 import vn.clinic.patientflow.clinical.repository.PrescriptionTemplateRepository;

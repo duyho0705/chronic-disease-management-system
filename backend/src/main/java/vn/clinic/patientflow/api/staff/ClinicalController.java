@@ -1,5 +1,16 @@
 package vn.clinic.patientflow.api.staff;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.*;
+
 import vn.clinic.patientflow.auth.AuthPrincipal;
 import vn.clinic.patientflow.clinical.service.CdsService;
 import vn.clinic.patientflow.clinical.service.ClinicalService;
@@ -80,7 +91,7 @@ public class ClinicalController {
 
         UUID doctorId = principal != null ? principal.getUserId() : null;
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(
-                ConsultationDto.fromEntity(clinicalService.startConsultation(request.getQueueEntryId(), doctorId))));
+                ConsultationDto.fromEntity(clinicalService.startConsultation(request.getPatientId(), doctorId))));
     }
 
     @PatchMapping("/{id}")
@@ -102,7 +113,7 @@ public class ClinicalController {
     @PostMapping("/prescriptions")
     @Operation(summary = "Tạo đơn thuốc")
     public ResponseEntity<ApiResponse<vn.clinic.patientflow.clinical.domain.Prescription>> createPrescription(
-            @RequestBody vn.clinic.patientflow.api.dto.CreatePrescriptionRequest request) {
+            @RequestBody vn.clinic.patientflow.api.dto.medication.CreatePrescriptionRequest request) {
         return ResponseEntity.ok(ApiResponse.success(clinicalService.createPrescription(request)));
     }
 }

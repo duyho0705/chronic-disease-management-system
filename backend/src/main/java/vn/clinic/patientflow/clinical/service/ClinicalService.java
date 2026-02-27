@@ -1,5 +1,16 @@
 package vn.clinic.patientflow.clinical.service;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -7,10 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.clinic.patientflow.api.dto.ConsultationSummaryPdfDto;
-import vn.clinic.patientflow.api.dto.CreatePrescriptionRequest;
-import vn.clinic.patientflow.api.dto.PrescriptionDto;
-import vn.clinic.patientflow.api.dto.PrescriptionItemDto;
+import vn.clinic.patientflow.api.dto.clinical.ConsultationSummaryPdfDto;
+import vn.clinic.patientflow.api.dto.medication.CreatePrescriptionRequest;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionDto;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionItemDto;
 import vn.clinic.patientflow.clinical.domain.*;
 import vn.clinic.patientflow.clinical.event.ConsultationCompletedEvent;
 import vn.clinic.patientflow.clinical.repository.*;
@@ -19,7 +30,6 @@ import vn.clinic.patientflow.common.service.AuditLogService;
 import vn.clinic.patientflow.common.tenant.TenantContext;
 import vn.clinic.patientflow.identity.service.IdentityService;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +53,7 @@ public class ClinicalService {
     private final PrescriptionRepository prescriptionRepository;
     private final LabResultRepository labResultRepository;
     private final DiagnosticImageRepository diagnosticImageRepository;
+    private final DoctorRepository doctorRepository;
 
     // Services
     private final IdentityService identityService;
@@ -116,26 +127,31 @@ public class ClinicalService {
     @Transactional
     public Prescription createPrescription(CreatePrescriptionRequest request) {
         var cons = getById(request.getConsultationId());
+
+        Doctor doctor = null;
+        if (cons.getDoctorUser() != null) {
+            doctor = doctorRepository.findByIdentityUser_Id(cons.getDoctorUser().getId()).orElse(null);
+        }
+
         Prescription prescription = Prescription.builder()
                 .consultation(cons)
                 .patient(cons.getPatient())
-                .doctorUserId(cons.getDoctorUser() != null ? cons.getDoctorUser().getId() : null)
+                .doctor(doctor)
                 .status(Prescription.PrescriptionStatus.ISSUED)
                 .notes(request.getNotes())
-                .items(new ArrayList<>())
+                .medications(new ArrayList<>())
                 .build();
 
         request.getItems().forEach(itemReq -> {
-            var item = PrescriptionItem.builder()
+            var medication = Medication.builder()
                     .prescription(prescription)
-                    .quantity(itemReq.getQuantity())
-                    .dosageInstruction(itemReq.getDosageInstruction())
-                    .productNameCustom(itemReq.getProductNameCustom())
-                    .unitPrice(itemReq.getUnitPrice())
+                    .medicineName(itemReq.getProductNameCustom())
+                    .dosage(itemReq.getDosageInstruction()) // Assuming dosage instruction is mapped to dosage for now
+                    .frequency("Daily") // Default, can be refined
+                    .durationDays(7) // Default, can be refined
                     .build();
 
-            // Link to actual product if provided (optional in CDM if catalog is simplified)
-            prescription.getItems().add(item);
+            prescription.getItems().add(medication);
         });
 
         var saved = prescriptionRepository.save(prescription);
@@ -182,23 +198,20 @@ public class ClinicalService {
     public PrescriptionDto mapPrescriptionToDto(Prescription p) {
         return PrescriptionDto.builder()
                 .id(p.getId())
-                .consultationId(p.getConsultation().getId())
+                .consultationId(p.getConsultation() != null ? p.getConsultation().getId() : null)
                 .patientId(p.getPatient().getId())
                 .patientName(p.getPatient().getFullNameVi())
-                .status(p.getStatus().name())
+                .status(p.getStatus() != null ? p.getStatus().name() : "ISSUED")
                 .notes(p.getNotes())
-                .items(p.getItems().stream().map(this::mapItemToDto).collect(Collectors.toList()))
+                .items(p.getMedications().stream().map(this::mapMedicationToDto).collect(Collectors.toList()))
                 .build();
     }
 
-    private PrescriptionItemDto mapItemToDto(PrescriptionItem item) {
+    private PrescriptionItemDto mapMedicationToDto(Medication med) {
         return PrescriptionItemDto.builder()
-                .id(item.getId())
-                .productName(item.getProductNameCustom())
-                .quantity(item.getQuantity())
-                .dosageInstruction(item.getDosageInstruction())
-                .unitPrice(item.getUnitPrice())
-                .availableStock(BigDecimal.ZERO) // Pharmacy removed
+                .id(med.getId())
+                .productName(med.getMedicineName())
+                .dosageInstruction(med.getDosage())
                 .build();
     }
 

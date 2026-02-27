@@ -1,14 +1,25 @@
 package vn.clinic.patientflow.patient.service;
 
-import vn.clinic.patientflow.api.dto.PatientChatConversationDto;
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
+import vn.clinic.patientflow.api.dto.messaging.PatientChatConversationDto;
 import vn.clinic.patientflow.patient.repository.PatientRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import vn.clinic.patientflow.api.dto.DoctorInfoDto;
-import vn.clinic.patientflow.api.dto.PatientChatMessageDto;
+import vn.clinic.patientflow.api.dto.clinical.DoctorInfoDto;
+import vn.clinic.patientflow.api.dto.messaging.PatientChatMessageDto;
 import vn.clinic.patientflow.common.service.FileStorageService;
 import vn.clinic.patientflow.identity.domain.IdentityUser;
 import vn.clinic.patientflow.identity.repository.IdentityUserRepository;

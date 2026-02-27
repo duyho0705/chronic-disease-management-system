@@ -1,13 +1,24 @@
 package vn.clinic.patientflow.auth;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.clinic.patientflow.api.dto.AuthUserDto;
-import vn.clinic.patientflow.api.dto.LoginRequest;
-import vn.clinic.patientflow.api.dto.LoginResponse;
+import vn.clinic.patientflow.api.dto.auth.AuthUserDto;
+import vn.clinic.patientflow.api.dto.auth.LoginRequest;
+import vn.clinic.patientflow.api.dto.auth.LoginResponse;
 import vn.clinic.patientflow.config.JwtProperties;
 import vn.clinic.patientflow.config.JwtUtil;
 import vn.clinic.patientflow.identity.domain.IdentityUser;
@@ -81,7 +92,7 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResponse register(vn.clinic.patientflow.api.dto.RegisterRequest request) {
+    public LoginResponse register(vn.clinic.patientflow.api.dto.auth.RegisterRequest request) {
         if (identityService.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email này đã được sử dụng");
         }
@@ -103,7 +114,7 @@ public class AuthService {
 
         Patient patient = new Patient();
         patient.setTenant(tenant);
-        patient.setIdentityUserId(user.getId());
+        patient.setIdentityUser(user);
         patient.setExternalId(user.getId().toString()); // Use user ID as external ID to link
         patient.setFullNameVi(user.getFullNameVi());
         patient.setEmail(user.getEmail());
@@ -116,7 +127,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void changePassword(UUID userId, vn.clinic.patientflow.api.dto.ChangePasswordRequest request) {
+    public void changePassword(UUID userId, vn.clinic.patientflow.api.dto.auth.ChangePasswordRequest request) {
         IdentityUser user = identityService.getUserById(userId);
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())) {
             throw new IllegalArgumentException("Mật khẩu cũ không chính xác");

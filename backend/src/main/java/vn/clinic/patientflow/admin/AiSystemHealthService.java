@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import vn.clinic.patientflow.aiaudit.repository.AiAuditLogRepository;
-import vn.clinic.patientflow.api.dto.AiSystemHealthDto;
+import vn.clinic.patientflow.api.dto.ai.AiSystemHealthDto;
 
 import java.util.HashMap;
 import java.util.Map;

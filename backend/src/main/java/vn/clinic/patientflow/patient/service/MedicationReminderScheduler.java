@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import vn.clinic.patientflow.patient.domain.MedicationReminder;
-import vn.clinic.patientflow.patient.repository.MedicationReminderRepository;
+import vn.clinic.patientflow.clinical.domain.MedicationSchedule;
+import vn.clinic.patientflow.clinical.repository.MedicationScheduleRepository;
 
-import java.time.LocalTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import java.util.Map;
 @Slf4j
 public class MedicationReminderScheduler {
 
-    private final MedicationReminderRepository reminderRepository;
+    private final MedicationScheduleRepository scheduleRepository;
     private final PatientNotificationService notificationService;
     private final vn.clinic.patientflow.common.service.OmniChannelService omniChannelService;
 
@@ -25,41 +26,43 @@ public class MedicationReminderScheduler {
      */
     @Scheduled(cron = "0 * * * * *")
     public void processReminders() {
-        LocalTime now = LocalTime.now().withSecond(0).withNano(0);
-        LocalTime nextMinute = now.plusMinutes(1);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.MINUTES);
+        Instant nextMinute = now.plus(1, ChronoUnit.MINUTES);
 
-        log.debug("Checking medication reminders for time: {}", now);
+        log.debug("Checking medication schedules for time: {}", now);
 
-        List<MedicationReminder> dueReminders = reminderRepository.findByIsActiveTrueAndReminderTimeBetween(now,
+        List<MedicationSchedule> dueSchedules = scheduleRepository.findByStatusAndScheduledTimeBetween("PENDING", now,
                 nextMinute);
 
-        if (dueReminders.isEmpty()) {
+        if (dueSchedules.isEmpty()) {
             return;
         }
 
-        log.info("Found {} medication reminders due at {}", dueReminders.size(), now);
+        log.info("Found {} medication schedules due at {}", dueSchedules.size(), now);
 
-        for (MedicationReminder reminder : dueReminders) {
-            sendNotification(reminder);
+        for (MedicationSchedule schedule : dueSchedules) {
+            sendNotification(schedule);
         }
     }
 
-    private void sendNotification(MedicationReminder reminder) {
-        String title = "🔔 Nhắc uống thuốc: " + reminder.getMedicineName();
+    private void sendNotification(MedicationSchedule schedule) {
+        var medication = schedule.getMedication();
+        var patient = medication.getPrescription().getPatient();
+
+        String title = "🔔 Nhắc uống thuốc: " + medication.getMedicineName();
         String body = String.format("Đã đến giờ uống thuốc: %s (Liều lượng: %s). Đừng quên nhé!",
-                reminder.getMedicineName(),
-                reminder.getDosage() != null ? reminder.getDosage() : "Theo chỉ dẫn");
+                medication.getMedicineName(),
+                medication.getDosageInstruction() != null ? medication.getDosageInstruction() : "Theo chỉ dẫn");
 
         Map<String, String> data = Map.of(
                 "type", "MEDICATION_REMINDER",
-                "reminderId", reminder.getId().toString(),
-                "medicineName", reminder.getMedicineName());
+                "scheduleId", schedule.getId().toString(),
+                "medicineName", medication.getMedicineName());
 
-        notificationService.notifyPatient(reminder.getPatient().getId(), title, body, data);
+        notificationService.notifyPatient(patient.getId(), title, body, data);
 
         // 2. Gửi Omni-channel (Email, SMS, Zalo)
-        var p = reminder.getPatient();
-        omniChannelService.sendMedicationReminder(p.getFullNameVi(), p.getEmail(), p.getPhone(),
-                reminder.getMedicineName(), reminder.getDosage());
+        omniChannelService.sendMedicationReminder(patient.getFullNameVi(), patient.getEmail(), patient.getPhone(),
+                medication.getMedicineName(), medication.getDosageInstruction());
     }
 }

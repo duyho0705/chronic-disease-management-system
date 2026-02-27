@@ -125,15 +125,13 @@ public class PatientService {
         return patientRepository.save(existing);
     }
 
-    @Transactional(readOnly = true)
     public Patient getByUserId(UUID userId) {
-        return patientRepository.findFirstByIdentityUserId(userId)
+        return patientRepository.findFirstByIdentityUser_Id(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient profile not found for user: " + userId));
     }
 
-    @Transactional(readOnly = true)
     public Optional<Patient> getByIdentityUserId(UUID identityUserId) {
-        return patientRepository.findFirstByIdentityUserId(identityUserId);
+        return patientRepository.findFirstByIdentityUser_Id(identityUserId);
     }
 
     @Transactional

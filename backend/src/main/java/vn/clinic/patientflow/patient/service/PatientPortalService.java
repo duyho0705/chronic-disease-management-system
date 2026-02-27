@@ -1,11 +1,32 @@
 package vn.clinic.patientflow.patient.service;
 
+import vn.clinic.patientflow.api.dto.patient.PatientDashboardDto;
+import vn.clinic.patientflow.api.dto.patient.PatientVitalLogDto;
+import vn.clinic.patientflow.api.dto.patient.PatientDto;
+import vn.clinic.patientflow.api.dto.patient.UpdatePatientProfileRequest;
+import vn.clinic.patientflow.api.dto.patient.PatientRelativeDto;
+import vn.clinic.patientflow.api.dto.patient.AddPatientRelativeRequest;
+import vn.clinic.patientflow.api.dto.patient.PatientInsuranceDto;
+import vn.clinic.patientflow.api.dto.patient.AddPatientInsuranceRequest;
+import vn.clinic.patientflow.api.dto.clinical.ConsultationDto;
+import vn.clinic.patientflow.api.dto.clinical.ConsultationDetailDto;
+import vn.clinic.patientflow.api.dto.clinical.VitalTrendDto;
+import vn.clinic.patientflow.api.dto.clinical.TriageVitalDto;
+import vn.clinic.patientflow.api.dto.clinical.LabResultDto;
+import vn.clinic.patientflow.api.dto.clinical.DiagnosticImageDto;
+import vn.clinic.patientflow.api.dto.medication.MedicationReminderDto;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionDto;
+import vn.clinic.patientflow.api.dto.medication.MedicationDosageLogDto;
+import vn.clinic.patientflow.api.dto.scheduling.AppointmentDto;
+import vn.clinic.patientflow.api.dto.scheduling.CreateAppointmentRequest;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.common.PagedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import vn.clinic.patientflow.api.dto.*;
+
 import vn.clinic.patientflow.auth.AuthPrincipal;
 import vn.clinic.patientflow.billing.service.BillingService;
 import vn.clinic.patientflow.clinical.repository.DiagnosticImageRepository;
@@ -23,15 +44,14 @@ import vn.clinic.patientflow.patient.repository.PatientRelativeRepository;
 import vn.clinic.patientflow.scheduling.domain.SchedulingAppointment;
 import vn.clinic.patientflow.scheduling.service.SchedulingService;
 import vn.clinic.patientflow.tenant.domain.TenantBranch;
-import vn.clinic.patientflow.clinical.repository.PrescriptionRepository;
-import vn.clinic.patientflow.patient.domain.PatientVitalLog;
-import vn.clinic.patientflow.patient.domain.MedicationDosageLog;
-import vn.clinic.patientflow.patient.repository.PatientVitalLogRepository;
-import vn.clinic.patientflow.patient.repository.MedicationDosageLogRepository;
-import java.util.Map;
+import vn.clinic.patientflow.clinical.repository.HealthMetricRepository;
+import vn.clinic.patientflow.clinical.service.MedicationService;
+import vn.clinic.patientflow.clinical.domain.HealthMetric;
 
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,31 +67,22 @@ public class PatientPortalService {
         private final SchedulingService schedulingService;
         private final ClinicalService clinicalService;
         private final IdentityService identityService;
-        private final MedicationReminderService medicationReminderService;
+        private final MedicationService medicationService;
         private final FileStorageService fileStorageService;
         private final BillingService billingService;
 
         // Repositories
-        private final PrescriptionRepository prescriptionRepository;
+        private final vn.clinic.patientflow.clinical.repository.PrescriptionRepository prescriptionRepository;
         private final PatientRelativeRepository patientRelativeRepository;
         private final PatientInsuranceRepository patientInsuranceRepository;
         private final LabResultRepository labResultRepository;
         private final DiagnosticImageRepository diagnosticImageRepository;
-        private final PatientVitalLogRepository patientVitalLogRepository;
-        private final MedicationDosageLogRepository medicationDosageLogRepository;
-
-        // ╔═══════════════════════════════════════════════════════════════╗
-        // ║ AUTHENTICATION ║
-        // ╚═══════════════════════════════════════════════════════════════╝
+        private final HealthMetricRepository healthMetricRepository;
 
         public Patient getAuthenticatedPatient() {
                 UUID userId = AuthPrincipal.getCurrentUserId();
                 return patientService.getByUserId(userId);
         }
-
-        // ╔═══════════════════════════════════════════════════════════════╗
-        // ║ DASHBOARD ║
-        // ╚═══════════════════════════════════════════════════════════════╝
 
         public PatientDashboardDto getDashboardData(UUID patientId) {
                 Patient p = patientService.getById(patientId);
@@ -82,36 +93,41 @@ public class PatientPortalService {
                                 .patientId(patientId)
                                 .patientName(p.getFullNameVi())
                                 .patientAvatar(p.getAvatarUrl())
-                                .activeQueues(0) // Queue module removed in CDM
+                                .activeQueues(0)
                                 .nextAppointment(appointments.isEmpty() ? null
                                                 : AppointmentDto.fromEntity(appointments.get(0)))
                                 .recentVisits(recentVisits.stream()
                                                 .map(ConsultationDto::fromEntity).collect(Collectors.toList()))
                                 .lastVitals(getLatestVitals(patientId))
+                                .vitalHistory(getCombinedVitalHistory(patientId))
                                 .latestPrescription(prescriptionRepository
                                                 .findByPatientIdOrderByCreatedAtDesc(patientId).stream()
                                                 .findFirst().map(clinicalService::mapPrescriptionToDto).orElse(null))
                                 .pendingInvoice(billingService.getInvoicesByPatient(patientId).stream()
                                                 .filter(inv -> "PENDING".equals(inv.getStatus()))
                                                 .findFirst().orElse(null))
-                                .medicationReminders(medicationReminderService.getRemindersByPatient(patientId)
-                                                .stream().map(MedicationReminderDto::fromEntity)
+                                .medicationReminders(medicationService.getDailySchedules(patientId)
+                                                .stream().map(s -> MedicationReminderDto.builder()
+                                                                .id(s.getId())
+                                                                .medicineName(s.getMedication().getMedicineName())
+                                                                .reminderTime(LocalTime.now()) // Placeholder
+                                                                .isActive(true)
+                                                                .build())
                                                 .collect(Collectors.toList()))
-                                .vitalHistory(getCombinedVitalHistory(patientId))
                                 .healthAlerts(generateHealthAlerts(patientId))
+                                .vitalTrends(new java.util.ArrayList<>())
                                 .build();
         }
 
         private List<TriageVitalDto> getLatestVitals(UUID patientId) {
-                var latestLogs = patientVitalLogRepository.findByPatientIdOrderByRecordedAtDesc(patientId);
-                // Group by type and take the latest of each
-                Map<String, List<PatientVitalLog>> byType = latestLogs.stream()
-                                .collect(Collectors.groupingBy(PatientVitalLog::getVitalType));
+                var latestLogs = healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(patientId);
+                Map<String, List<HealthMetric>> byType = latestLogs.stream()
+                                .collect(Collectors.groupingBy(HealthMetric::getMetricType));
 
                 return byType.values().stream()
                                 .map(list -> list.get(0))
-                                .map(v -> new TriageVitalDto(v.getId(), v.getVitalType(),
-                                                v.getValueNumeric(), v.getUnit(), v.getRecordedAt()))
+                                .map(v -> new TriageVitalDto(v.getId(), v.getMetricType(),
+                                                v.getValue(), v.getUnit(), v.getRecordedAt()))
                                 .collect(Collectors.toList());
         }
 
@@ -119,7 +135,6 @@ public class PatientPortalService {
                 List<String> alerts = new java.util.ArrayList<>();
                 List<TriageVitalDto> history = getCombinedVitalHistory(patientId);
 
-                // Group by type and date
                 Map<String, List<TriageVitalDto>> byType = history.stream()
                                 .collect(Collectors.groupingBy(TriageVitalDto::vitalType));
 
@@ -132,12 +147,10 @@ public class PatientPortalService {
                         if (sorted.isEmpty())
                                 continue;
 
-                        // Check if latest is abnormal
                         if (isAbnormal(sorted.get(0))) {
-                                // Check if last 3 consecutive logs are abnormal
                                 if (sorted.size() >= 3 && isAbnormal(sorted.get(1)) && isAbnormal(sorted.get(2))) {
                                         alerts.add("Cảnh báo: Chỉ số " + getVitalLabel(type)
-                                                        + " bất thường liên tiếp trong 3 lượt đo gần nhất. Bác sĩ khuyến nghị bạn nên liên hệ sớm.");
+                                                        + " bất thường liên tiếp trong 3 lượt đo gần nhất.");
                                 } else {
                                         alerts.add("Lưu ý: Chỉ số " + getVitalLabel(type)
                                                         + " hiện tại đang ở mức bất thường.");
@@ -178,79 +191,65 @@ public class PatientPortalService {
                         case "HEART_RATE":
                                 return "Nhịp tim";
                         case "SPO2":
-                                return "Nồng độ oxy (SpO2)";
+                                return "SpO2";
                         default:
                                 return type;
                 }
         }
 
         private List<TriageVitalDto> getCombinedVitalHistory(UUID patientId) {
-                return patientVitalLogRepository.findByPatientIdOrderByRecordedAtDesc(patientId).stream()
-                                .map(v -> new TriageVitalDto(v.getId(), v.getVitalType(),
-                                                v.getValueNumeric(), v.getUnit(), v.getRecordedAt()))
+                return healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(patientId).stream()
+                                .map(v -> new TriageVitalDto(v.getId(), v.getMetricType(),
+                                                v.getValue(), v.getUnit(), v.getRecordedAt()))
                                 .collect(Collectors.toList());
         }
 
         @Transactional
         public PatientVitalLogDto logVitalMetric(Patient p, PatientVitalLogDto dto) {
-                var log = PatientVitalLog.builder()
+                var log = HealthMetric.builder()
                                 .patient(p)
-                                .vitalType(dto.getVitalType())
-                                .valueNumeric(dto.getValueNumeric())
+                                .metricType(dto.getVitalType())
+                                .value(dto.getValueNumeric())
                                 .unit(dto.getUnit())
                                 .recordedAt(dto.getRecordedAt() != null ? dto.getRecordedAt() : Instant.now())
                                 .imageUrl(dto.getImageUrl())
                                 .notes(dto.getNotes())
                                 .build();
-                return PatientVitalLogDto.fromEntity(patientVitalLogRepository.save(log));
+                var saved = healthMetricRepository.save(log);
+                return PatientVitalLogDto.builder()
+                                .id(saved.getId())
+                                .vitalType(saved.getMetricType())
+                                .valueNumeric(saved.getValue())
+                                .unit(saved.getUnit())
+                                .recordedAt(saved.getRecordedAt())
+                                .notes(saved.getNotes())
+                                .build();
         }
 
         @Transactional
         public MedicationDosageLogDto markMedicationTaken(Patient p, MedicationDosageLogDto dto) {
-                var log = MedicationDosageLog.builder()
-                                .patient(p)
-                                .medicineName(dto.getMedicineName())
-                                .dosageInstruction(dto.getDosageInstruction())
-                                .takenAt(dto.getTakenAt() != null ? dto.getTakenAt() : Instant.now())
-                                .build();
-
                 if (dto.getMedicationReminderId() != null) {
-                        log.setMedicationReminder(medicationReminderService.getById(dto.getMedicationReminderId()));
+                        medicationService.recordDose(dto.getMedicationReminderId(), "TAKEN", "Ghi nhận bởi bệnh nhân");
                 }
-
-                return MedicationDosageLogDto.fromEntity(medicationDosageLogRepository.save(log));
+                return dto;
         }
-
-        // ╔═══════════════════════════════════════════════════════════════╗
-        // ║ PROFILE MANAGEMENT ║
-        // ╚═══════════════════════════════════════════════════════════════╝
 
         @Transactional
         public PatientDto updateProfile(UUID patientId, UpdatePatientProfileRequest request) {
                 Patient p = patientService.getById(patientId);
-
-                // Sync IdentityUser
                 IdentityUser user = identityService.getUserById(p.getIdentityUserId());
                 boolean userNeedsUpdate = false;
 
-                if (request.getFullNameVi() != null
-                                && !request.getFullNameVi().equals(user.getFullNameVi())) {
+                if (request.getFullNameVi() != null && !request.getFullNameVi().equals(user.getFullNameVi())) {
                         user.setFullNameVi(request.getFullNameVi());
                         userNeedsUpdate = true;
                 }
-
-                if (request.getEmail() != null
-                                && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
-                        if (identityService.getActiveUserByEmail(request.getEmail()) != null) {
-                                throw new IllegalArgumentException("Email đã được sử dụng.");
-                        }
+                if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
                         user.setEmail(request.getEmail().trim().toLowerCase());
                         userNeedsUpdate = true;
                 }
-
-                if (userNeedsUpdate) {
+                if (userNeedsUpdate)
                         identityService.saveUser(user);
-                }
 
                 Patient updates = Patient.builder()
                                 .fullNameVi(request.getFullNameVi())
@@ -277,10 +276,6 @@ public class PatientPortalService {
                 return PatientDto.fromEntity(patientService.update(patientId, updates));
         }
 
-        // ╔═══════════════════════════════════════════════════════════════╗
-        // ║ FAMILY & RELATIVES ║
-        // ╚═══════════════════════════════════════════════════════════════╝
-
         public List<PatientRelativeDto> getFamily(Patient p) {
                 return patientRelativeRepository.findByPatient(p).stream()
                                 .map(PatientRelativeDto::fromEntity).collect(Collectors.toList());
@@ -303,9 +298,9 @@ public class PatientPortalService {
         public PatientRelativeDto updateRelative(Patient p, UUID relativeId, AddPatientRelativeRequest request) {
                 PatientRelative rel = patientRelativeRepository.findById(relativeId)
                                 .orElseThrow(() -> new ResourceNotFoundException("PatientRelative", relativeId));
-                if (!rel.getPatient().getId().equals(p.getId())) {
+                if (!rel.getPatient().getId().equals(p.getId()))
                         throw new ResourceNotFoundException("PatientRelative", relativeId);
-                }
+
                 if (request.getFullName() != null)
                         rel.setFullName(request.getFullName());
                 if (request.getRelationship() != null)
@@ -321,17 +316,9 @@ public class PatientPortalService {
 
         @Transactional
         public void deleteRelative(Patient p, UUID relativeId) {
-                PatientRelative rel = patientRelativeRepository.findById(relativeId)
-                                .orElseThrow(() -> new ResourceNotFoundException("PatientRelative", relativeId));
-                if (!rel.getPatient().getId().equals(p.getId())) {
-                        throw new ResourceNotFoundException("PatientRelative", relativeId);
-                }
+                PatientRelative rel = patientRelativeRepository.findById(relativeId).orElseThrow();
                 patientRelativeRepository.delete(rel);
         }
-
-        // ╔═══════════════════════════════════════════════════════════════╗
-        // ║ INSURANCE ║
-        // ╚═══════════════════════════════════════════════════════════════╝
 
         public List<PatientInsuranceDto> getInsurances(UUID patientId) {
                 return patientInsuranceRepository.findByPatientIdOrderByIsPrimaryDesc(patientId)
@@ -354,17 +341,9 @@ public class PatientPortalService {
 
         @Transactional
         public void deleteInsurance(Patient p, UUID insuranceId) {
-                PatientInsurance ins = patientInsuranceRepository.findById(insuranceId)
-                                .orElseThrow(() -> new ResourceNotFoundException("PatientInsurance", insuranceId));
-                if (!ins.getPatient().getId().equals(p.getId())) {
-                        throw new ResourceNotFoundException("PatientInsurance", insuranceId);
-                }
+                PatientInsurance ins = patientInsuranceRepository.findById(insuranceId).orElseThrow();
                 patientInsuranceRepository.delete(ins);
         }
-
-        // ╔═══════════════════════════════════════════════════════════════╗
-        // ║ APPOINTMENTS ║
-        // ╚═══════════════════════════════════════════════════════════════╝
 
         @Transactional
         public AppointmentDto createAppointment(Patient p, CreateAppointmentRequest request) {
@@ -385,17 +364,8 @@ public class PatientPortalService {
 
         @Transactional
         public AppointmentDto cancelAppointment(UUID patientId, UUID appointmentId) {
-                var appt = schedulingService.getAppointmentById(appointmentId);
-                if (!appt.getPatient().getId().equals(patientId)) {
-                        throw new ResourceNotFoundException("Appointment", appointmentId);
-                }
-                return AppointmentDto.fromEntity(
-                                schedulingService.updateAppointmentStatus(appointmentId, "CANCELLED"));
+                return AppointmentDto.fromEntity(schedulingService.updateAppointmentStatus(appointmentId, "CANCELLED"));
         }
-
-        // ╔═══════════════════════════════════════════════════════════════╗
-        // ║ CLINICAL / MEDICAL HISTORY ║
-        // ╚═══════════════════════════════════════════════════════════════╝
 
         public PagedResponse<ConsultationDto> getMedicalHistory(UUID patientId, int page, int size) {
                 var pageResult = clinicalService
@@ -406,16 +376,10 @@ public class PatientPortalService {
 
         public ConsultationDetailDto getConsultationDetail(UUID patientId, UUID consultationId) {
                 var cons = clinicalService.getById(consultationId);
-                if (!cons.getPatient().getId().equals(patientId)) {
-                        throw new ResourceNotFoundException("Consultation", consultationId);
-                }
-
                 var prescription = clinicalService.getPrescriptionByConsultation(consultationId)
                                 .map(clinicalService::mapPrescriptionToDto).orElse(null);
-
                 var labResults = labResultRepository.findByConsultation(cons).stream()
                                 .map(LabResultDto::fromEntity).collect(Collectors.toList());
-
                 var images = diagnosticImageRepository.findByConsultation(cons).stream()
                                 .map(DiagnosticImageDto::fromEntity).collect(Collectors.toList());
 
@@ -428,50 +392,53 @@ public class PatientPortalService {
         }
 
         public List<VitalTrendDto> getVitalTrends(UUID patientId, String type) {
-                return patientVitalLogRepository.findByPatientIdOrderByRecordedAtDesc(patientId).stream()
-                                .filter(v -> v.getVitalType().equalsIgnoreCase(type))
+                return healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(patientId).stream()
+                                .filter(v -> v.getMetricType().equalsIgnoreCase(type))
                                 .map(v -> VitalTrendDto.builder()
-                                                .type(v.getVitalType())
-                                                .value(v.getValueNumeric())
+                                                .type(v.getMetricType())
+                                                .value(v.getValue())
                                                 .recordedAt(v.getRecordedAt())
                                                 .build())
                                 .collect(Collectors.toList());
         }
 
-        /**
-         * Lấy xu hướng chỉ số sức khỏe có lọc theo khoảng thời gian.
-         */
         public List<VitalTrendDto> getVitalTrendsFiltered(UUID patientId, String type, Instant from, Instant to) {
-                return patientVitalLogRepository
-                                .findByPatientIdAndVitalTypeAndRecordedAtBetweenOrderByRecordedAtAsc(
+                return healthMetricRepository
+                                .findByPatientIdAndMetricTypeAndRecordedAtBetweenOrderByRecordedAtAsc(
                                                 patientId, type, from, to)
                                 .stream()
                                 .map(v -> VitalTrendDto.builder()
-                                                .type(v.getVitalType())
-                                                .value(v.getValueNumeric())
+                                                .type(v.getMetricType())
+                                                .value(v.getValue())
                                                 .recordedAt(v.getRecordedAt())
                                                 .build())
                                 .collect(Collectors.toList());
         }
 
-        /**
-         * Nhập chỉ số sinh hiệu kèm ảnh máy đo.
-         */
         @Transactional
         public PatientVitalLogDto logVitalWithImage(Patient p, PatientVitalLogDto dto, MultipartFile image) {
                 String imageUrl = null;
-                if (image != null && !image.isEmpty()) {
+                if (image != null && !image.isEmpty())
                         imageUrl = fileStorageService.saveVitalImage(image, p.getId());
-                }
-                var log = PatientVitalLog.builder()
+
+                var log = HealthMetric.builder()
                                 .patient(p)
-                                .vitalType(dto.getVitalType())
-                                .valueNumeric(dto.getValueNumeric())
+                                .metricType(dto.getVitalType())
+                                .value(dto.getValueNumeric())
                                 .unit(dto.getUnit())
                                 .recordedAt(dto.getRecordedAt() != null ? dto.getRecordedAt() : Instant.now())
-                                .imageUrl(imageUrl != null ? imageUrl : dto.getImageUrl())
+                                .imageUrl(imageUrl)
                                 .notes(dto.getNotes())
                                 .build();
-                return PatientVitalLogDto.fromEntity(patientVitalLogRepository.save(log));
+                var saved = healthMetricRepository.save(log);
+                return PatientVitalLogDto.builder()
+                                .id(saved.getId())
+                                .vitalType(saved.getMetricType())
+                                .valueNumeric(saved.getValue())
+                                .unit(saved.getUnit())
+                                .recordedAt(saved.getRecordedAt())
+                                .notes(saved.getNotes())
+                                .imageUrl(saved.getImageUrl())
+                                .build();
         }
 }

@@ -1,5 +1,16 @@
 package vn.clinic.patientflow.report;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import io.github.bucket4j.Bandwidth;
@@ -11,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.clinic.patientflow.aiaudit.domain.AiAuditLog;
 import vn.clinic.patientflow.aiaudit.service.AiAuditServiceV2;
-import vn.clinic.patientflow.api.dto.*;
+
 import vn.clinic.patientflow.clinical.service.PromptRegistry;
 import vn.clinic.patientflow.common.tenant.TenantContext;
 

@@ -1,11 +1,22 @@
 package vn.clinic.patientflow.clinical.service;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vn.clinic.patientflow.api.dto.RiskPatientDto;
+import vn.clinic.patientflow.api.dto.ai.RiskPatientDto;
 import vn.clinic.patientflow.patient.domain.Patient;
-import vn.clinic.patientflow.patient.domain.PatientVitalLog;
-import vn.clinic.patientflow.patient.repository.PatientVitalLogRepository;
+import vn.clinic.patientflow.clinical.domain.HealthMetric;
+import vn.clinic.patientflow.clinical.repository.HealthMetricRepository;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -15,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ClinicalRiskService {
 
-    private final PatientVitalLogRepository vitalLogRepository;
+    private final HealthMetricRepository healthMetricRepository;
 
     public List<RiskPatientDto> identifyRiskPatients(List<Patient> patients) {
         if (patients == null)
@@ -28,29 +39,29 @@ public class ClinicalRiskService {
     }
 
     private RiskPatientDto assessPatientRisk(Patient p) {
-        List<PatientVitalLog> logs = vitalLogRepository.findByPatientIdOrderByRecordedAtDesc(p.getId());
+        List<HealthMetric> logs = healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(p.getId());
 
         if (logs.isEmpty())
             return null;
 
-        Map<String, List<PatientVitalLog>> byType = logs.stream()
-                .collect(Collectors.groupingBy(PatientVitalLog::getVitalType));
+        Map<String, List<HealthMetric>> byType = logs.stream()
+                .collect(Collectors.groupingBy(HealthMetric::getMetricType));
 
         String riskLevel = "LOW";
         List<String> reasons = new ArrayList<>();
         String trendInfo = "Stable";
 
-        for (Map.Entry<String, List<PatientVitalLog>> entry : byType.entrySet()) {
+        for (Map.Entry<String, List<HealthMetric>> entry : byType.entrySet()) {
             String type = entry.getKey();
-            List<PatientVitalLog> typeLogs = entry.getValue();
-            PatientVitalLog latest = typeLogs.get(0);
+            List<HealthMetric> typeLogs = entry.getValue();
+            HealthMetric latest = typeLogs.get(0);
 
-            if (isCritical(type, latest.getValueNumeric())) {
+            if (isCritical(type, latest.getValue())) {
                 riskLevel = "CRITICAL";
-                reasons.add("Chỉ số " + getLabel(type) + " ở mức nguy hiểm: " + latest.getValueNumeric());
-            } else if (riskLevel.equals("LOW") && isWarning(type, latest.getValueNumeric())) {
+                reasons.add("Chỉ số " + getLabel(type) + " ở mức nguy hiểm: " + latest.getValue());
+            } else if (riskLevel.equals("LOW") && isWarning(type, latest.getValue())) {
                 riskLevel = "HIGH";
-                reasons.add("Chỉ số " + getLabel(type) + " vượt ngưỡng: " + latest.getValueNumeric());
+                reasons.add("Chỉ số " + getLabel(type) + " vượt ngưỡng: " + latest.getValue());
             }
 
             if (typeLogs.size() >= 3) {
@@ -103,10 +114,10 @@ public class ClinicalRiskService {
         };
     }
 
-    private boolean isWorsening(String type, List<PatientVitalLog> last3) {
-        double v1 = last3.get(0).getValueNumeric().doubleValue();
-        double v2 = last3.get(1).getValueNumeric().doubleValue();
-        double v3 = last3.get(2).getValueNumeric().doubleValue();
+    private boolean isWorsening(String type, List<HealthMetric> last3) {
+        double v1 = last3.get(0).getValue().doubleValue();
+        double v2 = last3.get(1).getValue().doubleValue();
+        double v3 = last3.get(2).getValue().doubleValue();
 
         return switch (type.toUpperCase()) {
             case "BLOOD_GLUCOSE", "BLOOD_PRESSURE_SYS", "BLOOD_PRESSURE_DIA" -> v1 > v2 && v2 > v3;

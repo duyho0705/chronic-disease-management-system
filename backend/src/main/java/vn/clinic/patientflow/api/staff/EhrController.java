@@ -1,5 +1,21 @@
 package vn.clinic.patientflow.api.staff;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.clinical.TimelineItemDto;
+import vn.clinic.patientflow.api.dto.clinical.TriageVitalDto;
+import vn.clinic.patientflow.clinical.repository.HealthMetricRepository;
+import vn.clinic.patientflow.clinical.repository.ClinicalConsultationRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -8,12 +24,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vn.clinic.patientflow.api.dto.ApiResponse;
-import vn.clinic.patientflow.api.dto.TimelineItemDto;
-import vn.clinic.patientflow.api.dto.TriageVitalDto;
-import vn.clinic.patientflow.patient.repository.PatientVitalLogRepository;
-import vn.clinic.patientflow.clinical.repository.ClinicalConsultationRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,14 +35,14 @@ import java.util.stream.Collectors;
 @Tag(name = "EHR", description = "Hồ sơ sức khỏe điện tử")
 public class EhrController {
 
-        private final PatientVitalLogRepository vitalRepository;
+        private final HealthMetricRepository healthMetricRepository;
         private final ClinicalConsultationRepository consultationRepository;
 
         @GetMapping("/patient/{patientId}/vitals")
         @Operation(summary = "Lấy lịch sử dấu hiệu sinh tồn")
         public ResponseEntity<ApiResponse<List<TriageVitalDto>>> getVitalsHistory(@PathVariable UUID patientId) {
-                var data = vitalRepository.findByPatientIdOrderByRecordedAtDesc(patientId).stream()
-                                .map(v -> new TriageVitalDto(v.getId(), v.getVitalType(), v.getValueNumeric(),
+                var data = healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(patientId).stream()
+                                .map(v -> new TriageVitalDto(v.getId(), v.getMetricType(), v.getValue(),
                                                 v.getUnit(),
                                                 v.getRecordedAt()))
                                 .collect(Collectors.toList());

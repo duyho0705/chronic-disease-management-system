@@ -2,8 +2,7 @@ package vn.clinic.patientflow.patient.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import vn.clinic.patientflow.common.domain.BaseEntity;
-
+import vn.clinic.patientflow.common.domain.BaseAuditableEntity;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
@@ -15,42 +14,29 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PatientVitalLog extends BaseEntity {
+public class PatientVitalLog extends BaseAuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @Column(name = "vital_type", nullable = false, length = 32)
+    @Column(name = "vital_type", nullable = false)
     private String vitalType;
 
-    @Column(name = "value_numeric", precision = 10, scale = 2, nullable = false)
+    @Column(name = "value_numeric", precision = 10, scale = 2)
     private BigDecimal valueNumeric;
 
-    @Column(name = "unit", length = 20)
+    @Column(name = "unit")
     private String unit;
 
-    @Column(name = "recorded_at", nullable = false)
+    @Column(name = "recorded_at")
     private Instant recordedAt;
 
-    @Column(name = "image_url", length = 512)
+    @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "notes", columnDefinition = "text")
+    @Column(name = "notes")
     private String notes;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = Instant.now();
-        }
-        if (recordedAt == null) {
-            recordedAt = Instant.now();
-        }
-    }
 
     public PatientVitalLog(UUID id) {
         super(id);

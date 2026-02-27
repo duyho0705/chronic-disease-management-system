@@ -1,5 +1,16 @@
 package vn.clinic.patientflow.clinical.service;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -11,11 +22,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import vn.clinic.patientflow.aiaudit.domain.AiAuditLog;
 import vn.clinic.patientflow.aiaudit.service.AiAuditServiceV2;
-import vn.clinic.patientflow.api.dto.AiChatRequest;
-import vn.clinic.patientflow.api.dto.Icd10CodeDto;
-import vn.clinic.patientflow.api.dto.PrescriptionItemDto;
-import vn.clinic.patientflow.api.dto.PrescriptionTemplateDto;
-import vn.clinic.patientflow.api.dto.PrescriptionVerificationDto;
+import vn.clinic.patientflow.api.dto.ai.AiChatRequest;
+import vn.clinic.patientflow.api.dto.clinical.Icd10CodeDto;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionItemDto;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionTemplateDto;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionVerificationDto;
 import vn.clinic.patientflow.clinical.domain.ClinicalConsultation;
 import vn.clinic.patientflow.patient.domain.Patient;
 
@@ -329,7 +340,7 @@ public class AiClinicalService {
                 .build();
     }
 
-    public vn.clinic.patientflow.api.dto.DifferentialDiagnosisDto getDifferentialDiagnosis(
+    public vn.clinic.patientflow.api.dto.ai.DifferentialDiagnosisDto getDifferentialDiagnosis(
             ClinicalConsultation consultation) {
         if (chatModel == null)
             return null;
@@ -344,8 +355,8 @@ public class AiClinicalService {
             if (res.contains("{")) {
                 jsonPart = res.substring(res.indexOf("{"), res.lastIndexOf("}") + 1);
             }
-            vn.clinic.patientflow.api.dto.DifferentialDiagnosisDto dto = objectMapper.readValue(jsonPart,
-                    vn.clinic.patientflow.api.dto.DifferentialDiagnosisDto.class);
+            vn.clinic.patientflow.api.dto.ai.DifferentialDiagnosisDto dto = objectMapper.readValue(jsonPart,
+                    vn.clinic.patientflow.api.dto.ai.DifferentialDiagnosisDto.class);
 
             aiAuditService.recordInteraction(
                     AiAuditLog.AiFeatureType.DIFFERENTIAL_DIAGNOSIS,
@@ -370,7 +381,7 @@ public class AiClinicalService {
         }
     }
 
-    public vn.clinic.patientflow.api.dto.ClinicalChecklistDto getSuggestedChecklist(ClinicalConsultation consultation) {
+    public vn.clinic.patientflow.api.dto.clinical.ClinicalChecklistDto getSuggestedChecklist(ClinicalConsultation consultation) {
         if (chatModel == null)
             return null;
 
@@ -384,7 +395,7 @@ public class AiClinicalService {
             if (res.contains("{")) {
                 jsonPart = res.substring(res.indexOf("{"), res.lastIndexOf("}") + 1);
             }
-            var dto = objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.ClinicalChecklistDto.class);
+            var dto = objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.clinical.ClinicalChecklistDto.class);
 
             aiAuditService.recordInteraction(
                     AiAuditLog.AiFeatureType.CLINICAL_CHECKLIST,
@@ -491,7 +502,7 @@ public class AiClinicalService {
         }
     }
 
-    public vn.clinic.patientflow.api.dto.FollowUpSuggestionDto suggestFollowUp(ClinicalConsultation consultation) {
+    public vn.clinic.patientflow.api.dto.ai.FollowUpSuggestionDto suggestFollowUp(ClinicalConsultation consultation) {
         if (chatModel == null)
             return null;
 
@@ -504,14 +515,14 @@ public class AiClinicalService {
             if (res.contains("{")) {
                 jsonPart = res.substring(res.indexOf("{"), res.lastIndexOf("}") + 1);
             }
-            return objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.FollowUpSuggestionDto.class);
+            return objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.ai.FollowUpSuggestionDto.class);
         } catch (Exception e) {
             log.error("Follow-up Suggestion AI Error: {}", e.getMessage());
             return null;
         }
     }
 
-    public vn.clinic.patientflow.api.dto.TreatmentEfficacyDto analyzeTreatmentEfficacy(
+    public vn.clinic.patientflow.api.dto.ai.TreatmentEfficacyDto analyzeTreatmentEfficacy(
             ClinicalConsultation consultation) {
         if (chatModel == null)
             return null;
@@ -525,14 +536,14 @@ public class AiClinicalService {
             if (res.contains("{")) {
                 jsonPart = res.substring(res.indexOf("{"), res.lastIndexOf("}") + 1);
             }
-            return objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.TreatmentEfficacyDto.class);
+            return objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.ai.TreatmentEfficacyDto.class);
         } catch (Exception e) {
             log.error("Treatment Efficacy AI Error: {}", e.getMessage());
             return null;
         }
     }
 
-    public vn.clinic.patientflow.api.dto.ComplicationRiskDto predictComplicationRisk(
+    public vn.clinic.patientflow.api.dto.ai.ComplicationRiskDto predictComplicationRisk(
             ClinicalConsultation consultation) {
         if (chatModel == null)
             return null;
@@ -546,14 +557,14 @@ public class AiClinicalService {
             if (res.contains("{")) {
                 jsonPart = res.substring(res.indexOf("{"), res.lastIndexOf("}") + 1);
             }
-            return objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.ComplicationRiskDto.class);
+            return objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.ai.ComplicationRiskDto.class);
         } catch (Exception e) {
             log.error("Risk Prediction AI Error: {}", e.getMessage());
             return null;
         }
     }
 
-    public vn.clinic.patientflow.api.dto.StandardizedClinicalNoteDto standardizeClinicalNote(
+    public vn.clinic.patientflow.api.dto.clinical.StandardizedClinicalNoteDto standardizeClinicalNote(
             ClinicalConsultation consultation) {
         if (chatModel == null)
             return null;
@@ -567,7 +578,7 @@ public class AiClinicalService {
             if (res.contains("{")) {
                 jsonPart = res.substring(res.indexOf("{"), res.lastIndexOf("}") + 1);
             }
-            return objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.StandardizedClinicalNoteDto.class);
+            return objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.clinical.StandardizedClinicalNoteDto.class);
         } catch (Exception e) {
             log.error("Note Standardization AI Error: {}", e.getMessage());
             return null;

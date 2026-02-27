@@ -1,5 +1,16 @@
 package vn.clinic.patientflow.report;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.clinic.patientflow.api.dto.DailyVolumeDto;
-import vn.clinic.patientflow.api.dto.WaitTimeSummaryDto;
+import vn.clinic.patientflow.api.dto.report.DailyVolumeDto;
+import vn.clinic.patientflow.api.dto.report.WaitTimeSummaryDto;
 import vn.clinic.patientflow.common.tenant.TenantContext;
 import vn.clinic.patientflow.tenant.domain.TenantBranch;
 import vn.clinic.patientflow.tenant.repository.TenantBranchRepository;
@@ -68,11 +79,11 @@ public class ReportService {
 
         @Transactional(readOnly = true)
         @org.springframework.cache.annotation.Cacheable(value = "dashboards", key = "'heatmap_' + #branchId")
-        public vn.clinic.patientflow.api.dto.BranchOperationalHeatmapDto getOperationalHeatmap(UUID branchId) {
+        public vn.clinic.patientflow.api.dto.tenant.BranchOperationalHeatmapDto getOperationalHeatmap(UUID branchId) {
                 TenantBranch branch = tenantBranchRepository.findById(branchId)
                                 .orElseThrow(() -> new NoSuchElementException("Branch not found"));
 
-                return vn.clinic.patientflow.api.dto.BranchOperationalHeatmapDto.builder()
+                return vn.clinic.patientflow.api.dto.tenant.BranchOperationalHeatmapDto.builder()
                                 .branchName(branch.getNameVi())
                                 .queueDensity(new HashMap<>())
                                 .totalActivePatients(0L)

@@ -1,18 +1,27 @@
 package vn.clinic.patientflow.api.portal.doctor;
 
+import vn.clinic.patientflow.api.dto.ai.AiChatRequest;
+import vn.clinic.patientflow.api.dto.ai.PrescriptionVerificationDto;
+import vn.clinic.patientflow.api.dto.ai.DifferentialDiagnosisDto;
+import vn.clinic.patientflow.api.dto.clinical.PrescriptionItemDto;
+import vn.clinic.patientflow.api.dto.clinical.Icd10CodeDto;
+import vn.clinic.patientflow.api.dto.clinical.ClinicalChecklistDto;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.*;
+
 import vn.clinic.patientflow.clinical.service.AiClinicalService;
 import vn.clinic.patientflow.clinical.service.ClinicalContextService;
 import vn.clinic.patientflow.clinical.service.ClinicalService;
 import vn.clinic.patientflow.clinical.service.PrescriptionTemplateService;
 import vn.clinic.patientflow.common.service.PdfService;
 import vn.clinic.patientflow.common.service.EmailService;
+import vn.clinic.patientflow.patient.domain.Patient;
+import vn.clinic.patientflow.patient.repository.MedicationReminderRepository;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,7 +44,7 @@ public class DoctorAiSupportController {
     private final ClinicalContextService contextService;
     private final EmailService emailService;
     private final vn.clinic.patientflow.common.service.OmniChannelService omniChannelService;
-    private final vn.clinic.patientflow.patient.repository.MedicationReminderRepository reminderRepository;
+    private final MedicationReminderRepository reminderRepository;
 
     @PostMapping("/{id}/ai-clinical-support")
     @Operation(summary = "AI Hỗ trợ chẩn đoán và tóm tắt ca lâm sàng")
@@ -181,11 +190,12 @@ public class DoctorAiSupportController {
     @Operation(summary = "Gửi nhắc nhở uống thuốc thủ công qua đa kênh")
     public ResponseEntity<ApiResponse<String>> triggerMedicationReminder(@PathVariable UUID reminderId) {
         var reminder = reminderRepository.findById(reminderId)
-                .orElseThrow(() -> new vn.clinic.patientflow.common.exception.ResourceNotFoundException("Reminder",
-                        reminderId));
-        var p = reminder.getPatient();
+                .orElseThrow(
+                        () -> new vn.clinic.patientflow.common.exception.ResourceNotFoundException("MedicationReminder",
+                                reminderId));
+        var patient = reminder.getPatient();
 
-        omniChannelService.sendMedicationReminder(p.getFullNameVi(), p.getEmail(), p.getPhone(),
+        omniChannelService.sendMedicationReminder(patient.getFullNameVi(), patient.getEmail(), patient.getPhone(),
                 reminder.getMedicineName(), reminder.getDosage());
 
         return ResponseEntity.ok(ApiResponse.success("Đã gửi nhắc nhở tới bệnh nhân"));

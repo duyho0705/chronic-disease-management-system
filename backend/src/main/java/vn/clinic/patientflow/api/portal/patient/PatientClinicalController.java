@@ -8,7 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import vn.clinic.patientflow.api.dto.*;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.common.PagedResponse;
+import vn.clinic.patientflow.api.dto.patient.PatientDashboardDto;
+import vn.clinic.patientflow.api.dto.patient.PatientVitalLogDto;
+import vn.clinic.patientflow.api.dto.clinical.ConsultationDto;
+import vn.clinic.patientflow.api.dto.clinical.ConsultationDetailDto;
+import vn.clinic.patientflow.api.dto.clinical.VitalTrendDto;
+
 import vn.clinic.patientflow.patient.domain.Patient;
 import vn.clinic.patientflow.patient.service.PatientPortalService;
 

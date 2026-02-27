@@ -1,5 +1,13 @@
 package vn.clinic.patientflow.api.staff;
 
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.common.PagedResponse;
+import vn.clinic.patientflow.api.dto.patient.PatientCrmInsightDto;
+import vn.clinic.patientflow.api.dto.patient.PatientDto;
+import vn.clinic.patientflow.api.dto.patient.CreatePatientRequest;
+import vn.clinic.patientflow.api.dto.patient.UpdatePatientRequest;
+import vn.clinic.patientflow.api.dto.patient.PatientInsuranceDto;
+import vn.clinic.patientflow.api.dto.messaging.RegisterDeviceTokenRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -12,7 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.*;
+
 import vn.clinic.patientflow.patient.domain.Patient;
 import vn.clinic.patientflow.patient.service.PatientService;
 import vn.clinic.patientflow.patient.service.PatientCrmService;

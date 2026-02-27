@@ -1,5 +1,10 @@
 package vn.clinic.patientflow.api.portal.doctor;
 
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.ai.CdsAdviceDto;
+import vn.clinic.patientflow.api.dto.ai.ClinicalEarlyWarningDto;
+import vn.clinic.patientflow.api.dto.clinical.LabResultDto;
+import vn.clinic.patientflow.api.dto.clinical.DiagnosticImageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.*;
+
 import vn.clinic.patientflow.clinical.service.CdsService;
 import vn.clinic.patientflow.clinical.service.ClinicalService;
 import vn.clinic.patientflow.clinical.service.EarlyWarningService;

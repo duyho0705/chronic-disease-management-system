@@ -1,11 +1,22 @@
 package vn.clinic.patientflow.common.service;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import vn.clinic.patientflow.api.dto.PrescriptionDto;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionDto;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -62,7 +73,7 @@ public class PdfService {
     }
 
     public ByteArrayInputStream generateConsultationSummaryPdf(
-            vn.clinic.patientflow.api.dto.ConsultationSummaryPdfDto data) {
+            vn.clinic.patientflow.api.dto.clinical.ConsultationSummaryPdfDto data) {
         Document document = new Document(PageSize.A4);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -159,7 +170,7 @@ public class PdfService {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    public ByteArrayInputStream generateCdmReportPdf(vn.clinic.patientflow.api.dto.CdmReportDto data) {
+    public ByteArrayInputStream generateCdmReportPdf(vn.clinic.patientflow.api.dto.report.CdmReportDto data) {
         Document document = new Document(PageSize.A4);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 

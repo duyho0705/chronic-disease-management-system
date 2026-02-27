@@ -7,7 +7,7 @@ import vn.clinic.patientflow.common.domain.BaseAuditableEntity;
 import java.util.UUID;
 
 /**
- * Định nghĩa vai trò (Lễ tân, Y tá phân loại, Bác sĩ, Admin).
+ * Vai trò người dùng (PATIENT, DOCTOR, CLINIC_MANAGER, SYSTEM_ADMIN).
  */
 @Entity
 @Table(name = "identity_role")

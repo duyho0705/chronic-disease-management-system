@@ -1,5 +1,6 @@
 package vn.clinic.patientflow.api.portal.doctor;
 
+// Unused wildcard imports removed
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +10,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vn.clinic.patientflow.api.dto.ApiResponse;
-import vn.clinic.patientflow.api.dto.AppointmentDto;
-import vn.clinic.patientflow.api.dto.DoctorDashboardDto;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.scheduling.AppointmentDto;
+import vn.clinic.patientflow.api.dto.clinical.DoctorDashboardDto;
 import vn.clinic.patientflow.auth.AuthPrincipal;
 import vn.clinic.patientflow.scheduling.service.SchedulingService;
 

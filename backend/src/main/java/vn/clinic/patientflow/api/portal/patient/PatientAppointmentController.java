@@ -1,12 +1,16 @@
 package vn.clinic.patientflow.api.portal.patient;
 
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.scheduling.AppointmentDto;
+import vn.clinic.patientflow.api.dto.scheduling.SlotAvailabilityDto;
+import vn.clinic.patientflow.api.dto.scheduling.CreateAppointmentRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.*;
+
 import vn.clinic.patientflow.patient.domain.Patient;
 import vn.clinic.patientflow.patient.service.PatientPortalService;
 import vn.clinic.patientflow.scheduling.service.SchedulingService;

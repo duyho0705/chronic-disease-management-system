@@ -24,5 +24,5 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
 
     Optional<Patient> findFirstByTenantIdAndEmail(UUID tenantId, String email);
 
-    Optional<Patient> findFirstByIdentityUserId(UUID identityUserId);
+    Optional<Patient> findFirstByIdentityUser_Id(UUID userId);
 }

@@ -3,6 +3,7 @@ package vn.clinic.patientflow.identity.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import vn.clinic.patientflow.common.domain.BaseAuditableEntity;
+import vn.clinic.patientflow.tenant.domain.Tenant;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Tài khoản nhân viên / admin.
+ * Tài khoản người dùng hệ thống.
  */
 @Entity
 @Table(name = "identity_user")
@@ -20,6 +21,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class IdentityUser extends BaseAuditableEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id")
+    private Tenant tenant;
+
+    @Column(name = "username", nullable = false, unique = true, length = 100)
+    private String username;
 
     @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
@@ -40,7 +48,7 @@ public class IdentityUser extends BaseAuditableEntity {
     @Column(name = "last_login_at")
     private Instant lastLoginAt;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {})
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @Builder.Default
     private List<IdentityUserRole> userRoles = new ArrayList<>();
 

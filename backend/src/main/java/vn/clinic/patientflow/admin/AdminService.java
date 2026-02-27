@@ -1,12 +1,13 @@
 package vn.clinic.patientflow.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.common.PagedResponse;
+import vn.clinic.patientflow.api.dto.clinical.AuditLogDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.clinic.patientflow.api.dto.*;
 import vn.clinic.patientflow.common.exception.ResourceNotFoundException;
 import vn.clinic.patientflow.identity.domain.IdentityRole;
 import vn.clinic.patientflow.identity.domain.IdentityUser;
@@ -41,7 +42,7 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public PagedResponse<AdminUserDto> listUsers(UUID tenantId, Pageable pageable) {
-        Page<IdentityUser> page = tenantId != null
+        org.springframework.data.domain.Page<IdentityUser> page = tenantId != null
                 ? identityUserRepository.findDistinctByTenantId(tenantId, pageable)
                 : identityUserRepository.findAll(pageable);
         List<AdminUserDto> content = page.getContent().stream()
@@ -154,7 +155,7 @@ public class AdminService {
         if (tenantId == null)
             tenantId = vn.clinic.patientflow.common.tenant.TenantContext.getTenantId().orElse(null);
 
-        Page<vn.clinic.patientflow.common.domain.AuditLog> page = auditLogRepository
+        org.springframework.data.domain.Page<vn.clinic.patientflow.common.domain.AuditLog> page = auditLogRepository
                 .findByTenantIdOrderByCreatedAtDesc(tenantId, pageable);
 
         List<AuditLogDto> content = page.getContent().stream()

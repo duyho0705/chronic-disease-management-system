@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import vn.clinic.patientflow.clinical.domain.ClinicalConsultation;
 import vn.clinic.patientflow.clinical.repository.ClinicalVitalRepository;
 import vn.clinic.patientflow.clinical.repository.LabResultRepository;
-import vn.clinic.patientflow.patient.repository.PatientVitalLogRepository;
+import vn.clinic.patientflow.clinical.repository.HealthMetricRepository;
+import vn.clinic.patientflow.clinical.repository.MedicationScheduleRepository;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -19,13 +20,13 @@ import java.time.Period;
 @RequiredArgsConstructor
 public class ClinicalContextService {
 
-    private final PatientVitalLogRepository vitalsRepository;
+    private final HealthMetricRepository vitalsRepository;
     private final LabResultRepository labResultRepository;
     private final ClinicalVitalRepository clinicalVitalRepository;
     private final vn.clinic.patientflow.clinical.repository.PrescriptionRepository prescriptionRepository;
     private final vn.clinic.patientflow.patient.repository.PatientChronicConditionRepository chronicConditionRepository;
     private final vn.clinic.patientflow.patient.repository.PatientVitalTargetRepository vitalTargetRepository;
-    private final vn.clinic.patientflow.patient.repository.MedicationReminderRepository medicationReminderRepository;
+    private final MedicationScheduleRepository medicationScheduleRepository;
 
     /**
      * Builds a comprehensive, structured medical context for AI consumption.
@@ -90,9 +91,9 @@ public class ClinicalContextService {
         if (vitals.isEmpty()) {
             sb.append("- No vitals recorded.\n");
         } else {
-            vitals.stream().limit(10).forEach(v -> sb.append(String.format("- %s: %.1f %s (%s)\n",
-                    v.getVitalType(),
-                    v.getValueNumeric(),
+            vitals.stream().limit(10).forEach(v -> sb.append(String.format("- %s: %s %s (%s)\n",
+                    v.getMetricType(),
+                    v.getValue(),
                     safeStr(v.getUnit()),
                     v.getRecordedAt())));
         }
@@ -155,14 +156,16 @@ public class ClinicalContextService {
 
     private void appendMedicationAdherence(StringBuilder sb, ClinicalConsultation consultation) {
         sb.append("### PATIENT MEDICATION ADHERENCE\n");
-        var reminders = medicationReminderRepository.findByPatientId(consultation.getPatient().getId());
-        if (reminders.isEmpty()) {
+        var schedules = medicationScheduleRepository
+                .findByMedicationPrescriptionPatientId(consultation.getPatient().getId());
+        if (schedules.isEmpty()) {
             sb.append("- No medication track records for this patient.\n");
         } else {
-            reminders.forEach(r -> sb.append(String.format("- %s: Adherence Score: %s%% (Last taken: %s)\n",
-                    r.getMedicineName(),
-                    r.getAdherenceScore() != null ? r.getAdherenceScore() : "0",
-                    r.getLastTakenAt() != null ? r.getLastTakenAt() : "Never")));
+            schedules.stream().limit(10).forEach(s -> sb.append(String.format("- %s: %s (Scheduled: %s, Taken: %s)\n",
+                    s.getMedication().getMedicineName(),
+                    s.getStatus(),
+                    s.getScheduledTime(),
+                    s.getTakenAt() != null ? s.getTakenAt() : "N/A")));
         }
         sb.append("\n");
     }
@@ -173,21 +176,21 @@ public class ClinicalContextService {
         if (prescription.isEmpty()) {
             sb.append("- No active prescriptions for this encounter.\n");
         } else {
-            prescription.ifPresent(p -> p.getItems().forEach(item -> {
+            prescription.ifPresent(p -> p.getMedications().forEach(item -> {
                 sb.append(String.format("- %s (Qty: %s) - %s\n",
-                        item.getProductNameCustom(), item.getQuantity(), safeStr(item.getDosageInstruction())));
+                        item.getMedicineName(), item.getQuantity(), safeStr(item.getDosage())));
             }));
         }
         sb.append("\n");
     }
 
-    public vn.clinic.patientflow.api.dto.CdmReportDto getCdmReportData(ClinicalConsultation consultation,
+    public vn.clinic.patientflow.api.dto.report.CdmReportDto getCdmReportData(ClinicalConsultation consultation,
             String carePlan) {
         var patient = consultation.getPatient();
         var patientId = patient.getId();
 
         var conditions = chronicConditionRepository.findByPatientId(patientId).stream()
-                .map(c -> vn.clinic.patientflow.api.dto.CdmReportDto.ConditionInfo.builder()
+                .map(c -> vn.clinic.patientflow.api.dto.report.CdmReportDto.ConditionInfo.builder()
                         .name(c.getConditionName())
                         .icd10(c.getIcd10Code())
                         .severity(c.getSeverityLevel())
@@ -196,22 +199,24 @@ public class ClinicalContextService {
                 .toList();
 
         var targets = vitalTargetRepository.findByPatientId(patientId).stream()
-                .map(t -> vn.clinic.patientflow.api.dto.CdmReportDto.TargetInfo.builder()
+                .map(t -> vn.clinic.patientflow.api.dto.report.CdmReportDto.TargetInfo.builder()
                         .type(t.getVitalType())
                         .range(t.getMinValue() + " - " + t.getMaxValue())
                         .unit(t.getUnit())
                         .build())
                 .toList();
 
-        var adherence = medicationReminderRepository.findByPatientId(patientId).stream()
-                .map(r -> vn.clinic.patientflow.api.dto.CdmReportDto.AdherenceInfo.builder()
-                        .medicine(r.getMedicineName())
-                        .score(r.getAdherenceScore() != null ? r.getAdherenceScore() : java.math.BigDecimal.ZERO)
-                        .lastTaken(r.getLastTakenAt() != null ? r.getLastTakenAt().toString() : "Chưa uống")
+        var adherence = medicationScheduleRepository.findByMedicationPrescriptionPatientId(patientId).stream()
+                .limit(10)
+                .map(s -> vn.clinic.patientflow.api.dto.report.CdmReportDto.AdherenceInfo.builder()
+                        .medicine(s.getMedication().getMedicineName())
+                        .score(s.getStatus().equals("TAKEN") ? java.math.BigDecimal.valueOf(100)
+                                : java.math.BigDecimal.ZERO)
+                        .lastTaken(s.getTakenAt() != null ? s.getTakenAt().toString() : "Chưa uống")
                         .build())
                 .toList();
 
-        return vn.clinic.patientflow.api.dto.CdmReportDto.builder()
+        return vn.clinic.patientflow.api.dto.report.CdmReportDto.builder()
                 .patientName(patient.getFullNameVi())
                 .patientDob(patient.getDateOfBirth() != null ? patient.getDateOfBirth().toString() : "N/A")
                 .patientGender(patient.getGender() != null ? patient.getGender() : "N/A")

@@ -9,7 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import vn.clinic.patientflow.api.dto.*;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.auth.ChangePasswordRequest;
+import vn.clinic.patientflow.api.dto.patient.PatientDto;
+import vn.clinic.patientflow.api.dto.patient.UpdatePatientProfileRequest;
+import vn.clinic.patientflow.api.dto.patient.PatientRelativeDto;
+import vn.clinic.patientflow.api.dto.patient.AddPatientRelativeRequest;
+import vn.clinic.patientflow.api.dto.patient.PatientInsuranceDto;
+import vn.clinic.patientflow.api.dto.patient.AddPatientInsuranceRequest;
+
 import vn.clinic.patientflow.auth.AuthPrincipal;
 import vn.clinic.patientflow.auth.AuthService;
 import vn.clinic.patientflow.patient.domain.Patient;

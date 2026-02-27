@@ -15,8 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import vn.clinic.patientflow.aiaudit.domain.AiAuditLog;
 import vn.clinic.patientflow.aiaudit.repository.AiAuditLogRepository;
-import vn.clinic.patientflow.api.dto.ApiResponse;
-import vn.clinic.patientflow.api.dto.PagedResponse;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.common.PagedResponse;
 
 /**
  * API AI Audit – Xem log tương tác AI (Enterprise Observability).

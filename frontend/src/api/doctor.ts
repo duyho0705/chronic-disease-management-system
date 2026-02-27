@@ -12,8 +12,9 @@ export interface DoctorDashboardDto {
     totalPatientsToday: number;
     pendingConsultations: number;
     completedConsultationsToday: number;
-    activeQueue: any[];
     upcomingAppointments: any[];
+    riskPatients: any[];
+    criticalVitalsAlerts: string[];
 }
 
 export async function getDoctorProfile(tenant: TenantHeaders | null): Promise<DoctorInfoDto> {

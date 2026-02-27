@@ -2,8 +2,8 @@ package vn.clinic.patientflow.clinical.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import vn.clinic.patientflow.api.dto.ConsultationSummaryPdfDto;
-import vn.clinic.patientflow.api.dto.LabResultDto;
+import vn.clinic.patientflow.api.dto.clinical.ConsultationSummaryPdfDto;
+import vn.clinic.patientflow.api.dto.clinical.LabResultDto;
 import vn.clinic.patientflow.clinical.domain.ClinicalConsultation;
 import vn.clinic.patientflow.clinical.domain.ClinicalVital;
 import vn.clinic.patientflow.clinical.domain.DiagnosticImage;
@@ -28,7 +28,7 @@ public class ClinicalMapper {
             List<LabResult> labs,
             List<DiagnosticImage> images,
             Prescription prescription,
-            vn.clinic.patientflow.api.dto.PrescriptionDto prescriptionDto) {
+            vn.clinic.patientflow.api.dto.medication.PrescriptionDto prescriptionDto) {
 
         var builder = ConsultationSummaryPdfDto.builder()
                 .consultationId(cons.getId())

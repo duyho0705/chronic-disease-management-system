@@ -1,5 +1,16 @@
 package vn.clinic.patientflow.report;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.PageSize;
@@ -20,9 +31,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
-import vn.clinic.patientflow.api.dto.AiEffectivenessDto;
-import vn.clinic.patientflow.api.dto.DailyVolumeDto;
-import vn.clinic.patientflow.api.dto.WaitTimeSummaryDto;
+import vn.clinic.patientflow.api.dto.ai.AiEffectivenessDto;
+import vn.clinic.patientflow.api.dto.report.DailyVolumeDto;
+import vn.clinic.patientflow.api.dto.report.WaitTimeSummaryDto;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

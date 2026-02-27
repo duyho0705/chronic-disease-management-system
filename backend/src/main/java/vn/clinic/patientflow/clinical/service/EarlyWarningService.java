@@ -1,5 +1,16 @@
 package vn.clinic.patientflow.clinical.service;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import lombok.RequiredArgsConstructor;
@@ -9,14 +20,15 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import vn.clinic.patientflow.aiaudit.domain.AiAuditLog;
 import vn.clinic.patientflow.aiaudit.service.AiAuditServiceV2;
-import vn.clinic.patientflow.api.dto.ClinicalEarlyWarningDto;
+import vn.clinic.patientflow.api.dto.ai.ClinicalEarlyWarningDto;
 import vn.clinic.patientflow.clinical.domain.ClinicalConsultation;
 import vn.clinic.patientflow.clinical.domain.ClinicalVital;
+import vn.clinic.patientflow.clinical.domain.HealthMetric;
 import vn.clinic.patientflow.clinical.repository.ClinicalVitalRepository;
-import vn.clinic.patientflow.patient.domain.PatientVitalLog;
-import vn.clinic.patientflow.patient.repository.PatientVitalLogRepository;
+import vn.clinic.patientflow.clinical.repository.HealthMetricRepository;
 import vn.clinic.patientflow.patient.repository.PatientChronicConditionRepository;
 import vn.clinic.patientflow.patient.repository.PatientVitalTargetRepository;
+import vn.clinic.patientflow.clinical.repository.MedicationScheduleRepository;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,14 +40,14 @@ import java.util.stream.Collectors;
 /**
  * Enterprise Early Warning Service.
  * Analyzes vital trends using NEWS2 protocol and AI assessment.
- * Updated for CDM - uses PatientVitalLog instead of TriageVital.
+ * Updated for CDM - uses HealthMetric instead of PatientVitalLog.
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class EarlyWarningService {
 
-        private final PatientVitalLogRepository patientVitalLogRepository;
+        private final HealthMetricRepository healthMetricRepository;
         private final ClinicalVitalRepository clinicalVitalRepository;
         private final PromptRegistry promptRegistry;
         private final AiAuditServiceV2 aiAuditService;
@@ -46,7 +58,7 @@ public class EarlyWarningService {
 
         private final PatientChronicConditionRepository chronicConditionRepository;
         private final PatientVitalTargetRepository vitalTargetRepository;
-        private final vn.clinic.patientflow.patient.repository.MedicationReminderRepository medicationReminderRepository;
+        private final MedicationScheduleRepository medicationScheduleRepository;
 
         @Cacheable(value = "ai_support", key = "'ews_' + #consultation.id")
         public ClinicalEarlyWarningDto calculateEarlyWarning(ClinicalConsultation consultation) {
@@ -57,7 +69,7 @@ public class EarlyWarningService {
                 UUID patientId = consultation.getPatient().getId();
 
                 // Holistic View: CDM Vitals + Clinical Encounter Vitals
-                List<PatientVitalLog> cdmVitals = patientVitalLogRepository
+                List<HealthMetric> cdmVitals = healthMetricRepository
                                 .findByPatientIdOrderByRecordedAtDesc(patientId)
                                 .stream().limit(10).collect(Collectors.toList());
                 List<ClinicalVital> clinicalVitals = clinicalVitalRepository
@@ -65,7 +77,7 @@ public class EarlyWarningService {
 
                 List<VitalSnapshot> mergedVitals = new ArrayList<>();
                 cdmVitals.forEach(v -> mergedVitals.add(
-                                new VitalSnapshot(v.getRecordedAt(), v.getVitalType(), v.getValueNumeric(), v.getUnit(),
+                                new VitalSnapshot(v.getRecordedAt(), v.getMetricType(), v.getValue(), v.getUnit(),
                                                 "CDM")));
                 clinicalVitals.forEach(v -> mergedVitals.add(
                                 new VitalSnapshot(v.getRecordedAt(), v.getVitalType(), v.getValueNumeric(), v.getUnit(),
@@ -83,7 +95,7 @@ public class EarlyWarningService {
                 // Context enrichment for Chronic Disease Management
                 var chronicConditions = chronicConditionRepository.findByPatientId(patientId);
                 var vitalTargets = vitalTargetRepository.findByPatientId(patientId);
-                var reminders = medicationReminderRepository.findByPatientId(patientId);
+                var schedules = medicationScheduleRepository.findByMedicationPrescriptionPatientId(patientId);
 
                 String chronicContext = chronicConditions.stream()
                                 .map(c -> String.format("- %s (ICD10: %s, Severity: %s, Status: %s)",
@@ -96,15 +108,16 @@ public class EarlyWarningService {
                                                 t.getVitalType(), t.getMinValue(), t.getMaxValue(), t.getUnit()))
                                 .collect(Collectors.joining("\n"));
 
-                String adherenceContext = reminders.stream()
-                                .map(r -> String.format("- %s: Adherence %s%% (Last taken: %s)",
-                                                r.getMedicineName(),
-                                                r.getAdherenceScore() != null ? r.getAdherenceScore() : "0",
-                                                r.getLastTakenAt() != null ? r.getLastTakenAt() : "Never"))
+                String adherenceContext = schedules.stream()
+                                .filter(s -> s.getStatus().equals("TAKEN"))
+                                .limit(10)
+                                .map(s -> String.format("- %s: Taken at %s",
+                                                s.getMedication().getMedicineName(),
+                                                s.getTakenAt() != null ? s.getTakenAt() : "Unknown"))
                                 .collect(Collectors.joining("\n"));
 
                 String patientData = String.format(
-                                "Patient: %s (Age: %s)\nDIAGNOSIS: %s\nCHRONIC CONDITIONS:\n%s\nPERSONALIZED TARGETS:\n%s\nMEDICATION ADHERENCE:\n%s",
+                                "Patient: %s (Age: %s)\nDIAGNOSIS: %s\nCHRONIC CONDITIONS:\n%s\nPERSONALIZED TARGETS:\n%s\nRECENT MEDICATION ADHERENCE:\n%s",
                                 consultation.getPatient().getFullNameVi(),
                                 consultation.getPatient().getDateOfBirth() != null ? java.time.Period
                                                 .between(consultation.getPatient().getDateOfBirth(),
@@ -114,7 +127,7 @@ public class EarlyWarningService {
                                 consultation.getDiagnosisNotes(),
                                 chronicContext.isEmpty() ? "None" : chronicContext,
                                 targetContext.isEmpty() ? "Standard intervals" : targetContext,
-                                adherenceContext.isEmpty() ? "No reminders set" : adherenceContext);
+                                adherenceContext.isEmpty() ? "No recent adherence data" : adherenceContext);
 
                 String prompt = promptRegistry.getEarlyWarningPrompt(patientData, vitalHistory);
 

@@ -5,12 +5,16 @@ import lombok.*;
 import vn.clinic.patientflow.common.domain.BaseAuditableEntity;
 import vn.clinic.patientflow.patient.domain.Patient;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Toa thuốc.
+ */
 @Entity
-@Table(name = "clinical_prescription")
+@Table(name = "prescription")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,33 +23,48 @@ import java.util.UUID;
 public class Prescription extends BaseAuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "consultation_id", nullable = false)
+    @JoinColumn(name = "consultation_id")
     private ClinicalConsultation consultation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @Column(name = "doctor_user_id")
-    private UUID doctorUserId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_id")
+    private Doctor doctor;
+
+    @Column(name = "diagnosis", columnDefinition = "text")
+    private String diagnosis;
+
+    @Column(name = "notes", columnDefinition = "text")
+    private String notes;
+
+    @Column(name = "issued_at")
+    @Builder.Default
+    private Instant issuedAt = Instant.now();
+
+    @Column(name = "expires_at")
+    private Instant expiresAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PrescriptionStatus status;
-
-    private String notes;
+    @Column(name = "status", length = 20)
+    @Builder.Default
+    private PrescriptionStatus status = PrescriptionStatus.ISSUED;
 
     @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<PrescriptionItem> items = new ArrayList<>();
+    private List<Medication> medications = new ArrayList<>();
 
-    @Column(name = "dispensed_at")
-    private java.time.Instant dispensedAt;
-
-    @Column(name = "dispenser_user_id")
-    private UUID dispenserUserId;
+    public List<Medication> getItems() {
+        return medications;
+    }
 
     public enum PrescriptionStatus {
         DRAFT, ISSUED, DISPENSED, CANCELLED
+    }
+
+    public Prescription(UUID id) {
+        super(id);
     }
 }

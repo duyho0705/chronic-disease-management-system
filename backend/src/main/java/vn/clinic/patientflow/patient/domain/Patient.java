@@ -3,13 +3,15 @@ package vn.clinic.patientflow.patient.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import vn.clinic.patientflow.common.domain.BaseAuditableEntity;
+import vn.clinic.patientflow.identity.domain.IdentityUser;
 import vn.clinic.patientflow.tenant.domain.Tenant;
+import vn.clinic.patientflow.clinical.domain.Doctor;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * Bệnh nhân. Mã ngoài: external_id (phòng khám), cccd (CCCD).
+ * Bệnh nhân.
  */
 @Entity
 @Table(name = "patient")
@@ -24,6 +26,10 @@ public class Patient extends BaseAuditableEntity {
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "identity_user_id", unique = true)
+    private IdentityUser identityUser;
+
     @Column(name = "external_id", length = 64)
     private String externalId;
 
@@ -33,7 +39,7 @@ public class Patient extends BaseAuditableEntity {
     @Column(name = "full_name_vi", nullable = false, length = 255)
     private String fullNameVi;
 
-    @Column(name = "date_of_birth", nullable = false)
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     @Column(name = "gender", length = 20)
@@ -57,16 +63,12 @@ public class Patient extends BaseAuditableEntity {
     @Column(name = "ward", length = 100)
     private String ward;
 
-    @Column(name = "nationality", nullable = false, length = 100)
+    @Column(name = "nationality", length = 100)
     @Builder.Default
     private String nationality = "VN";
 
     @Column(name = "ethnicity", length = 100)
     private String ethnicity;
-
-    @Column(name = "is_active", nullable = false)
-    @Builder.Default
-    private Boolean isActive = true;
 
     @Column(name = "avatar_url", length = 1000)
     private String avatarUrl;
@@ -80,8 +82,21 @@ public class Patient extends BaseAuditableEntity {
     @Column(name = "chronic_conditions", columnDefinition = "text")
     private String chronicConditions;
 
-    @Column(name = "identity_user_id")
-    private UUID identityUserId;
+    @Column(name = "risk_level", length = 20)
+    @Builder.Default
+    private String riskLevel = "LOW";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_doctor_id")
+    private Doctor assignedDoctor;
+
+    @Column(name = "is_active", nullable = false)
+    @Builder.Default
+    private Boolean isActive = true;
+
+    public UUID getIdentityUserId() {
+        return identityUser != null ? identityUser.getId() : null;
+    }
 
     public Patient(UUID id) {
         super(id);

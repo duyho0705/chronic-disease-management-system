@@ -1,5 +1,16 @@
 package vn.clinic.patientflow.patient.service;
 
+import vn.clinic.patientflow.api.dto.auth.*;
+import vn.clinic.patientflow.api.dto.patient.*;
+import vn.clinic.patientflow.api.dto.clinical.*;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.*;
+import vn.clinic.patientflow.api.dto.scheduling.*;
+import vn.clinic.patientflow.api.dto.common.*;
+import vn.clinic.patientflow.api.dto.messaging.*;
+import vn.clinic.patientflow.api.dto.tenant.*;
+import vn.clinic.patientflow.api.dto.billing.*;
+import vn.clinic.patientflow.api.dto.report.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import lombok.RequiredArgsConstructor;
@@ -8,14 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.clinic.patientflow.aiaudit.domain.AiAuditLog.AiFeatureType;
 import vn.clinic.patientflow.aiaudit.service.AiAuditServiceV2;
-import vn.clinic.patientflow.api.dto.AiChatRequest;
-import vn.clinic.patientflow.api.dto.AiChatResponse;
+import vn.clinic.patientflow.api.dto.ai.AiChatRequest;
+import vn.clinic.patientflow.api.dto.ai.AiChatResponse;
 import vn.clinic.patientflow.clinical.repository.LabResultRepository;
 import vn.clinic.patientflow.clinical.repository.PrescriptionRepository;
 import vn.clinic.patientflow.clinical.service.ClinicalService;
 import vn.clinic.patientflow.clinical.service.PromptRegistry;
 import vn.clinic.patientflow.patient.domain.Patient;
-import vn.clinic.patientflow.patient.repository.PatientVitalLogRepository;
+import vn.clinic.patientflow.clinical.repository.HealthMetricRepository;
+import vn.clinic.patientflow.clinical.service.MedicationService;
 import vn.clinic.patientflow.scheduling.service.SchedulingService;
 
 import java.time.LocalDate;
@@ -33,11 +45,11 @@ public class PatientAiChatService {
 
         private final SchedulingService schedulingService;
         private final PrescriptionRepository prescriptionRepository;
-        private final PatientVitalLogRepository patientVitalLogRepository;
+        private final HealthMetricRepository healthMetricRepository;
         private final LabResultRepository labResultRepository;
         private final ClinicalService clinicalService;
         private final PromptRegistry promptRegistry;
-        private final MedicationReminderService medicationReminderService;
+        private final MedicationService medicationService;
         private final AiAuditServiceV2 aiAuditService;
 
         private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -109,11 +121,11 @@ public class PatientAiChatService {
                 sb.append("- Giới tính: ").append(p.getGender()).append("\n\n");
 
                 // Latest Vitals from PatientVitalLog
-                var vitals = patientVitalLogRepository.findByPatientIdOrderByRecordedAtDesc(p.getId());
+                var vitals = healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(p.getId());
                 if (!vitals.isEmpty()) {
-                        sb.append("=== SINH HIỆU MỚI NHẤT ===\n");
-                        vitals.stream().limit(10).forEach(v -> sb.append("- ").append(v.getVitalType())
-                                        .append(": ").append(v.getValueNumeric()).append(" ").append(v.getUnit())
+                        sb.append("=== CHỈ SỐ SỨC KHỎE GẦN ĐÂY ===\n");
+                        vitals.stream().limit(10).forEach(v -> sb.append("- ").append(v.getMetricType())
+                                        .append(": ").append(v.getValue()).append(" ").append(v.getUnit())
                                         .append(" (ghi nhận lúc ").append(v.getRecordedAt()).append(")\n"));
                         sb.append("\n");
                 }
@@ -138,19 +150,20 @@ public class PatientAiChatService {
                 var prescriptions = prescriptionRepository.findByPatientIdOrderByCreatedAtDesc(p.getId());
                 if (!prescriptions.isEmpty()) {
                         sb.append("=== THUỐC ĐANG DÙNG (ĐƠN MỚI NHẤT) ===\n");
-                        prescriptions.get(0).getItems().forEach(i -> {
-                                sb.append("- ").append(i.getProductNameCustom()).append(": ")
-                                                .append(i.getDosageInstruction()).append("\n");
+                        prescriptions.get(0).getMedications().forEach(m -> {
+                                sb.append("- ").append(m.getMedicineName()).append(": ")
+                                                .append(m.getDosage()).append("\n");
                         });
                         sb.append("\n");
                 }
 
-                var reminders = medicationReminderService.getRemindersByPatient(p.getId());
-                if (!reminders.isEmpty()) {
-                        sb.append("=== LỊCH NHẮC UỐNG THUỐC HIỆN TẠI ===\n");
-                        reminders.stream().filter(r -> r.getIsActive()).forEach(r -> sb.append("- ")
-                                        .append(r.getMedicineName()).append(" lúc ").append(r.getReminderTime())
-                                        .append("\n"));
+                var schedules = medicationService.getDailySchedules(p.getId());
+                if (!schedules.isEmpty()) {
+                        sb.append("=== LỊCH UỐNG THUỐC HÔM NAY ===\n");
+                        schedules.forEach(s -> sb.append("- ")
+                                        .append(s.getMedication().getMedicineName()).append(" lúc ")
+                                        .append(s.getScheduledTime())
+                                        .append(" (Trạng thái: ").append(s.getStatus()).append(")\n"));
                         sb.append("\n");
                 }
 
@@ -179,8 +192,8 @@ public class PatientAiChatService {
 
         private String buildChatPrompt(String context, String history, String message) {
                 return String.format(
-                                "Bạn là Trợ lý Y tế AI 'PatientFlow' của phòng khám. "
-                                                + "Hãy dùng thông tin hồ sơ sau để hỗ trợ bệnh nhân:\n\n"
+                                "Bạn là 'Trợ lý Bệnh mãn tính AI' (CDM Companion) của phòng khám. "
+                                                + "Bạn chuyên hỗ trợ bệnh nhân quản lý các bệnh mãn tính như tiểu đường, huyết áp, SPO2 tại nhà.\n\n"
                                                 + "HỒ SƠ BỆNH NHÂN:\n%s\n\n"
                                                 + "LỊCH SỬ TRÒ CHUYỆN:\n%s\n"
                                                 + "CÂU HỎI MỚI: \"%s\"\n\n"
@@ -207,7 +220,7 @@ public class PatientAiChatService {
                 aiAuditService.recordInteraction(
                                 AiFeatureType.CHAT,
                                 patient.getId(),
-                                patient.getIdentityUserId(),
+                                patient.getIdentityUser() != null ? patient.getIdentityUser().getId() : null,
                                 prompt,
                                 response,
                                 System.currentTimeMillis() - startTime, status, errorMsg);

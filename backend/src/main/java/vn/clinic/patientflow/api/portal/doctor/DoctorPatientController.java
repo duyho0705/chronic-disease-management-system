@@ -1,5 +1,6 @@
 package vn.clinic.patientflow.api.portal.doctor;
 
+// Unused wildcard imports removed
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vn.clinic.patientflow.api.dto.ApiResponse;
-import vn.clinic.patientflow.api.dto.PatientDto;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.patient.PatientDto;
 import vn.clinic.patientflow.clinical.service.AiClinicalService;
 import vn.clinic.patientflow.patient.service.PatientService;
 

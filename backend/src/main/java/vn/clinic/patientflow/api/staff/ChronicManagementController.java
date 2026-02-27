@@ -6,14 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vn.clinic.patientflow.api.dto.ApiResponse;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
 import vn.clinic.patientflow.patient.domain.PatientChronicCondition;
 import vn.clinic.patientflow.patient.domain.PatientVitalTarget;
 import vn.clinic.patientflow.patient.repository.PatientChronicConditionRepository;
 import vn.clinic.patientflow.patient.repository.PatientVitalTargetRepository;
-import vn.clinic.patientflow.patient.repository.PatientVitalLogRepository;
+import vn.clinic.patientflow.clinical.repository.HealthMetricRepository;
 import vn.clinic.patientflow.clinical.repository.ClinicalVitalRepository;
-import vn.clinic.patientflow.api.dto.VitalHistoryDto;
+import vn.clinic.patientflow.api.dto.clinical.VitalHistoryDto;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,7 +29,7 @@ public class ChronicManagementController {
 
     private final PatientChronicConditionRepository chronicConditionRepository;
     private final PatientVitalTargetRepository vitalTargetRepository;
-    private final PatientVitalLogRepository patientVitalLogRepository;
+    private final HealthMetricRepository healthMetricRepository;
     private final ClinicalVitalRepository clinicalVitalRepository;
 
     @GetMapping("/conditions")
@@ -62,12 +62,12 @@ public class ChronicManagementController {
     public ResponseEntity<ApiResponse<List<VitalHistoryDto>>> getVitalHistory(@RequestParam UUID patientId) {
         List<VitalHistoryDto> history = new ArrayList<>();
 
-        patientVitalLogRepository.findByPatientIdOrderByRecordedAtDesc(patientId)
+        healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(patientId)
                 .stream().limit(10)
                 .forEach(v -> history.add(VitalHistoryDto.builder()
                         .recordedAt(v.getRecordedAt())
-                        .vitalType(v.getVitalType())
-                        .valueNumeric(v.getValueNumeric())
+                        .vitalType(v.getMetricType())
+                        .valueNumeric(v.getValue())
                         .unit(v.getUnit())
                         .source("CDM")
                         .build()));
