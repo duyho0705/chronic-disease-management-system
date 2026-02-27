@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import vn.clinic.patientflow.auth.AuthPrincipal;
 import vn.clinic.patientflow.clinical.service.CdsService;
 import vn.clinic.patientflow.clinical.service.ClinicalService;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.ai.ClinicalEarlyWarningDto;
+import vn.clinic.patientflow.api.dto.ai.CdsAdviceDto;
+import vn.clinic.patientflow.api.dto.clinical.ConsultationDto;
+import vn.clinic.patientflow.api.dto.clinical.TriageVitalDto;
+import vn.clinic.patientflow.api.dto.clinical.CreateConsultationRequest;
 
 import java.util.List;
 import java.util.UUID;

@@ -30,6 +30,7 @@ import vn.clinic.patientflow.clinical.repository.DiagnosticImageRepository;
 import vn.clinic.patientflow.clinical.repository.LabResultRepository;
 import vn.clinic.patientflow.clinical.service.ClinicalService;
 import vn.clinic.patientflow.common.exception.ResourceNotFoundException;
+import vn.clinic.patientflow.api.dto.common.PagedResponse;
 import vn.clinic.patientflow.common.service.FileStorageService;
 import vn.clinic.patientflow.identity.domain.IdentityUser;
 import vn.clinic.patientflow.identity.service.IdentityService;

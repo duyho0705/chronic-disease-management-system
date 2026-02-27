@@ -211,6 +211,8 @@ C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\pat
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\masters\domain\MedicalService.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\masters\repository\MedicalServiceRepository.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\masters\service\MasterDataService.java
+C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\MedicationDosageLog.java
+C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\MedicationReminder.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\Patient.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\PatientChatConversation.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\PatientChatMessage.java
@@ -219,7 +221,10 @@ C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\pat
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\PatientInsurance.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\PatientNotification.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\PatientRelative.java
+C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\PatientVitalLog.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\domain\PatientVitalTarget.java
+C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\MedicationDosageLogRepository.java
+C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\MedicationReminderRepository.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\PatientChatConversationRepository.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\PatientChatMessageRepository.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\PatientChronicConditionRepository.java
@@ -228,9 +233,9 @@ C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\pat
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\PatientNotificationRepository.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\PatientRelativeRepository.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\PatientRepository.java
+C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\PatientVitalLogRepository.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\repository\PatientVitalTargetRepository.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\service\MedicationReminderScheduler.java
-C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\service\MedicationReminderService.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\service\PatientAiChatService.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\service\PatientChatService.java
 C:\MyLearn\chronic-disease-management-system\backend\src\main\java\vn\clinic\patientflow\patient\service\PatientCrmService.java

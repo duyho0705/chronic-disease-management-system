@@ -13,6 +13,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import vn.clinic.patientflow.api.dto.common.ApiResponse;
+import vn.clinic.patientflow.api.dto.common.PagedResponse;
+import vn.clinic.patientflow.api.dto.scheduling.AppointmentDto;
+import vn.clinic.patientflow.api.dto.scheduling.CreateAppointmentRequest;
+import vn.clinic.patientflow.api.dto.scheduling.SlotTemplateDto;
 
 import vn.clinic.patientflow.common.tenant.TenantContext;
 import vn.clinic.patientflow.identity.domain.IdentityUser;

@@ -1,6 +1,7 @@
 package vn.clinic.patientflow.report;
 
 import vn.clinic.patientflow.api.dto.report.*;
+import vn.clinic.patientflow.api.dto.tenant.BranchOperationalHeatmapDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import io.github.bucket4j.Bandwidth;
