@@ -1,12 +1,10 @@
 package vn.clinic.patientflow.api.dto.auth;
 
-// Unused DTO imports removed
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vn.clinic.patientflow.identity.domain.IdentityUser;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

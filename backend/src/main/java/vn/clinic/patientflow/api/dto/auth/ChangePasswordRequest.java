@@ -1,16 +1,17 @@
 package vn.clinic.patientflow.api.dto.auth;
 
-// Unused DTO imports removed
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChangePasswordRequest {
-    @NotBlank(message = "Vui lòng nhập mật khẩu cũ")
     private String oldPassword;
-
-    @NotBlank(message = "Vui lòng nhập mật khẩu mới")
     @Size(min = 8, message = "Mật khẩu mới phải có ít nhất 8 ký tự")
     private String newPassword;
 }

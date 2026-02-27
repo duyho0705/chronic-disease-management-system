@@ -1,22 +1,26 @@
 package vn.clinic.patientflow.api.dto.ai;
 
-// Unused DTO imports removed
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClinicalEarlyWarningDto {
-    private Integer news2Score; // 0-20
+    private Integer news2Score;
     private String riskLevel; // LOW, MEDIUM, HIGH
-    private String monitoringFrequency; // e.g., "Every 12 hours", "Continuous nursing care"
     private List<VitalWarning> warnings;
     private String aiClinicalAssessment;
     private String escalationProtocol; // Recommended clinical action (e.g., "Notify Senior Doctor")
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class VitalWarning {
         private String vitalType;
         private String value;

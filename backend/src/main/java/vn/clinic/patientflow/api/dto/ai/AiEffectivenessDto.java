@@ -1,16 +1,13 @@
 package vn.clinic.patientflow.api.dto.ai;
 
-// Unused DTO imports removed
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
 /**
- * Hiệu quả AI phân loại: tỷ lệ khớp gợi ý, tỷ lệ override, so sánh trước/sau
- * khi dùng AI.
+ * Report DTO: Tỷ lệ hiệu quả của AI trong phân loại bệnh nhân.
  */
 @Data
 @NoArgsConstructor

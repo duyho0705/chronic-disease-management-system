@@ -1,11 +1,11 @@
 package vn.clinic.patientflow.api.portal.doctor;
 
-import vn.clinic.patientflow.api.dto.ai.AiChatRequest;
-import vn.clinic.patientflow.api.dto.ai.PrescriptionVerificationDto;
-import vn.clinic.patientflow.api.dto.ai.DifferentialDiagnosisDto;
-import vn.clinic.patientflow.api.dto.clinical.PrescriptionItemDto;
+import vn.clinic.patientflow.api.dto.ai.*;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionVerificationDto;
+import vn.clinic.patientflow.api.dto.medication.PrescriptionItemDto;
 import vn.clinic.patientflow.api.dto.clinical.Icd10CodeDto;
 import vn.clinic.patientflow.api.dto.clinical.ClinicalChecklistDto;
+import vn.clinic.patientflow.api.dto.clinical.StandardizedClinicalNoteDto;
 import vn.clinic.patientflow.api.dto.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +20,6 @@ import vn.clinic.patientflow.clinical.service.ClinicalService;
 import vn.clinic.patientflow.clinical.service.PrescriptionTemplateService;
 import vn.clinic.patientflow.common.service.PdfService;
 import vn.clinic.patientflow.common.service.EmailService;
-import vn.clinic.patientflow.patient.domain.Patient;
 import vn.clinic.patientflow.patient.repository.MedicationReminderRepository;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;

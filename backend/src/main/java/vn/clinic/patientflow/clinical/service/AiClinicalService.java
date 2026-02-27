@@ -1,16 +1,6 @@
 package vn.clinic.patientflow.clinical.service;
 
-import vn.clinic.patientflow.api.dto.auth.*;
-import vn.clinic.patientflow.api.dto.patient.*;
-import vn.clinic.patientflow.api.dto.clinical.*;
-import vn.clinic.patientflow.api.dto.ai.*;
-import vn.clinic.patientflow.api.dto.medication.*;
-import vn.clinic.patientflow.api.dto.scheduling.*;
-import vn.clinic.patientflow.api.dto.common.*;
-import vn.clinic.patientflow.api.dto.messaging.*;
-import vn.clinic.patientflow.api.dto.tenant.*;
-import vn.clinic.patientflow.api.dto.billing.*;
-import vn.clinic.patientflow.api.dto.report.*;
+// Unused wildcard imports removed
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -381,7 +371,8 @@ public class AiClinicalService {
         }
     }
 
-    public vn.clinic.patientflow.api.dto.clinical.ClinicalChecklistDto getSuggestedChecklist(ClinicalConsultation consultation) {
+    public vn.clinic.patientflow.api.dto.clinical.ClinicalChecklistDto getSuggestedChecklist(
+            ClinicalConsultation consultation) {
         if (chatModel == null)
             return null;
 
@@ -395,7 +386,8 @@ public class AiClinicalService {
             if (res.contains("{")) {
                 jsonPart = res.substring(res.indexOf("{"), res.lastIndexOf("}") + 1);
             }
-            var dto = objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.clinical.ClinicalChecklistDto.class);
+            var dto = objectMapper.readValue(jsonPart,
+                    vn.clinic.patientflow.api.dto.clinical.ClinicalChecklistDto.class);
 
             aiAuditService.recordInteraction(
                     AiAuditLog.AiFeatureType.CLINICAL_CHECKLIST,
@@ -578,7 +570,8 @@ public class AiClinicalService {
             if (res.contains("{")) {
                 jsonPart = res.substring(res.indexOf("{"), res.lastIndexOf("}") + 1);
             }
-            return objectMapper.readValue(jsonPart, vn.clinic.patientflow.api.dto.clinical.StandardizedClinicalNoteDto.class);
+            return objectMapper.readValue(jsonPart,
+                    vn.clinic.patientflow.api.dto.clinical.StandardizedClinicalNoteDto.class);
         } catch (Exception e) {
             log.error("Note Standardization AI Error: {}", e.getMessage());
             return null;

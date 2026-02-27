@@ -1,12 +1,10 @@
 package vn.clinic.patientflow.api.dto.patient;
 
-// Unused DTO imports removed
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vn.clinic.patientflow.patient.domain.Patient;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;

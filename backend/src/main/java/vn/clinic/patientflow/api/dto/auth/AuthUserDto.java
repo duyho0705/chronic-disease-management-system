@@ -1,16 +1,14 @@
 package vn.clinic.patientflow.api.dto.auth;
 
-// Unused DTO imports removed
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Thông tin user trong response login / me.
+ * Thông tin user cơ bản trả về sau login.
  */
 @Data
 @Builder
