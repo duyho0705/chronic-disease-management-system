@@ -30,12 +30,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Bá»‡nh nhÃ¢n â€“ tenant-scoped (header X-Tenant-Id báº¯t buá»™c).
+ * Bệnh nhân – tenant-scoped (header X-Tenant-Id bắt buộc).
  */
 @RestController
 @RequestMapping(value = "/api/patients", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@Tag(name = "Patient", description = "Bá»‡nh nhÃ¢n")
+@Tag(name = "Patient", description = "Bệnh nhân")
 public class PatientController {
 
     private final PatientService patientService;
@@ -43,7 +43,7 @@ public class PatientController {
 
     @GetMapping("/{id}/crm-insights")
     @PreAuthorize("hasAnyRole('CLINIC_MANAGER', 'ADMIN', 'DOCTOR')")
-    @Operation(summary = "Láº¥y phÃ¢n tÃ­ch gáº¯n káº¿t vÃ  gáº¯n bÃ³ cá»§a bá»‡nh nhÃ¢n (Enterprise CRM)")
+    @Operation(summary = "Lấy phân tích gắn kết và gắn bó của bệnh nhân (Enterprise CRM)")
     public ResponseEntity<ApiResponse<PatientCrmInsightDto>> getCrmInsights(@PathVariable UUID id) {
         var patient = patientService.getById(id);
         return ResponseEntity.ok(ApiResponse.success(patientCrmService.getPatientInsight(patient)));
@@ -51,7 +51,7 @@ public class PatientController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('RECEPTIONIST', 'TRIAGE_NURSE', 'DOCTOR', 'ADMIN', 'CLINIC_MANAGER')")
-    @Operation(summary = "Danh sÃ¡ch bá»‡nh nhÃ¢n (phÃ¢n trang)")
+    @Operation(summary = "Danh sách bệnh nhân (phân trang)")
     public ResponseEntity<ApiResponse<PagedResponse<PatientDto>>> list(
             @PageableDefault(size = 20) Pageable pageable) {
         Page<Patient> page = patientService.listByTenant(pageable);
@@ -62,20 +62,20 @@ public class PatientController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('RECEPTIONIST', 'TRIAGE_NURSE', 'DOCTOR', 'ADMIN', 'CLINIC_MANAGER')")
-    @Operation(summary = "Láº¥y bá»‡nh nhÃ¢n theo ID")
+    @Operation(summary = "Lấy bệnh nhân theo ID")
     public ResponseEntity<ApiResponse<PatientDto>> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(PatientDto.fromEntity(patientService.getById(id))));
     }
 
     @GetMapping("/by-cccd")
-    @Operation(summary = "TÃ¬m bá»‡nh nhÃ¢n theo CCCD")
+    @Operation(summary = "Tìm bệnh nhân theo CCCD")
     public ResponseEntity<ApiResponse<PatientDto>> findByCccd(@RequestParam String cccd) {
         return ResponseEntity
                 .ok(ApiResponse.success(patientService.findByCccd(cccd).map(PatientDto::fromEntity).orElse(null)));
     }
 
     @GetMapping("/by-phone")
-    @Operation(summary = "TÃ¬m bá»‡nh nhÃ¢n theo sá»‘ Ä‘iá»‡n thoáº¡i")
+    @Operation(summary = "Tìm bệnh nhân theo số điện thoại")
     public ResponseEntity<ApiResponse<PatientDto>> findByPhone(@RequestParam String phone) {
         return ResponseEntity
                 .ok(ApiResponse.success(patientService.findByPhone(phone).map(PatientDto::fromEntity).orElse(null)));
@@ -84,7 +84,7 @@ public class PatientController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
-    @Operation(summary = "Táº¡o bá»‡nh nhÃ¢n")
+    @Operation(summary = "Tạo bệnh nhân")
     public ResponseEntity<ApiResponse<PatientDto>> create(@Valid @RequestBody CreatePatientRequest request) {
         Patient patient = Patient.builder()
                 .externalId(request.getExternalId())
@@ -107,7 +107,7 @@ public class PatientController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
-    @Operation(summary = "Cáº­p nháº­t bá»‡nh nhÃ¢n")
+    @Operation(summary = "Cập nhật bệnh nhân")
     public ResponseEntity<ApiResponse<PatientDto>> update(@PathVariable UUID id,
             @Valid @RequestBody UpdatePatientRequest request) {
         Patient updates = Patient.builder()
@@ -130,7 +130,7 @@ public class PatientController {
     }
 
     @GetMapping("/{id}/insurances")
-    @Operation(summary = "Danh sÃ¡ch báº£o hiá»ƒm cá»§a bá»‡nh nhÃ¢n")
+    @Operation(summary = "Danh sách bảo hiểm của bệnh nhân")
     public ResponseEntity<ApiResponse<List<PatientInsuranceDto>>> getInsurances(@PathVariable UUID id) {
         var data = patientService.getInsurances(id).stream()
                 .map(PatientInsuranceDto::fromEntity)
@@ -139,7 +139,7 @@ public class PatientController {
     }
 
     @PostMapping("/{id}/device-tokens")
-    @Operation(summary = "ÄÄƒng kÃ½ FCM token cho bá»‡nh nhÃ¢n")
+    @Operation(summary = "Đăng ký FCM token cho bệnh nhân")
     @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
     public ResponseEntity<ApiResponse<Void>> registerToken(
             @PathVariable UUID id,
@@ -150,4 +150,3 @@ public class PatientController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }
-

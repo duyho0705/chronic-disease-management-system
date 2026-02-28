@@ -25,13 +25,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * API BÃ¡o cÃ¡o (dÃ nh cho Clinic Manager/Admin).
+ * API Báo cáo (dành cho Clinic Manager/Admin).
  * Triage, Billing, and AI-Triage audit have been removed.
  */
 @RestController
 @RequestMapping("/api/admin/reports")
 @RequiredArgsConstructor
-@Tag(name = "Report", description = "BÃ¡o cÃ¡o thá»‘ng kÃª (Clinic Manager)")
+@Tag(name = "Report", description = "Báo cáo thống kê (Clinic Manager)")
 @PreAuthorize("hasAnyRole('CLINIC_MANAGER', 'ADMIN')")
 public class ReportController {
 
@@ -40,7 +40,7 @@ public class ReportController {
         private final AiOperationalService aiOperationalService;
 
         @GetMapping("/wait-time")
-        @Operation(summary = "BÃ¡o cÃ¡o thá»i gian chá» trung bÃ¬nh")
+        @Operation(summary = "Báo cáo thời gian chờ trung bình")
         public ResponseEntity<ApiResponse<WaitTimeSummaryDto>> getWaitTimeSummary(
                         @RequestParam UUID branchId,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
@@ -51,7 +51,7 @@ public class ReportController {
         }
 
         @GetMapping("/daily-volume")
-        @Operation(summary = "BÃ¡o cÃ¡o sá»‘ lÆ°á»£ng bá»‡nh nhÃ¢n theo ngÃ y")
+        @Operation(summary = "Báo cáo số lượng bệnh nhân theo ngày")
         public ResponseEntity<ApiResponse<List<DailyVolumeDto>>> getDailyVolume(
                         @RequestParam UUID branchId,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
@@ -62,7 +62,7 @@ public class ReportController {
         }
 
         @GetMapping("/daily-volume/excel")
-        @Operation(summary = "Xuáº¥t bÃ¡o cÃ¡o sá»‘ lÆ°á»£ng bá»‡nh nhÃ¢n ra file Excel")
+        @Operation(summary = "Xuất báo cáo số lượng bệnh nhân ra file Excel")
         public ResponseEntity<byte[]> exportDailyVolumeExcel(
                         @RequestParam UUID branchId,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
@@ -83,7 +83,7 @@ public class ReportController {
         }
 
         @GetMapping("/wait-time/excel")
-        @Operation(summary = "Xuáº¥t bÃ¡o cÃ¡o thá»i gian chá» ra file Excel")
+        @Operation(summary = "Xuất báo cáo thời gian chờ ra file Excel")
         public ResponseEntity<byte[]> exportWaitTimeExcel(
                         @RequestParam UUID branchId,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
@@ -104,14 +104,14 @@ public class ReportController {
         }
 
         @GetMapping("/operational-heatmap")
-        @Operation(summary = "Xem máº­t Ä‘á»™ bá»‡nh nhÃ¢n táº¡i cÃ¡c khu vá»±c (Heatmap)")
+        @Operation(summary = "Xem mật độ bệnh nhân tại các khu vực (Heatmap)")
         public ResponseEntity<ApiResponse<BranchOperationalHeatmapDto>> getOperationalHeatmap(
                         @RequestParam UUID branchId) {
                 return ResponseEntity.ok(ApiResponse.success(reportService.getOperationalHeatmap(branchId)));
         }
 
         @GetMapping("/ai-operational-insights")
-        @Operation(summary = "Láº¥y phÃ¢n tÃ­ch váº­n hÃ nh thÃ´ng minh tá»« AI (Operational Intelligence)")
+        @Operation(summary = "Lấy phân tích vận hành thông minh từ AI (Operational Intelligence)")
         public ResponseEntity<ApiResponse<AiOperationalInsightDto>> getAiOperationalInsights(
                         @RequestParam UUID branchId) {
                 return ResponseEntity.ok(ApiResponse.success(aiOperationalService.getOperationalInsights(branchId)));
@@ -127,4 +127,3 @@ public class ReportController {
                 return resolveEndDate(toDate).minusDays(30);
         }
 }
-

@@ -83,7 +83,7 @@ public class ClinicalService {
 
         consultation = consultationRepository.save(consultation);
         auditLogService.log("START_CONSULTATION", "CLINICAL_CONSULTATION", consultation.getId().toString(),
-                "Báº¯t Ä‘áº§u phiÃªn khÃ¡m CDM cho BN: " + consultation.getPatient().getId());
+                "Bắt đầu phiên khám CDM cho BN: " + consultation.getPatient().getId());
 
         return consultation;
     }
@@ -104,7 +104,7 @@ public class ClinicalService {
         cons = consultationRepository.save(cons);
 
         auditLogService.log("COMPLETE_CONSULTATION", "CLINICAL_CONSULTATION", cons.getId().toString(),
-                "HoÃ n thÃ nh phiÃªn khÃ¡m: " + cons.getPatient().getId());
+                "Hoàn thành phiên khám: " + cons.getPatient().getId());
 
         // Async Post-processing
         eventPublisher.publishEvent(new ConsultationCompletedEvent(this, cons));
@@ -145,7 +145,7 @@ public class ClinicalService {
 
         var saved = prescriptionRepository.save(prescription);
         auditLogService.log("CREATE_PRESCRIPTION", "PRESCRIPTION", saved.getId().toString(),
-                String.format("Táº¡o Ä‘Æ¡n thuá»‘c cho BN: %s", cons.getPatient().getId()));
+                String.format("Tạo đơn thuốc cho BN: %s", cons.getPatient().getId()));
         return saved;
     }
 
@@ -224,8 +224,7 @@ public class ClinicalService {
         diagnosticImageRepository.save(DiagnosticImage.builder()
                 .consultation(getById(consultationId))
                 .title(title)
-                .description("YÃªu cáº§u chá»¥p: " + title)
+                .description("Yêu cầu chụp: " + title)
                 .build());
     }
 }
-

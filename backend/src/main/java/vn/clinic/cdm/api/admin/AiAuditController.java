@@ -19,8 +19,8 @@ import vn.clinic.cdm.api.dto.common.ApiResponse;
 import vn.clinic.cdm.api.dto.common.PagedResponse;
 
 /**
- * API AI Audit â€“ Xem log tÆ°Æ¡ng tÃ¡c AI (Enterprise Observability).
- * YÃªu cáº§u X-Tenant-Id, X-Branch-Id.
+ * API AI Audit – Xem log tương tác AI (Enterprise Observability).
+ * Yêu cầu X-Tenant-Id, X-Branch-Id.
  */
 @RestController
 @RequestMapping("/api/admin/ai-audit")
@@ -31,7 +31,7 @@ public class AiAuditController {
     private final AiAuditLogRepository aiAuditLogRepository;
 
     @GetMapping
-    @Operation(summary = "Danh sÃ¡ch AI audit log theo chi nhÃ¡nh")
+    @Operation(summary = "Danh sách AI audit log theo chi nhánh")
     public ResponseEntity<ApiResponse<PagedResponse<AiAuditLog>>> listByBranch(
             @RequestParam UUID branchId,
             @RequestParam(defaultValue = "0") int page,
@@ -41,4 +41,3 @@ public class AiAuditController {
         return ResponseEntity.ok(ApiResponse.success(PagedResponse.of(logs)));
     }
 }
-

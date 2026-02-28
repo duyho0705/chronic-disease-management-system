@@ -11,7 +11,7 @@ import vn.clinic.cdm.patient.domain.Patient;
 import java.util.List;
 
 /**
- * PhÃ¢n tÃ­ch rá»§i ro báº±ng AI (Role 2).
+ * Phân tích rủi ro bằng AI (Role 2).
  */
 @Service
 @RequiredArgsConstructor
@@ -27,26 +27,26 @@ public class AiClinicalAnalysisService {
         }
 
         String context = buildPatientSummary(patient, metrics);
-        String prompt = "Báº¡n lÃ  bÃ¡c sÄ© AI chuyÃªn nghiá»‡p. HÃ£y phÃ¢n tÃ­ch cÃ¡c chá»‰ sá»‘ sá»©c khá»e sau vÃ  Ä‘Æ°a ra Ä‘Ã¡nh giÃ¡ rá»§i ro (Tháº¥p, Trung bÃ¬nh, Cao) kÃ¨m theo lá»i khuyÃªn chuyÃªn mÃ´n:\n\n"
+        String prompt = "Bạn là bác sĩ AI chuyên nghiệp. Hãy phân tích các chỉ số sức khỏe sau và đưa ra đánh giá rủi ro (Thấp, Trung bình, Cao) kèm theo lời khuyên chuyên môn:\n\n"
                 + context + "\n\n"
-                + "YÃªu cáº§u:\n"
-                + "1. Tráº£ lá»i báº±ng tiáº¿ng Viá»‡t.\n"
-                + "2. Táº­p trung vÃ o cÃ¡c báº¥t thÆ°á»ng.\n"
-                + "3. ÄÆ°a ra cÃ¡c bÆ°á»›c tiáº¿p theo cho bÃ¡c sÄ© Ä‘iá»u trá»‹.";
+                + "Yêu cầu:\n"
+                + "1. Trả lời bằng tiếng Việt.\n"
+                + "2. Tập trung vào các bất thường.\n"
+                + "3. Đưa ra các bước tiếp theo cho bác sĩ điều trị.";
 
         try {
             return chatModel.chat(prompt);
         } catch (Exception e) {
             log.error("AI Analysis failed: {}", e.getMessage());
-            return "Lá»—i khi phÃ¢n tÃ­ch báº±ng AI: " + e.getMessage();
+            return "Lỗi khi phân tích bằng AI: " + e.getMessage();
         }
     }
 
     private String buildPatientSummary(Patient p, List<HealthMetric> metrics) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Bá»‡nh nhÃ¢n: ").append(p.getFullNameVi()).append("\n");
-        sb.append("Giá»›i tÃ­nh: ").append(p.getGender()).append("\n");
-        sb.append("Chá»‰ sá»‘ gáº§n Ä‘Ã¢y:\n");
+        sb.append("Bệnh nhân: ").append(p.getFullNameVi()).append("\n");
+        sb.append("Giới tính: ").append(p.getGender()).append("\n");
+        sb.append("Chỉ số gần đây:\n");
         metrics.stream().limit(10).forEach(m -> {
             sb.append("- ").append(m.getMetricType()).append(": ")
                     .append(m.getValue()).append(" ").append(m.getUnit())
@@ -55,4 +55,3 @@ public class AiClinicalAnalysisService {
         return sb.toString();
     }
 }
-

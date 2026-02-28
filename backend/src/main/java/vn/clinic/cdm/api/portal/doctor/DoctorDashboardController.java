@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/doctor-portal/dashboard")
 @RequiredArgsConstructor
-@Tag(name = "Doctor Dashboard", description = "Dashboard dÃ nh cho bÃ¡c sÄ© - Chronic Disease Management")
+@Tag(name = "Doctor Dashboard", description = "Dashboard dành cho bác sĩ - Chronic Disease Management")
 @Slf4j
 @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
 public class DoctorDashboardController {
@@ -32,7 +32,7 @@ public class DoctorDashboardController {
         private final vn.clinic.cdm.clinical.service.ClinicalRiskService riskService;
 
         @GetMapping
-        @Operation(summary = "Láº¥y dá»¯ liá»‡u tá»•ng quan cho bÃ¡c sÄ© (Real-time Dashboard)")
+        @Operation(summary = "Lấy dữ liệu tổng quan cho bác sĩ (Real-time Dashboard)")
         public ResponseEntity<ApiResponse<DoctorDashboardDto>> getDashboard() {
                 UUID doctorUserId = AuthPrincipal.getCurrentUserId();
                 log.debug("Building doctor dashboard for user: {}", doctorUserId);
@@ -62,7 +62,7 @@ public class DoctorDashboardController {
                                 .riskPatients(riskPatients)
                                 .criticalVitalsAlerts(riskPatients.stream()
                                                 .filter(rp -> "CRITICAL".equals(rp.getRiskLevel()))
-                                                .map(rp -> "Cáº¢NH BÃO NGUY Cáº¤P: BN " + rp.getPatientName() + " - "
+                                                .map(rp -> "CẢNH BÁO NGUY CẤP: BN " + rp.getPatientName() + " - "
                                                                 + rp.getReason())
                                                 .collect(Collectors.toList()))
                                 .unreadMessages(List.of())
@@ -70,4 +70,3 @@ public class DoctorDashboardController {
                 return ResponseEntity.ok(ApiResponse.success(data));
         }
 }
-

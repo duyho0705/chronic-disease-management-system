@@ -15,23 +15,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/tenants")
 @RequiredArgsConstructor
-@Tag(name = "System Admin", description = "Quáº£n trá»‹ há»‡ thá»‘ng (Role 4)")
+@Tag(name = "System Admin", description = "Quản trị hệ thống (Role 4)")
 public class AdminController {
 
     private final TenantRepository tenantRepository;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Danh sÃ¡ch chi nhÃ¡nh/phÃ²ng khÃ¡m (Tenants)")
+    @Operation(summary = "Danh sách chi nhánh/phòng khám (Tenants)")
     public ResponseEntity<ApiResponse<List<Tenant>>> listTenants() {
         return ResponseEntity.ok(ApiResponse.success(tenantRepository.findAll()));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Táº¡o má»›i tenant")
+    @Operation(summary = "Tạo mới tenant")
     public ResponseEntity<ApiResponse<Tenant>> createTenant(@RequestBody Tenant tenant) {
         return ResponseEntity.ok(ApiResponse.success(tenantRepository.save(tenant)));
     }
 }
-

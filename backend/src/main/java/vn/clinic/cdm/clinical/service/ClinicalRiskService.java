@@ -47,17 +47,17 @@ public class ClinicalRiskService {
 
             if (isCritical(type, latest.getValue())) {
                 riskLevel = "CRITICAL";
-                reasons.add("Chá»‰ sá»‘ " + getLabel(type) + " á»Ÿ má»©c nguy hiá»ƒm: " + latest.getValue());
+                reasons.add("Chỉ số " + getLabel(type) + " ở mức nguy hiểm: " + latest.getValue());
             } else if (riskLevel.equals("LOW") && isWarning(type, latest.getValue())) {
                 riskLevel = "HIGH";
-                reasons.add("Chá»‰ sá»‘ " + getLabel(type) + " vÆ°á»£t ngÆ°á»¡ng: " + latest.getValue());
+                reasons.add("Chỉ số " + getLabel(type) + " vượt ngưỡng: " + latest.getValue());
             }
 
             if (typeLogs.size() >= 3) {
                 if (isWorsening(type, typeLogs.subList(0, 3))) {
                     if (!riskLevel.equals("CRITICAL"))
                         riskLevel = "HIGH";
-                    trendInfo = "Xu hÆ°á»›ng " + getLabel(type) + " Ä‘ang xáº¥u Ä‘i";
+                    trendInfo = "Xu hướng " + getLabel(type) + " đang xấu đi";
                     reasons.add(trendInfo);
                 }
             }
@@ -117,13 +117,12 @@ public class ClinicalRiskService {
 
     private String getLabel(String type) {
         return switch (type.toUpperCase()) {
-            case "BLOOD_GLUCOSE" -> "ÄÆ°á»ng huyáº¿t";
-            case "BLOOD_PRESSURE_SYS" -> "Huyáº¿t Ã¡p (TÃ¢m thu)";
-            case "BLOOD_PRESSURE_DIA" -> "Huyáº¿t Ã¡p (TÃ¢m trÆ°Æ¡ng)";
+            case "BLOOD_GLUCOSE" -> "Đường huyết";
+            case "BLOOD_PRESSURE_SYS" -> "Huyết áp (Tâm thu)";
+            case "BLOOD_PRESSURE_DIA" -> "Huyết áp (Tâm trương)";
             case "SPO2" -> "SpO2";
-            case "HEART_RATE" -> "Nhá»‹p tim";
+            case "HEART_RATE" -> "Nhịp tim";
             default -> type;
         };
     }
 }
-

@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Health", description = "Kiá»ƒm tra API")
+@Tag(name = "Health", description = "Kiểm tra API")
 public class HealthController {
 
     @GetMapping("/health")
@@ -25,5 +25,3 @@ public class HealthController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("status", "UP", "service", "cdm-platform-triage")));
     }
 }
-
-

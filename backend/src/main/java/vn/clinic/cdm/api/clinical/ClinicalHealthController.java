@@ -19,8 +19,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/clinical/health")
 @RequiredArgsConstructor
-@Tag(name = "Health Tracking", description = "Theo dÃµi sá»©c khá»e (Role 1 & 2)")
-public class HealthController {
+@Tag(name = "Health Tracking", description = "Theo dõi sức khỏe (Role 1 & 2)")
+public class ClinicalHealthController {
 
     private final HealthMetricRepository healthMetricRepository;
     private final PatientService patientService;
@@ -28,7 +28,7 @@ public class HealthController {
 
     @PostMapping("/{patientId}/metrics")
     @PreAuthorize("hasAnyRole('PATIENT', 'DOCTOR', 'nurse')")
-    @Operation(summary = "Nháº­p chá»‰ sá»‘ sá»©c khá»e")
+    @Operation(summary = "Nhập chỉ số sức khỏe")
     public ResponseEntity<ApiResponse<HealthMetric>> addMetric(@PathVariable UUID patientId,
             @RequestBody HealthMetric metric) {
         metric.setPatient(patientService.getById(patientId));
@@ -37,7 +37,7 @@ public class HealthController {
 
     @GetMapping("/{patientId}/metrics")
     @PreAuthorize("hasAnyRole('PATIENT', 'DOCTOR')")
-    @Operation(summary = "Xem lá»‹ch sá»­ chá»‰ sá»‘ sá»©c khá»e")
+    @Operation(summary = "Xem lịch sử chỉ số sức khỏe")
     public ResponseEntity<ApiResponse<List<HealthMetric>>> getMetrics(@PathVariable UUID patientId) {
         return ResponseEntity
                 .ok(ApiResponse.success(healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(patientId)));
@@ -45,11 +45,10 @@ public class HealthController {
 
     @GetMapping("/{patientId}/ai-analysis")
     @PreAuthorize("hasAnyRole('DOCTOR', 'PATIENT')")
-    @Operation(summary = "PhÃ¢n tÃ­ch sá»©c khá»e báº±ng AI (Role 2)")
+    @Operation(summary = "Phân tích sức khỏe bằng AI (Role 2)")
     public ResponseEntity<ApiResponse<String>> analyzeHealth(@PathVariable UUID patientId) {
         var patient = patientService.getById(patientId);
         var metrics = healthMetricRepository.findByPatientIdOrderByRecordedAtDesc(patientId);
         return ResponseEntity.ok(ApiResponse.success(aiClinicalAnalysisService.analyzePatientHealth(patient, metrics)));
     }
 }
-

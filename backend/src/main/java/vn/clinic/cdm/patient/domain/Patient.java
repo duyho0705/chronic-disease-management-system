@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * Bá»‡nh nhÃ¢n.
+ * Bệnh nhân.
  */
 @Entity
 @Table(name = "patient")
@@ -102,4 +102,3 @@ public class Patient extends BaseAuditableEntity {
         super(id);
     }
 }
-

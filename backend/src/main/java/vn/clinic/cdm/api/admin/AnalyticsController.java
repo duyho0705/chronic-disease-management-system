@@ -20,14 +20,14 @@ import java.util.UUID;
 @RestController
 @RequestMapping(value = "/api/admin/analytics", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@Tag(name = "Analytics", description = "PhÃ¢n tÃ­ch & BÃ¡o cÃ¡o")
+@Tag(name = "Analytics", description = "Phân tích & Báo cáo")
 @PreAuthorize("hasAnyRole('CLINIC_MANAGER', 'ADMIN')")
 public class AnalyticsController {
 
         private final AnalyticsService analyticsService;
 
         @GetMapping("/summary/today")
-        @Operation(summary = "Tá»•ng quan hÃ´m nay: sá»‘ bá»‡nh nhÃ¢n, thá»i gian chá», tá»· lá»‡ AI")
+        @Operation(summary = "Tổng quan hôm nay: số bệnh nhân, thời gian chờ, tỷ lệ AI")
         public ResponseEntity<ApiResponse<Map<String, Object>>> getTodaySummary(
                         @RequestParam(required = false) UUID branchId) {
                 UUID tenantId = TenantContext.getTenantIdOrThrow();
@@ -35,11 +35,10 @@ public class AnalyticsController {
         }
 
         @GetMapping("/summary/week")
-        @Operation(summary = "Thá»‘ng kÃª 7 ngÃ y gáº§n nháº¥t")
+        @Operation(summary = "Thống kê 7 ngày gần nhất")
         public ResponseEntity<ApiResponse<Map<String, Object>>> getWeekSummary(
                         @RequestParam(required = false) UUID branchId) {
                 UUID tenantId = TenantContext.getTenantIdOrThrow();
                 return ResponseEntity.ok(ApiResponse.success(analyticsService.getWeekSummary(tenantId, branchId)));
         }
 }
-

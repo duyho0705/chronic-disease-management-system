@@ -24,18 +24,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Tenant and branch â€“ admin / bootstrap. No tenant context required.
+ * Tenant and branch – admin / bootstrap. No tenant context required.
  */
 @RestController
 @RequestMapping(value = "/api/tenants", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@Tag(name = "Tenant", description = "PhÃ²ng khÃ¡m / chi nhÃ¡nh")
+@Tag(name = "Tenant", description = "Phòng khám / chi nhánh")
 public class TenantController {
 
         private final TenantService tenantService;
 
         @GetMapping
-        @Operation(summary = "Danh sÃ¡ch tenant (phÃ²ng khÃ¡m) Ä‘ang hoáº¡t Ä‘á»™ng")
+        @Operation(summary = "Danh sách tenant (phòng khám) đang hoạt động")
         public ResponseEntity<ApiResponse<List<TenantDto>>> list() {
                 var data = tenantService.listAllActive().stream()
                                 .map(TenantDto::fromEntity)
@@ -44,20 +44,20 @@ public class TenantController {
         }
 
         @GetMapping("/{id}")
-        @Operation(summary = "Láº¥y tenant theo ID")
+        @Operation(summary = "Lấy tenant theo ID")
         public ResponseEntity<ApiResponse<TenantDto>> getById(@PathVariable UUID id) {
                 return ResponseEntity.ok(ApiResponse.success(TenantDto.fromEntity(tenantService.getById(id))));
         }
 
         @GetMapping("/by-code/{code}")
-        @Operation(summary = "Láº¥y tenant theo mÃ£")
+        @Operation(summary = "Lấy tenant theo mã")
         public ResponseEntity<ApiResponse<TenantDto>> getByCode(@PathVariable String code) {
                 return ResponseEntity.ok(ApiResponse.success(TenantDto.fromEntity(tenantService.getByCode(code))));
         }
 
         @PostMapping
         @ResponseStatus(HttpStatus.CREATED)
-        @Operation(summary = "Táº¡o tenant (phÃ²ng khÃ¡m)")
+        @Operation(summary = "Tạo tenant (phòng khám)")
         public ResponseEntity<ApiResponse<TenantDto>> create(@Valid @RequestBody CreateTenantRequest request) {
                 Tenant tenant = Tenant.builder()
                                 .code(request.getCode())
@@ -72,7 +72,7 @@ public class TenantController {
         }
 
         @GetMapping("/{tenantId}/branches")
-        @Operation(summary = "Danh sÃ¡ch chi nhÃ¡nh cá»§a tenant")
+        @Operation(summary = "Danh sách chi nhánh của tenant")
         public ResponseEntity<ApiResponse<List<TenantBranchDto>>> getBranches(@PathVariable UUID tenantId) {
                 var data = tenantService.getBranchesByTenantId(tenantId).stream()
                                 .map(TenantBranchDto::fromEntity)
@@ -82,7 +82,7 @@ public class TenantController {
 
         @PostMapping("/branches")
         @ResponseStatus(HttpStatus.CREATED)
-        @Operation(summary = "Táº¡o chi nhÃ¡nh")
+        @Operation(summary = "Tạo chi nhánh")
         public ResponseEntity<ApiResponse<TenantBranchDto>> createBranch(
                         @Valid @RequestBody CreateBranchRequest request) {
                 Tenant tenant = tenantService.getById(request.getTenantId());
@@ -102,7 +102,7 @@ public class TenantController {
         }
 
         @GetMapping("/branches/{branchId}")
-        @Operation(summary = "Láº¥y chi nhÃ¡nh theo ID")
+        @Operation(summary = "Lấy chi nhánh theo ID")
         public ResponseEntity<ApiResponse<TenantBranchDto>> getBranchById(@PathVariable UUID branchId) {
                 return ResponseEntity
                                 .ok(ApiResponse.success(
@@ -110,7 +110,7 @@ public class TenantController {
         }
 
         @PutMapping("/branches/{branchId}")
-        @Operation(summary = "Cáº­p nháº­t chi nhÃ¡nh")
+        @Operation(summary = "Cập nhật chi nhánh")
         public ResponseEntity<ApiResponse<TenantBranchDto>> updateBranch(@PathVariable UUID branchId,
                         @RequestBody TenantBranchDto dto) {
                 TenantBranch details = TenantBranch.builder()
@@ -128,7 +128,7 @@ public class TenantController {
         }
 
         @PutMapping("/{tenantId}/settings")
-        @Operation(summary = "Cáº­p nháº­t cáº¥u hÃ¬nh tenant (Admin)")
+        @Operation(summary = "Cập nhật cấu hình tenant (Admin)")
         public ResponseEntity<ApiResponse<TenantDto>> updateSettings(@PathVariable UUID tenantId,
                         @RequestBody UpdateTenantSettingsRequest request) {
                 return ResponseEntity.ok(ApiResponse
@@ -136,4 +136,3 @@ public class TenantController {
                                                 tenantService.updateSettings(tenantId, request.getSettingsJson()))));
         }
 }
-

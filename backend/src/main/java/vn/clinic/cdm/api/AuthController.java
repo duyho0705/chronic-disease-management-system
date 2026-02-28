@@ -20,19 +20,19 @@ import vn.clinic.cdm.identity.domain.IdentityUser;
 import vn.clinic.cdm.identity.service.IdentityService;
 
 /**
- * API xÃ¡c thá»±c â€“ login (JWT), me (thÃ´ng tin user hiá»‡n táº¡i).
+ * API xác thực – login (JWT), me (thông tin user hiện tại).
  */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Auth", description = "ÄÄƒng nháº­p vÃ  thÃ´ng tin user")
+@Tag(name = "Auth", description = "Đăng nhập và thông tin user")
 public class AuthController {
 
         private final AuthService authService;
         private final IdentityService identityService;
 
         @PostMapping("/login")
-        @Operation(summary = "ÄÄƒng nháº­p", description = "Tráº£ vá» JWT vÃ  thÃ´ng tin user (CÅ©ng Ä‘áº·t JWT trong HttpOnly Cookie).")
+        @Operation(summary = "Đăng nhập", description = "Trả về JWT và thông tin user (Cũng đặt JWT trong HttpOnly Cookie).")
         public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
                 LoginResponse response = authService.login(request);
 
@@ -50,7 +50,7 @@ public class AuthController {
         }
 
         @PostMapping("/register")
-        @Operation(summary = "ÄÄƒng kÃ½", description = "Tá»± Ä‘Äƒng kÃ½ tÃ i khoáº£n má»›i vÃ  Ä‘áº·t JWT Cookie.")
+        @Operation(summary = "Đăng ký", description = "Tự đăng ký tài khoản mới và đặt JWT Cookie.")
         public ResponseEntity<ApiResponse<LoginResponse>> register(
                         @Valid @RequestBody vn.clinic.cdm.api.dto.auth.RegisterRequest request) {
                 LoginResponse response = authService.register(request);
@@ -69,7 +69,7 @@ public class AuthController {
         }
 
         @PostMapping("/social-login")
-        @Operation(summary = "ÄÄƒng nháº­p Google/Facebook", description = "XÃ¡c thá»±c Firebase Token vÃ  cáº¥p JWT.")
+        @Operation(summary = "Đăng nhập Google/Facebook", description = "Xác thực Firebase Token và cấp JWT.")
         public ResponseEntity<ApiResponse<LoginResponse>> socialLogin(
                         @Valid @RequestBody vn.clinic.cdm.api.dto.auth.SocialLoginRequest request) {
                 LoginResponse response = authService.socialLogin(request);
@@ -88,7 +88,7 @@ public class AuthController {
         }
 
         @PostMapping("/logout")
-        @Operation(summary = "ÄÄƒng xuáº¥t", description = "XÃ³a JWT Cookie.")
+        @Operation(summary = "Đăng xuất", description = "Xóa JWT Cookie.")
         public ResponseEntity<ApiResponse<Void>> logout() {
                 ResponseCookie cookie = ResponseCookie.from("jwt", "")
                                 .httpOnly(true)
@@ -104,7 +104,7 @@ public class AuthController {
         }
 
         @GetMapping("/me")
-        @Operation(summary = "ThÃ´ng tin user hiá»‡n táº¡i", description = "Láº¥y thÃ´ng tin user tá»« JWT (cáº§n Authorization: Bearer <token>).")
+        @Operation(summary = "Thông tin user hiện tại", description = "Lấy thông tin user từ JWT (cần Authorization: Bearer <token>).")
         public ResponseEntity<ApiResponse<AuthUserDto>> me(@AuthenticationPrincipal AuthPrincipal principal) {
                 if (principal == null) {
                         return ResponseEntity.status(401).body(ApiResponse.error("Unauthorized"));
@@ -121,4 +121,3 @@ public class AuthController {
                 return ResponseEntity.ok(ApiResponse.success(dto));
         }
 }
-

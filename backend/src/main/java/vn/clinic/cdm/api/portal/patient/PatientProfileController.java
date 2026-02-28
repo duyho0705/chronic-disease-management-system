@@ -29,7 +29,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/portal/profile")
 @RequiredArgsConstructor
-@Tag(name = "Patient Profile", description = "Quáº£n lÃ½ há»“ sÆ¡ bá»‡nh nhÃ¢n")
+@Tag(name = "Patient Profile", description = "Quản lý hồ sơ bệnh nhân")
 @PreAuthorize("hasRole('PATIENT')")
 public class PatientProfileController {
 
@@ -37,7 +37,7 @@ public class PatientProfileController {
     private final AuthService authService;
 
     @PostMapping("/change-password")
-    @Operation(summary = "Äá»•i máº­t kháº©u")
+    @Operation(summary = "Đổi mật khẩu")
     public ResponseEntity<ApiResponse<Void>> changePassword(@RequestBody ChangePasswordRequest request) {
         UUID userId = AuthPrincipal.getCurrentUserId();
         authService.changePassword(userId, request);
@@ -45,14 +45,14 @@ public class PatientProfileController {
     }
 
     @GetMapping
-    @Operation(summary = "Láº¥y há»“ sÆ¡ bá»‡nh nhÃ¢n hiá»‡n táº¡i")
+    @Operation(summary = "Lấy hồ sơ bệnh nhân hiện tại")
     public ResponseEntity<ApiResponse<PatientDto>> getProfile() {
         Patient p = portalService.getAuthenticatedPatient();
         return ResponseEntity.ok(ApiResponse.success(PatientDto.fromEntity(p)));
     }
 
     @PutMapping
-    @Operation(summary = "Cáº­p nháº­t há»“ sÆ¡ bá»‡nh nhÃ¢n")
+    @Operation(summary = "Cập nhật hồ sơ bệnh nhân")
     public ResponseEntity<ApiResponse<PatientDto>> updateProfile(
             @Valid @RequestBody UpdatePatientProfileRequest request) {
         Patient p = portalService.getAuthenticatedPatient();
@@ -60,28 +60,28 @@ public class PatientProfileController {
     }
 
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Táº£i áº£nh Ä‘áº¡i diá»‡n")
+    @Operation(summary = "Tải ảnh đại diện")
     public ResponseEntity<ApiResponse<PatientDto>> uploadAvatar(@RequestParam("file") MultipartFile file) {
         Patient p = portalService.getAuthenticatedPatient();
         return ResponseEntity.ok(ApiResponse.success(portalService.uploadAvatar(p.getId(), file)));
     }
 
     @GetMapping("/family")
-    @Operation(summary = "Láº¥y danh sÃ¡ch ngÆ°á»i thÃ¢n")
+    @Operation(summary = "Lấy danh sách người thân")
     public ResponseEntity<ApiResponse<List<PatientRelativeDto>>> getFamily() {
         Patient p = portalService.getAuthenticatedPatient();
         return ResponseEntity.ok(ApiResponse.success(portalService.getFamily(p)));
     }
 
     @PostMapping("/family")
-    @Operation(summary = "ThÃªm ngÆ°á»i thÃ¢n")
+    @Operation(summary = "Thêm người thân")
     public ResponseEntity<ApiResponse<PatientRelativeDto>> addRelative(@RequestBody AddPatientRelativeRequest request) {
         Patient p = portalService.getAuthenticatedPatient();
         return ResponseEntity.ok(ApiResponse.success(portalService.addRelative(p, request)));
     }
 
     @PutMapping("/family/{id}")
-    @Operation(summary = "Cáº­p nháº­t ngÆ°á»i thÃ¢n")
+    @Operation(summary = "Cập nhật người thân")
     public ResponseEntity<ApiResponse<PatientRelativeDto>> updateRelative(
             @PathVariable UUID id, @RequestBody AddPatientRelativeRequest request) {
         Patient p = portalService.getAuthenticatedPatient();
@@ -89,7 +89,7 @@ public class PatientProfileController {
     }
 
     @DeleteMapping("/family/{id}")
-    @Operation(summary = "XÃ³a ngÆ°á»i thÃ¢n")
+    @Operation(summary = "Xóa người thân")
     public ResponseEntity<ApiResponse<Void>> deleteRelative(@PathVariable UUID id) {
         Patient p = portalService.getAuthenticatedPatient();
         portalService.deleteRelative(p, id);
@@ -97,14 +97,14 @@ public class PatientProfileController {
     }
 
     @GetMapping("/insurance")
-    @Operation(summary = "Láº¥y danh sÃ¡ch báº£o hiá»ƒm")
+    @Operation(summary = "Lấy danh sách bảo hiểm")
     public ResponseEntity<ApiResponse<List<PatientInsuranceDto>>> getInsurances() {
         Patient p = portalService.getAuthenticatedPatient();
         return ResponseEntity.ok(ApiResponse.success(portalService.getInsurances(p.getId())));
     }
 
     @PostMapping("/insurance")
-    @Operation(summary = "ThÃªm báº£o hiá»ƒm")
+    @Operation(summary = "Thêm bảo hiểm")
     public ResponseEntity<ApiResponse<PatientInsuranceDto>> addInsurance(
             @RequestBody AddPatientInsuranceRequest request) {
         Patient p = portalService.getAuthenticatedPatient();
@@ -112,7 +112,7 @@ public class PatientProfileController {
     }
 
     @DeleteMapping("/insurance/{id}")
-    @Operation(summary = "XÃ³a báº£o hiá»ƒm")
+    @Operation(summary = "Xóa bảo hiểm")
     public ResponseEntity<ApiResponse<Void>> deleteInsurance(@PathVariable UUID id) {
         Patient p = portalService.getAuthenticatedPatient();
         portalService.deleteInsurance(p, id);
@@ -120,10 +120,9 @@ public class PatientProfileController {
     }
 
     @GetMapping("/check-in-code")
-    @Operation(summary = "Láº¥y mÃ£ QR Check-in sá»‘ hÃ³a")
+    @Operation(summary = "Lấy mã QR Check-in số hóa")
     public ResponseEntity<ApiResponse<String>> getCheckInCode() {
         Patient p = portalService.getAuthenticatedPatient();
         return ResponseEntity.ok(ApiResponse.success("PATIENT_FLOW:" + p.getId()));
     }
 }
-
