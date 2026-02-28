@@ -7,6 +7,8 @@ import { LogOut, Menu, Plus, X, Search, Bell, Settings, BriefcaseMedical } from 
 import { useState, useEffect } from 'react'
 import { STAFF_NAV } from '@/routes/staffNav'
 import { motion } from 'framer-motion'
+import { requestForToken, onForegroundMessage } from '@/firebase'
+import toast from 'react-hot-toast'
 
 export function Layout() {
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -15,6 +17,11 @@ export function Layout() {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     return () => clearInterval(timer)
   }, [])
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { user, logout } = useAuth()
+  const { tenantId, branchId } = useTenant()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const formatDateVi = (date: Date) => {
     const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7']
@@ -25,11 +32,30 @@ export function Layout() {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
   }
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { user, logout } = useAuth()
-  const { tenantId, branchId } = useTenant()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    if (!user || !tenantId) return
+
+    // Request token on layout mount
+    requestForToken().catch(err => console.warn('FCM token error:', err))
+
+    // Handle foreground push notifications
+    const unsubscribe = onForegroundMessage((payload) => {
+      console.log("Foreground push notification:", payload);
+      toast.success(
+        payload?.notification?.body || "Bạn có thông báo mới",
+        {
+          icon: '🔔',
+          position: 'top-right',
+          duration: 5000,
+        }
+      );
+    });
+
+    return () => {
+      unsubscribe();
+    }
+  }, [user, tenantId])
 
   const visibleNav = STAFF_NAV.filter(
     (item) => !item.roles || (user?.roles && item.roles.some((r) => user.roles.includes(r)))

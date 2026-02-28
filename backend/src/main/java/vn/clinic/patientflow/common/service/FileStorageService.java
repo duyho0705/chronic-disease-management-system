@@ -33,7 +33,7 @@ public class FileStorageService {
 
     private String uploadToCloudinary(MultipartFile file, String folder, String publicId) {
         try {
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
                     "folder", folder,
                     "public_id", publicId,
                     "resource_type", "auto" // Automatically detect image vs raw file (like pdf)

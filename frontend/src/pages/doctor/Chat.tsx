@@ -22,9 +22,11 @@ import {
     Download as DownloadIcon,
     FileIcon
 } from 'lucide-react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getDoctorChatConversations, getDoctorChatHistory, sendDoctorChatMessage } from '@/api/doctorChat'
+import { useQuery } from '@tanstack/react-query'
+import { getDoctorChatConversations } from '@/api/doctorChat'
 import { useTenant } from '@/context/TenantContext'
+import { useAuth } from '@/context/AuthContext'
+import { useFirebaseChat } from '@/hooks/useFirebaseChat'
 import toast from 'react-hot-toast'
 import type { PatientChatConversationDto, PatientChatMessageDto } from '@/types/api'
 import VideoCall from '@/components/VideoCall'
@@ -102,7 +104,6 @@ const mockChatHistory: PatientChatMessageDto[] = [
 
 export default function DoctorChat() {
     const { headers } = useTenant()
-    const queryClient = useQueryClient()
     // 1. Fetch Conversations
     const { data: realConversations, isLoading: loadingConvs } = useQuery({
         queryKey: ['doctor-chat-conversations'],
@@ -113,35 +114,36 @@ export default function DoctorChat() {
 
     const conversations: ExtendedConversation[] = realConversations?.length ? (realConversations as ExtendedConversation[]) : mockConversations
 
+    const { user } = useAuth()
+    const doctorId = user?.id || 'd-01' // Fallback to map with mock patient chat ui
+
     const [selectedPatientId, setSelectedPatientId] = useState<string | null>(conversations[0]?.patientId || null)
     const [message, setMessage] = useState('')
     const [searchTerm, setSearchTerm] = useState('')
     const [isVideoCallOpen, setIsVideoCallOpen] = useState(false)
+    const [isSending, setIsSending] = useState(false)
 
-    // 2. Fetch Chat History
-    const { data: realChatHistory, isLoading: loadingHistory } = useQuery({
-        queryKey: ['doctor-chat-history', selectedPatientId],
-        queryFn: () => getDoctorChatHistory(selectedPatientId!, headers),
-        enabled: !!selectedPatientId && !!headers?.tenantId,
-        refetchInterval: 3000
-    })
+    // 2. Fetch Chat History (Realtime)
+    const { messages: firebaseHistory, loading: loadingHistory, sendMessage } = useFirebaseChat(
+        headers?.tenantId,
+        selectedPatientId,
+        doctorId
+    )
 
-    const chatHistory = realChatHistory?.length ? realChatHistory : (selectedPatientId === 'pat-001' ? mockChatHistory : [])
+    const chatHistory = firebaseHistory?.length ? firebaseHistory : (selectedPatientId === 'pat-001' ? mockChatHistory : [])
 
-    const sendMutation = useMutation({
-        mutationFn: (content: string) => sendDoctorChatMessage(selectedPatientId!, content, headers),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['doctor-chat-history', selectedPatientId] })
+    const handleSend = async () => {
+        if (!message.trim() || isSending || !selectedPatientId || !doctorId) return
+
+        setIsSending(true)
+        try {
+            await sendMessage(message, doctorId, 'DOCTOR')
             setMessage('')
-        },
-        onError: () => {
+        } catch (error) {
             toast.error('Không thể gửi tin nhắn.')
+        } finally {
+            setIsSending(false)
         }
-    })
-
-    const handleSend = () => {
-        if (!message.trim() || sendMutation.isPending) return
-        sendMutation.mutate(message)
     }
 
     const filteredConversations = conversations?.filter(c =>
@@ -426,10 +428,10 @@ export default function DoctorChat() {
                                 </div>
                                 <button
                                     onClick={handleSend}
-                                    disabled={!message.trim() || sendMutation.isPending}
+                                    disabled={!message.trim() || isSending}
                                     className="bg-emerald-400 text-slate-900 p-3.5 rounded-2xl shadow-xl shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-30"
                                 >
-                                    {sendMutation.isPending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
+                                    {isSending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
                                 </button>
                             </div>
                         </footer>

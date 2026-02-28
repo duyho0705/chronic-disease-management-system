@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useTenant } from '@/context/TenantContext'
-import { requestForToken } from '@/firebase'
+import { requestForToken, onForegroundMessage } from '@/firebase'
 import { registerPortalFcmToken } from '@/api/portal'
 import {
     LayoutGrid,
@@ -25,6 +25,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePatientRealtime } from '@/hooks/usePatientRealtime'
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 interface PatientLayoutProps {
     children: ReactNode
@@ -82,7 +83,26 @@ export function PatientLayout({ children }: PatientLayoutProps) {
         }
 
         setupNotifications()
-    }, [headers, user])
+
+        // Handle foreground push notifications
+        const unsubscribe = onForegroundMessage((payload) => {
+            console.log("Foreground push notification:", payload);
+            toast.success(
+                payload?.notification?.body || "Bạn có thông báo mới",
+                {
+                    icon: '🔔',
+                    position: 'top-right',
+                    duration: 5000,
+                }
+            );
+            // Invalidate notifications query to fetch latest list
+            queryClient.invalidateQueries({ queryKey: ['patient-notifications'] });
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, [headers, user, queryClient])
 
     const handleMarkAsRead = async (id: string) => {
         try {

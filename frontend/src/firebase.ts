@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCJ-lTXX83ocINOlbCQTKbiADzz3Loy5pQ",
@@ -15,6 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
 export const auth = getAuth(app);
+export const db = getFirestore(app);
 
 const isPlaceholder = (val: string) => val.startsWith("YOUR_");
 
@@ -42,10 +44,6 @@ export const requestForToken = async () => {
     }
 };
 
-export const onMessageListener = () =>
-    new Promise((resolve) => {
-        onMessage(messaging, (payload: any) => {
-            console.log("Payload received: ", payload);
-            resolve(payload);
-        });
-    });
+export const onForegroundMessage = (callback: (payload: any) => void) => {
+    return onMessage(messaging, callback);
+};
