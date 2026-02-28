@@ -2,10 +2,10 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useTenant } from '@/context/TenantContext'
-import { listTenants, getBranches } from '@/api/tenants'
+import { listTenants } from '@/api/tenants'
 import { useQuery } from '@tanstack/react-query'
 import {
-  X, LogIn, Mail, Lock, Building2, MapPin, AlertCircle, Loader2,
+  X, LogIn, Mail, Lock, Building2, AlertCircle, Loader2,
   BriefcaseMedical, ChevronRight, User, Eye, EyeOff, ShieldCheck, Heart,
   Activity, ArrowLeft,
 } from 'lucide-react'
@@ -14,7 +14,7 @@ import { FcGoogle } from 'react-icons/fc'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { RegisterRequest } from '@/types/api'
 import { CustomSelect } from '@/components/CustomSelect'
-import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth'
+import { GoogleAuthProvider, FacebookAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth'
 import { auth } from '@/firebase'
 
 /* ─────────── helpers ─────────── */
@@ -56,22 +56,37 @@ function LoginForm({ onSuccess, redirectTo }: LoginFormProps) {
   const [password, setPassword] = useState('')
   const [fullNameVi, setFullNameVi] = useState('')
   const [tenantId, setTenantId] = useState('')
-  const [branchId, setBranchId] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [firebaseIdToken, setFirebaseIdToken] = useState<string | null>(null)
 
   const { data: tenants = [] } = useQuery({ queryKey: ['tenants'], queryFn: listTenants })
-  const { data: branches = [] } = useQuery({
-    queryKey: ['branches', tenantId],
-    queryFn: () => getBranches(tenantId),
-    enabled: !!tenantId,
-  })
 
   useEffect(() => {
     if (tenants.length === 1 && !tenantId) setTenantId(tenants[0].id)
   }, [tenants])
+
+  // Process the redirect login result when the component mounts
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth)
+        if (result && result.user) {
+          const token = await result.user.getIdToken()
+          setFirebaseIdToken(token)
+          // Proceed to the next step (e.g., branch selection)
+          setStep(2)
+        }
+      } catch (err: any) {
+        console.error('Redirect sign-in error:', err)
+        setError(err?.message || 'Lỗi xử lý đăng nhập bằng mạng xã hội.')
+      }
+    }
+
+    handleRedirectResult()
+  }, [])
+
 
   const pwStrength = useMemo(() => getPasswordStrength(password), [password])
 
@@ -101,13 +116,13 @@ function LoginForm({ onSuccess, redirectTo }: LoginFormProps) {
       let res;
       if (firebaseIdToken) {
         // Complete social login flow
-        res = await socialLogin({ idToken: firebaseIdToken, tenantId, branchId: branchId || undefined })
+        res = await socialLogin({ idToken: firebaseIdToken, tenantId, branchId: undefined })
       } else {
         if (mode === 'register') {
-          const req: RegisterRequest = { email: email.trim(), password, fullNameVi: fullNameVi.trim(), tenantId, branchId: branchId || undefined }
+          const req: RegisterRequest = { email: email.trim(), password, fullNameVi: fullNameVi.trim(), tenantId, branchId: undefined }
           await register(req)
         }
-        res = await login({ email: email.trim(), password, tenantId, branchId: branchId || undefined })
+        res = await login({ email: email.trim(), password, tenantId, branchId: undefined })
       }
 
       setTenant(res.user.tenantId, res.user.branchId ?? undefined)
@@ -127,15 +142,10 @@ function LoginForm({ onSuccess, redirectTo }: LoginFormProps) {
     setError('')
     try {
       const provider = providerName === 'google' ? new GoogleAuthProvider() : new FacebookAuthProvider()
-      const result = await signInWithPopup(auth, provider)
-      const token = await result.user.getIdToken()
-      // Store token and trigger step 2 directly
-      setFirebaseIdToken(token)
-      setStep(2)
-
+      await signInWithRedirect(auth, provider)
     } catch (err: any) {
       console.error(err)
-      setError(err?.message || `Lỗi khi đăng nhập bằng ${providerName}`)
+      setError(err?.message || `Lỗi khi chuyển hướng đăng nhập bằng ${providerName}`)
     }
   }
 
@@ -241,20 +251,10 @@ function LoginForm({ onSuccess, redirectTo }: LoginFormProps) {
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-0.5">Phòng khám</label>
                 <CustomSelect
                   options={tenants} value={tenantId}
-                  onChange={v => { setTenantId(v); setBranchId('') }}
+                  onChange={setTenantId}
                   labelKey="nameVi" valueKey="id"
                   placeholder="Chọn phòng khám"
                   icon={<Building2 className="w-5 h-5" />}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-0.5">Chi nhánh</label>
-                <CustomSelect
-                  options={branches} value={branchId}
-                  onChange={setBranchId} disabled={!tenantId}
-                  labelKey="nameVi" valueKey="id"
-                  placeholder="Chọn chi nhánh (Tùy chọn)"
-                  icon={<MapPin className="w-5 h-5" />}
                 />
               </div>
 

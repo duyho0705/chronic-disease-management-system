@@ -15,14 +15,14 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MedicationReminderScheduler {
+public class MedicationDueReminderScheduler {
 
     private final MedicationScheduleRepository scheduleRepository;
     private final PatientNotificationService notificationService;
     private final vn.clinic.cdm.common.service.OmniChannelService omniChannelService;
 
     /**
-     * Cháº¡y má»—i phÃºt Ä‘á»ƒ kiá»ƒm tra vÃ  gá»­i nháº¯c lá»‹ch uá»‘ng thuá»‘c.
+     * Chạy mỗi phút để kiểm tra và gửi nhắc lịch uống thuốc.
      */
     @Scheduled(cron = "0 * * * * *")
     public void processReminders() {
@@ -49,10 +49,10 @@ public class MedicationReminderScheduler {
         var medication = schedule.getMedication();
         var patient = medication.getPrescription().getPatient();
 
-        String title = "ðŸ”” Nháº¯c uá»‘ng thuá»‘c: " + medication.getMedicineName();
-        String body = String.format("ÄÃ£ Ä‘áº¿n giá» uá»‘ng thuá»‘c: %s (Liá»u lÆ°á»£ng: %s). Äá»«ng quÃªn nhÃ©!",
+        String title = "🔔 Nhắc uống thuốc: " + medication.getMedicineName();
+        String body = String.format("Đã đến giờ uống thuốc: %s (Liều lượng: %s). Đừng quên nhé!",
                 medication.getMedicineName(),
-                medication.getDosageInstruction() != null ? medication.getDosageInstruction() : "Theo chá»‰ dáº«n");
+                medication.getDosageInstruction() != null ? medication.getDosageInstruction() : "Theo chỉ dẫn");
 
         Map<String, String> data = Map.of(
                 "type", "MEDICATION_REMINDER",
@@ -61,9 +61,8 @@ public class MedicationReminderScheduler {
 
         notificationService.notifyPatient(patient.getId(), title, body, data);
 
-        // 2. Gá»­i Omni-channel (Email, SMS, Zalo)
+        // 2. Gửi Omni-channel (Email, SMS, Zalo)
         omniChannelService.sendMedicationReminder(patient.getFullNameVi(), patient.getEmail(), patient.getPhone(),
                 medication.getMedicineName(), medication.getDosageInstruction());
     }
 }
-

@@ -15,19 +15,19 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MedicationReminderScheduler {
+public class MedicationOverdueReminderScheduler {
 
     private final MedicationScheduleRepository scheduleRepository;
     private final PatientNotificationService notificationService;
 
     /**
-     * Cháº¡y má»—i 15 phÃºt Ä‘á»ƒ kiá»ƒm tra cÃ¡c lá»‹ch uá»‘ng thuá»‘c bá»‹ bá» lá»¡ hoáº·c Ä‘áº¿n giá».
+     * Chạy mỗi 15 phút để kiểm tra các lịch uống thuốc bị bỏ lỡ hoặc đến giờ.
      */
     @Scheduled(fixedRate = 900000) // 15 minutes
     public void processOverdueMedications() {
         log.info("Starting Medication Reminder Job at {}", Instant.now());
 
-        // Láº¥y táº¥t cáº£ cÃ¡c lá»‹ch PENDING Ä‘Ã£ quÃ¡ giá» scheduledTime
+        // Lấy tất cả các lịch PENDING đã quá giờ scheduledTime
         List<MedicationSchedule> overdue = scheduleRepository.findByStatusAndScheduledTimeBefore("PENDING",
                 Instant.now());
 
@@ -40,22 +40,21 @@ public class MedicationReminderScheduler {
 
                 notificationService.notifyPatient(
                         patient.getId(),
-                        "ðŸ”” Nháº¯c uá»‘ng thuá»‘c",
+                        "🔔 Nhắc uống thuốc",
                         String.format(
-                                "ÄÃ£ Ä‘áº¿n giá» uá»‘ng thuá»‘c: %s. Vui lÃ²ng uá»‘ng thuá»‘c vÃ  Ä‘Ã¡nh dáº¥u 'ÄÃ£ uá»‘ng' trÃªn á»©ng dá»¥ng.",
+                                "Đã đến giờ uống thuốc: %s. Vui lòng uống thuốc và đánh dấu 'Đã uống' trên ứng dụng.",
                                 medicineName),
                         Map.of(
                                 "type", "MEDICATION_REMINDER",
                                 "scheduleId", schedule.getId().toString(),
                                 "medicineName", medicineName));
 
-                // TrÃ¡nh spam - trong thá»±c táº¿ sáº½ Ä‘Ã¡nh dáº¥u lÃ  NOTIFIED Ä‘á»ƒ khÃ´ng gá»­i láº¡i trong láº§n
-                // cháº¡y sau
-                // á»ž Ä‘Ã¢y demo nÃªn ta giá»¯ nguyÃªn hoáº·c cÃ³ thá»ƒ update status táº¡m.
+                // Tránh spam - trong thực tế sẽ đánh dấu là NOTIFIED để không gửi lại trong lần
+                // chạy sau
+                // Ở đây demo nên ta giữ nguyên hoặc có thể update status tạm.
             } catch (Exception e) {
                 log.error("Error processing reminder for schedule {}: {}", schedule.getId(), e.getMessage());
             }
         }
     }
 }
-
