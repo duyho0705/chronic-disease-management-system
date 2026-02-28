@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Principal lÆ°u trong SecurityContext sau khi xÃ¡c thá»±c JWT â€“ userId, email,
+ * Principal lÆ°u trong SecurityContext sau khi xÃ¡c thá»±c JWT â€“ userId,
+ * email,
  * tenant, branch, roles.
  */
 @Getter
@@ -19,6 +20,7 @@ public class AuthPrincipal {
     private final UUID tenantId;
     private final UUID branchId;
     private final List<String> roles;
+    private final List<String> permissions;
 
     public static AuthPrincipal getCurrent() {
         var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
@@ -38,4 +40,3 @@ public class AuthPrincipal {
         return p != null ? p.getEmail() : null;
     }
 }
-

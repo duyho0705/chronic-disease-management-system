@@ -46,10 +46,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             UUID tenantId = jwtUtil.getTenantId(claims);
             UUID branchId = jwtUtil.getBranchId(claims);
             List<String> roles = jwtUtil.getRoles(claims);
+            List<String> permissions = jwtUtil.getPermissions(claims);
 
             List<SimpleGrantedAuthority> authorities = roles.stream()
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toList());
+
+            permissions.forEach(p -> authorities.add(new SimpleGrantedAuthority(p)));
 
             AuthPrincipal principal = AuthPrincipal.builder()
                     .userId(jwtUtil.getUserId(claims))
@@ -57,6 +60,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .tenantId(tenantId)
                     .branchId(branchId)
                     .roles(roles)
+                    .permissions(permissions)
                     .build();
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

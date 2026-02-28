@@ -18,6 +18,8 @@ import vn.clinic.cdm.auth.AuthPrincipal;
 import vn.clinic.cdm.auth.AuthService;
 import vn.clinic.cdm.identity.domain.IdentityUser;
 import vn.clinic.cdm.identity.service.IdentityService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * API xác thực – login (JWT), me (thông tin user hiện tại).
@@ -35,17 +37,22 @@ public class AuthController {
         @Operation(summary = "Đăng nhập", description = "Trả về JWT và thông tin user (Cũng đặt JWT trong HttpOnly Cookie).")
         public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
                 LoginResponse response = authService.login(request);
+                String refreshToken = response.getRefreshToken();
+                response.setRefreshToken(null);
 
-                ResponseCookie cookie = ResponseCookie.from("jwt", response.getToken())
+                ResponseCookie jwtCookie = ResponseCookie.from("jwt", response.getToken())
                                 .httpOnly(true)
-                                .secure(false) // Set true in production with HTTPS
+                                .secure(false)
                                 .path("/")
-                                .maxAge(24 * 60 * 60) // 1 day
+                                .maxAge(24 * 60 * 60)
                                 .sameSite("Lax")
                                 .build();
 
+                ResponseCookie refreshCookie = createRefreshCookie(refreshToken);
+
                 return ResponseEntity.ok()
-                                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                                 .body(ApiResponse.success(response));
         }
 
@@ -54,8 +61,10 @@ public class AuthController {
         public ResponseEntity<ApiResponse<LoginResponse>> register(
                         @Valid @RequestBody vn.clinic.cdm.api.dto.auth.RegisterRequest request) {
                 LoginResponse response = authService.register(request);
+                String refreshToken = response.getRefreshToken();
+                response.setRefreshToken(null);
 
-                ResponseCookie cookie = ResponseCookie.from("jwt", response.getToken())
+                ResponseCookie jwtCookie = ResponseCookie.from("jwt", response.getToken())
                                 .httpOnly(true)
                                 .secure(false)
                                 .path("/")
@@ -63,8 +72,11 @@ public class AuthController {
                                 .sameSite("Lax")
                                 .build();
 
+                ResponseCookie refreshCookie = createRefreshCookie(refreshToken);
+
                 return ResponseEntity.ok()
-                                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                                 .body(ApiResponse.success(response));
         }
 
@@ -73,24 +85,29 @@ public class AuthController {
         public ResponseEntity<ApiResponse<LoginResponse>> socialLogin(
                         @Valid @RequestBody vn.clinic.cdm.api.dto.auth.SocialLoginRequest request) {
                 LoginResponse response = authService.socialLogin(request);
+                String refreshToken = response.getRefreshToken();
+                response.setRefreshToken(null);
 
-                ResponseCookie cookie = ResponseCookie.from("jwt", response.getToken())
+                ResponseCookie jwtCookie = ResponseCookie.from("jwt", response.getToken())
                                 .httpOnly(true)
-                                .secure(false) // Set true in production with HTTPS
+                                .secure(false)
                                 .path("/")
                                 .maxAge(24 * 60 * 60)
                                 .sameSite("Lax")
                                 .build();
 
+                ResponseCookie refreshCookie = createRefreshCookie(refreshToken);
+
                 return ResponseEntity.ok()
-                                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                                 .body(ApiResponse.success(response));
         }
 
         @PostMapping("/logout")
         @Operation(summary = "Đăng xuất", description = "Xóa JWT Cookie.")
         public ResponseEntity<ApiResponse<Void>> logout() {
-                ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                ResponseCookie jwtCookie = ResponseCookie.from("jwt", "")
                                 .httpOnly(true)
                                 .secure(false)
                                 .path("/")
@@ -98,8 +115,17 @@ public class AuthController {
                                 .sameSite("Lax")
                                 .build();
 
+                ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", "")
+                                .httpOnly(true)
+                                .secure(false)
+                                .path("/") // Fixed: should match cookie path
+                                .maxAge(0)
+                                .sameSite("Lax")
+                                .build();
+
                 return ResponseEntity.ok()
-                                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                                 .body(ApiResponse.success(null));
         }
 
@@ -119,5 +145,42 @@ public class AuthController {
                                 .branchId(principal.getBranchId())
                                 .build();
                 return ResponseEntity.ok(ApiResponse.success(dto));
+        }
+
+        @PostMapping("/refresh")
+        @Operation(summary = "Làm mới Token", description = "Dùng Refresh Token từ Cookie để lấy Access Token mới.")
+        public ResponseEntity<ApiResponse<LoginResponse>> refresh(HttpServletRequest request) {
+                String refreshToken = null;
+                if (request.getCookies() != null) {
+                        for (Cookie cookie : request.getCookies()) {
+                                if ("refresh_token".equals(cookie.getName())) {
+                                        refreshToken = cookie.getValue();
+                                }
+                        }
+                }
+
+                if (refreshToken == null) {
+                        return ResponseEntity.status(401).body(ApiResponse.error("Refresh token missing"));
+                }
+
+                LoginResponse response = authService.rotateRefreshToken(refreshToken);
+                String newRefreshToken = response.getRefreshToken();
+                response.setRefreshToken(null);
+
+                ResponseCookie refreshCookie = createRefreshCookie(newRefreshToken);
+
+                return ResponseEntity.ok()
+                                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                                .body(ApiResponse.success(response));
+        }
+
+        private ResponseCookie createRefreshCookie(String token) {
+                return ResponseCookie.from("refresh_token", token)
+                                .httpOnly(true)
+                                .secure(false) // Set true in production
+                                .path("/") // Should match across app
+                                .maxAge(7 * 24 * 60 * 60) // 7 days
+                                .sameSite("Lax")
+                                .build();
         }
 }

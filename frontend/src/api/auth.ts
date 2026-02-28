@@ -27,4 +27,10 @@ export function logout() {
   setStoredToken(null)
 }
 
+export async function refresh(): Promise<LoginResponse> {
+  const res = await post<LoginResponse>('/auth/refresh')
+  if (res.token) setStoredToken(res.token)
+  return res
+}
+
 

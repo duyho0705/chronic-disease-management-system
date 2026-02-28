@@ -22,6 +22,7 @@ import vn.clinic.cdm.auth.AuthPrincipal;
 import vn.clinic.cdm.auth.AuthService;
 import vn.clinic.cdm.patient.domain.Patient;
 import vn.clinic.cdm.patient.service.PatientPortalService;
+import vn.clinic.cdm.common.annotation.AuditAction;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +39,7 @@ public class PatientProfileController {
 
     @PostMapping("/change-password")
     @Operation(summary = "Đổi mật khẩu")
+    @AuditAction("CHANGE_PASSWORD")
     public ResponseEntity<ApiResponse<Void>> changePassword(@RequestBody ChangePasswordRequest request) {
         UUID userId = AuthPrincipal.getCurrentUserId();
         authService.changePassword(userId, request);
@@ -53,6 +55,7 @@ public class PatientProfileController {
 
     @PutMapping
     @Operation(summary = "Cập nhật hồ sơ bệnh nhân")
+    @AuditAction("UPDATE_PROFILE")
     public ResponseEntity<ApiResponse<PatientDto>> updateProfile(
             @Valid @RequestBody UpdatePatientProfileRequest request) {
         Patient p = portalService.getAuthenticatedPatient();
@@ -75,6 +78,7 @@ public class PatientProfileController {
 
     @PostMapping("/family")
     @Operation(summary = "Thêm người thân")
+    @AuditAction("ADD_RELATIVE")
     public ResponseEntity<ApiResponse<PatientRelativeDto>> addRelative(@RequestBody AddPatientRelativeRequest request) {
         Patient p = portalService.getAuthenticatedPatient();
         return ResponseEntity.ok(ApiResponse.success(portalService.addRelative(p, request)));
@@ -90,6 +94,7 @@ public class PatientProfileController {
 
     @DeleteMapping("/family/{id}")
     @Operation(summary = "Xóa người thân")
+    @AuditAction("DELETE_RELATIVE")
     public ResponseEntity<ApiResponse<Void>> deleteRelative(@PathVariable UUID id) {
         Patient p = portalService.getAuthenticatedPatient();
         portalService.deleteRelative(p, id);

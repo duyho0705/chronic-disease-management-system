@@ -41,6 +41,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TenantRepository tenantRepository;
     private final RegisterService registerService;
+    private final vn.clinic.cdm.identity.repository.RefreshTokenRepository refreshTokenRepository;
+    private final vn.clinic.cdm.common.service.AuditService auditService;
 
     /**
      * Đăng nhập: kiểm tra email/password, lấy roles theo tenant (và branch nếu có),
@@ -63,13 +65,21 @@ public class AuthService {
         }
         UUID branchId = request.getBranchId();
         List<String> roles = identityService.getRoleCodesForUserInTenantAndBranch(user.getId(), tenantId, branchId);
+        List<String> permissions = identityService.getPermissionCodesForUserInTenantAndBranch(user.getId(), tenantId,
+                branchId);
         if (roles.isEmpty()) {
             log.warn("Login failed: No roles found for user {} in tenant {}", request.getEmail(), tenantId);
             throw new BadCredentialsException("Báº¡n khÃ´ng cÃ³ quyá»n truy cáº­p tenant/chi nhÃ¡nh nÃ y");
         }
         identityService.updateLastLoginAt(user);
         Instant expiresAt = Instant.now().plusMillis(jwtProperties.getExpirationMs());
-        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), tenantId, branchId, roles);
+        String accessToken = jwtUtil.generateToken(user.getId(), user.getEmail(), tenantId, branchId, roles,
+                permissions);
+        String refreshToken = createRefreshToken(user);
+
+        // Audit Logging
+        auditService.logSuccess(user.getId(), user.getEmail(), "LOGIN", "Logged in via Email/Password", null, null);
+
         AuthUserDto userDto = AuthUserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -78,8 +88,10 @@ public class AuthService {
                 .tenantId(tenantId)
                 .branchId(branchId)
                 .build();
+
         return LoginResponse.builder()
-                .token(token)
+                .token(accessToken)
+                .refreshToken(refreshToken) // Added temporarily for controller to set cookie
                 .expiresAt(expiresAt)
                 .user(userDto)
                 .build();
@@ -148,9 +160,17 @@ public class AuthService {
                 }
             }
 
+            List<String> permissions = identityService.getPermissionCodesForUserInTenantAndBranch(user.getId(),
+                    tenantId, branchId);
             identityService.updateLastLoginAt(user);
             Instant expiresAt = Instant.now().plusMillis(jwtProperties.getExpirationMs());
-            String token = jwtUtil.generateToken(user.getId(), user.getEmail(), tenantId, branchId, roles);
+            String accessToken = jwtUtil.generateToken(user.getId(), user.getEmail(), tenantId, branchId, roles,
+                    permissions);
+            String refreshToken = createRefreshToken(user);
+
+            auditService.logSuccess(user.getId(), user.getEmail(), "SOCIAL_LOGIN", "Logged in via Social Provider",
+                    null, null);
+
             AuthUserDto userDto = AuthUserDto.builder()
                     .id(user.getId())
                     .email(user.getEmail())
@@ -160,7 +180,8 @@ public class AuthService {
                     .branchId(branchId)
                     .build();
             return LoginResponse.builder()
-                    .token(token)
+                    .token(accessToken)
+                    .refreshToken(refreshToken)
                     .expiresAt(expiresAt)
                     .user(userDto)
                     .build();
@@ -174,10 +195,78 @@ public class AuthService {
     }
 
     @Transactional
+    public String createRefreshToken(IdentityUser user) {
+        // Delete existing refresh tokens for this user (optional: logout from all
+        // devices)
+        // For simple rotation, we can keep multiple or just one.
+        // Let's delete old ones to be strict (Single active session per user)
+        refreshTokenRepository.deleteByUser(user);
+
+        String token = jwtUtil.generateRefreshToken(user.getId());
+        vn.clinic.cdm.identity.domain.RefreshToken refreshToken = vn.clinic.cdm.identity.domain.RefreshToken.builder()
+                .user(user)
+                .token(token)
+                .expiryDate(Instant.now().plusMillis(jwtProperties.getRefreshExpirationMs()))
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+        return token;
+    }
+
+    @Transactional
+    public LoginResponse rotateRefreshToken(String requestToken) {
+        return refreshTokenRepository.findByToken(requestToken)
+                .map(token -> {
+                    if (token.isExpired()) {
+                        refreshTokenRepository.delete(token);
+                        throw new ApiException(ErrorCode.AUTH_BAD_CREDENTIALS, HttpStatus.UNAUTHORIZED,
+                                "Refresh token expired");
+                    }
+
+                    IdentityUser user = token.getUser();
+                    // Rotation: Generate new access + new refresh, revoke old refresh
+                    refreshTokenRepository.delete(token);
+
+                    // We need tenant/branch info for the new access token.
+                    // Simplified: Use the user's primary tenant or previous context.
+                    // Better: Store tenantId/branchId in RefreshToken entity.
+                    // For now, let's assume primary tenant or just re-login if needed.
+                    // But in Enterprise, we usually store context in RefreshToken.
+
+                    UUID tenantId = user.getTenant() != null ? user.getTenant().getId() : null;
+                    List<String> roles = identityService.getRoleCodesForUserInTenantAndBranch(user.getId(), tenantId,
+                            null);
+                    List<String> permissions = identityService.getPermissionCodesForUserInTenantAndBranch(user.getId(),
+                            tenantId, null);
+
+                    String newAccessToken = jwtUtil.generateToken(user.getId(), user.getEmail(), tenantId, null, roles,
+                            permissions);
+                    String newRefreshToken = createRefreshToken(user);
+
+                    AuthUserDto userDto = AuthUserDto.builder()
+                            .id(user.getId())
+                            .email(user.getEmail())
+                            .fullNameVi(user.getFullNameVi())
+                            .roles(roles)
+                            .tenantId(tenantId)
+                            .build();
+
+                    return LoginResponse.builder()
+                            .token(newAccessToken)
+                            .refreshToken(newRefreshToken)
+                            .expiresAt(Instant.now().plusMillis(jwtProperties.getExpirationMs()))
+                            .user(userDto)
+                            .build();
+                })
+                .orElseThrow(() -> new ApiException(ErrorCode.AUTH_BAD_CREDENTIALS, HttpStatus.UNAUTHORIZED,
+                        "Invalid refresh token"));
+    }
+
+    @Transactional
     public void changePassword(UUID userId, vn.clinic.cdm.api.dto.auth.ChangePasswordRequest request) {
         IdentityUser user = identityService.getUserById(userId);
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())) {
-            throw new IllegalArgumentException("Máº­t kháº©u cÅ© khÃ´ng chÃ­nh xÃ¡c");
+            throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
         }
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         identityService.saveUser(user);

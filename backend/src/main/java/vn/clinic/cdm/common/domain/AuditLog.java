@@ -21,36 +21,24 @@ public class AuditLog {
     @Column(name = "tenant_id")
     private UUID tenantId;
 
-    @Column(name = "branch_id")
-    private UUID branchId;
-
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(name = "user_email", length = 128)
-    private String userEmail;
+    private String email;
 
-    @Column(name = "action", nullable = false, length = 64)
-    private String action; // CREATE, UPDATE, DELETE, LOGIN, etc.
+    @Column(nullable = false)
+    private String action; // e.g., LOGIN_SUCCESS, PATIENT_DELETE
 
-    @Column(name = "resource_type", length = 64)
-    private String resourceType; // PATIENT, INVOICE, USER, etc.
-
-    @Column(name = "resource_id", length = 128)
-    private String resourceId;
-
-    @Column(name = "details", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String details;
 
-    @Column(name = "ip_address", length = 45)
     private String ipAddress;
 
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
+    private String userAgent;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = Instant.now();
-    }
+    @Column(nullable = false)
+    private Instant timestamp;
+
+    @Builder.Default
+    private String status = "SUCCESS"; // SUCCESS, FAILED
 }
-

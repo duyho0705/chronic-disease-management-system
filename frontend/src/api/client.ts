@@ -1,5 +1,6 @@
 ﻿const API_BASE = '/api'
 const TOKEN_KEY = 'cdm-platform-token'
+const TENANT_KEY = 'cdm-platform-tenant'
 
 export type TenantHeaders = {
   tenantId: string
@@ -19,6 +20,19 @@ export function setStoredToken(token: string | null) {
   else localStorage.removeItem(TOKEN_KEY)
 }
 
+export function getStoredTenant(): TenantHeaders | null {
+  try {
+    const raw = localStorage.getItem(TENANT_KEY)
+    if (raw) {
+      const { tenantId, branchId } = JSON.parse(raw)
+      if (tenantId) return { tenantId, branchId: branchId || undefined }
+    }
+  } catch {
+    return null
+  }
+  return null
+}
+
 function headers(tenant: TenantHeaders | null, body?: unknown): HeadersInit {
   const h: Record<string, string> = {
     Accept: 'application/json',
@@ -28,9 +42,12 @@ function headers(tenant: TenantHeaders | null, body?: unknown): HeadersInit {
   }
   const token = getStoredToken()
   if (token) h['Authorization'] = `Bearer ${token}`
-  if (tenant?.tenantId) {
-    h['X-Tenant-Id'] = tenant.tenantId
-    if (tenant.branchId) h['X-Branch-Id'] = tenant.branchId
+
+  // Use provided tenant or fallback to stored one
+  const targetTenant = tenant || getStoredTenant()
+  if (targetTenant?.tenantId) {
+    h['X-Tenant-Id'] = targetTenant.tenantId
+    if (targetTenant.branchId) h['X-Branch-Id'] = targetTenant.branchId
   }
   return h
 }
@@ -40,6 +57,39 @@ export interface ApiResponse<T> {
   message: string
   data: T
   timestamp: string
+}
+
+let isRefreshing = false
+let refreshPromise: Promise<string | null> | null = null
+
+async function silentRefresh(): Promise<string | null> {
+  if (isRefreshing && refreshPromise) return refreshPromise
+
+  isRefreshing = true
+  refreshPromise = (async () => {
+    try {
+      const resp = await fetch(`${API_BASE}/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!resp.ok) throw new Error('Refresh failed')
+      const json = await resp.json()
+      // Unwrap enterprise ApiResponse if needed
+      const data = json.data || json
+      const token = data.token
+      if (token) setStoredToken(token)
+      return token
+    } catch (err) {
+      console.error('Silent refresh failed:', err)
+      setStoredToken(null)
+      return null
+    } finally {
+      isRefreshing = false
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
 }
 
 export async function api<T>(
@@ -55,6 +105,15 @@ export async function api<T>(
   })
 
   if (!res.ok) {
+    if (res.status === 401 && !path.includes('/auth/refresh') && !path.includes('/auth/login')) {
+      // Try silent refresh
+      const newToken = await silentRefresh()
+      if (newToken) {
+        // Retry original request with new token
+        return api(path, { ...options, headers: { ...options.headers, 'Authorization': `Bearer ${newToken}` } })
+      }
+    }
+
     const err = await res.json().catch(() => ({ message: res.statusText }))
     const errorMessage = err.message || err.error || res.statusText
     const error: any = new Error(errorMessage)

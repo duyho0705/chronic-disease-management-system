@@ -30,6 +30,7 @@ public class IdentityService {
     private final IdentityRoleRepository identityRoleRepository;
     private final TenantRepository tenantRepository;
     private final TenantBranchRepository tenantBranchRepository;
+    private final vn.clinic.cdm.identity.repository.IdentityRolePermissionRepository identityRolePermissionRepository;
 
     @Transactional(readOnly = true)
     public IdentityUser getUserById(UUID id) {
@@ -48,7 +49,8 @@ public class IdentityService {
     }
 
     /**
-     * Role codes Ã¡p dá»¥ng cho user trong tenant táº¡i chi nhÃ¡nh (branch_id IS NULL
+     * Role codes Ã¡p dá»¥ng cho user trong tenant táº¡i chi nhÃ¡nh (branch_id IS
+     * NULL
      * hoáº·c = branchId).
      */
     @Transactional(readOnly = true)
@@ -58,6 +60,18 @@ public class IdentityService {
         return list.stream()
                 .map(ur -> ur.getRole().getCode())
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getPermissionCodesForUserInTenantAndBranch(UUID userId, UUID tenantId, UUID branchId) {
+        List<IdentityUserRole> list = identityUserRoleRepository
+                .findByUserIdAndTenantIdAndBranchNullOrBranchId(userId, tenantId, branchId);
+        List<UUID> roleIds = list.stream()
+                .map(ur -> ur.getRole().getId())
+                .collect(Collectors.toList());
+        if (roleIds.isEmpty())
+            return List.of();
+        return identityRolePermissionRepository.findPermissionCodesByRoleIds(roleIds);
     }
 
     @Transactional
@@ -96,4 +110,3 @@ public class IdentityService {
         identityUserRoleRepository.save(userRole);
     }
 }
-

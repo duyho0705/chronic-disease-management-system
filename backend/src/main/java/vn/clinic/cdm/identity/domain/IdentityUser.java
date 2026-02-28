@@ -48,6 +48,10 @@ public class IdentityUser extends BaseAuditableEntity {
     @Column(name = "last_login_at")
     private Instant lastLoginAt;
 
+    @Column(name = "token_version", nullable = false)
+    @Builder.Default
+    private Integer tokenVersion = 1;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @Builder.Default
     private List<IdentityUserRole> userRoles = new ArrayList<>();
@@ -56,4 +60,3 @@ public class IdentityUser extends BaseAuditableEntity {
         super(id);
     }
 }
-

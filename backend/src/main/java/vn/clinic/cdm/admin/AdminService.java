@@ -86,7 +86,8 @@ public class AdminService {
                 .build();
         identityUserRoleRepository.save(userRole);
 
-        auditLogService.log("CREATE", "USER", user.getId().toString(), "Táº¡o má»›i ngÆ°á»i dÃ¹ng: " + user.getEmail());
+        auditLogService.log("CREATE", "USER", user.getId().toString(),
+                "Táº¡o má»›i ngÆ°á»i dÃ¹ng: " + user.getEmail());
 
         return toAdminUserDto(identityUserRepository.findById(user.getId()).orElse(user));
     }
@@ -128,7 +129,8 @@ public class AdminService {
             }
         }
 
-        auditLogService.log("UPDATE", "USER", userId.toString(), "Cáº­p nháº­t thÃ´ng tin ngÆ°á»i dÃ¹ng: " + user.getEmail());
+        auditLogService.log("UPDATE", "USER", userId.toString(),
+                "Cáº­p nháº­t thÃ´ng tin ngÆ°á»i dÃ¹ng: " + user.getEmail());
 
         return toAdminUserDto(identityUserRepository.findById(userId).orElse(user));
     }
@@ -156,17 +158,19 @@ public class AdminService {
             tenantId = vn.clinic.cdm.common.tenant.TenantContext.getTenantId().orElse(null);
 
         org.springframework.data.domain.Page<vn.clinic.cdm.common.domain.AuditLog> page = auditLogRepository
-                .findByTenantIdOrderByCreatedAtDesc(tenantId, pageable);
+                .findByTenantIdOrderByTimestampDesc(tenantId, pageable);
 
         List<AuditLogDto> content = page.getContent().stream()
                 .map(l -> AuditLogDto.builder()
                         .id(l.getId())
-                        .userEmail(l.getUserEmail())
+                        .userId(l.getUserId())
+                        .userEmail(l.getEmail())
                         .action(l.getAction())
-                        .resourceType(l.getResourceType())
-                        .resourceId(l.getResourceId())
                         .details(l.getDetails())
-                        .createdAt(l.getCreatedAt())
+                        .ipAddress(l.getIpAddress())
+                        .userAgent(l.getUserAgent())
+                        .timestamp(l.getTimestamp())
+                        .status(l.getStatus())
                         .build())
                 .collect(Collectors.toList());
 
@@ -189,4 +193,3 @@ public class AdminService {
     }
 
 }
-

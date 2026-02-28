@@ -20,6 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@org.hibernate.annotations.Filter(name = "tenantFilter")
 public class Patient extends BaseAuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
