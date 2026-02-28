@@ -2,7 +2,8 @@ import { ReactNode, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useTenant } from '@/context/TenantContext'
-import { requestForToken, onForegroundMessage } from '@/firebase'
+import { requestForToken, onForegroundMessage, db } from '@/firebase'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { registerPortalFcmToken } from '@/api/portal'
 import {
     LayoutGrid,
@@ -74,8 +75,17 @@ export function PatientLayout({ children }: PatientLayoutProps) {
         const setupNotifications = async () => {
             try {
                 const token = await requestForToken()
-                if (token) {
-                    await registerPortalFcmToken(token, 'web', headers)
+                if (token && user?.id) {
+                    // 1. Gửi cho Backend Java (như cũ)
+                    await registerPortalFcmToken(token, 'web', headers).catch(e => console.error(e))
+
+                    // 2. Lưu token vào Firestore để Cloud Functions có thể truy cập
+                    await setDoc(doc(db, 'users', user.id), {
+                        fcmToken: token,
+                        lastSeenAt: serverTimestamp(),
+                        userType: 'PATIENT',
+                        name: profile?.fullNameVi || ''
+                    }, { merge: true })
                 }
             } catch (err) {
                 console.warn('FCM registration failed:', err)

@@ -1,5 +1,5 @@
-# ---------------------------------------------------------------------------
-# Production profile – external config, no defaults for secrets
+﻿# ---------------------------------------------------------------------------
+# Production profile â€“ external config, no defaults for secrets
 # ---------------------------------------------------------------------------
 
 spring:
@@ -26,7 +26,7 @@ spring:
 logging:
   level:
     root: WARN
-    vn.clinic.patientflow: INFO
+    vn.clinic.cdm: INFO
 
 management:
   endpoints:
@@ -43,3 +43,4 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+

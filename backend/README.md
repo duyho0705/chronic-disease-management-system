@@ -1,6 +1,6 @@
-# Backend – Patient Flow & Triage (Enterprise)
+﻿# Backend â€“ Patient Flow & Triage (Enterprise)
 
-Spring Boot **modular monolith** cho hệ thống luồng bệnh nhân và phân loại ưu tiên bằng AI (phòng khám Việt Nam).
+Spring Boot **modular monolith** cho há»‡ thá»‘ng luá»“ng bá»‡nh nhÃ¢n vÃ  phÃ¢n loáº¡i Æ°u tiÃªn báº±ng AI (phÃ²ng khÃ¡m Viá»‡t Nam).
 
 ## Tech Stack
 
@@ -11,47 +11,47 @@ Spring Boot **modular monolith** cho hệ thống luồng bệnh nhân và phân
 - **Springdoc OpenAPI 2** (Swagger UI)
 - **Lombok**
 
-## Cấu trúc (Modular Monolith)
+## Cáº¥u trÃºc (Modular Monolith)
 
 ```
 src/main/java/vn/clinic/patientflow/
-├── PatientFlowApplication.java
-├── api/                    # REST controllers
-├── common/                 # Shared: base entity, tenant context, exceptions
-├── config/                 # JPA, OpenAPI, Tenant filter
-├── tenant/                 # Module: tenant, tenant_branch
-│   ├── domain/
-│   ├── repository/
-│   └── service/
-├── identity/               # Module: user, role, user_role
-├── patient/                # Module: patient, patient_insurance
-├── scheduling/             # Module: slot_template, calendar_day, appointment
-├── triage/                 # Module: triage_session, complaint, vital
-│   └── ai/                  # AI gợi ý acuity: AiTriageProvider, RuleBasedTriageProvider
-├── queue/                  # Module: queue_definition, queue_entry
-├── clinical/               # Module: consultation, clinical_vital
-└── aiaudit/                # Module: ai_model_version, ai_triage_audit
+â”œâ”€â”€ CdmApplication.java
+â”œâ”€â”€ api/                    # REST controllers
+â”œâ”€â”€ common/                 # Shared: base entity, tenant context, exceptions
+â”œâ”€â”€ config/                 # JPA, OpenAPI, Tenant filter
+â”œâ”€â”€ tenant/                 # Module: tenant, tenant_branch
+â”‚   â”œâ”€â”€ domain/
+â”‚   â”œâ”€â”€ repository/
+â”‚   â””â”€â”€ service/
+â”œâ”€â”€ identity/               # Module: user, role, user_role
+â”œâ”€â”€ patient/                # Module: patient, patient_insurance
+â”œâ”€â”€ scheduling/             # Module: slot_template, calendar_day, appointment
+â”œâ”€â”€ triage/                 # Module: triage_session, complaint, vital
+â”‚   â””â”€â”€ ai/                  # AI gá»£i Ã½ acuity: AiTriageProvider, RuleBasedTriageProvider
+â”œâ”€â”€ queue/                  # Module: queue_definition, queue_entry
+â”œâ”€â”€ clinical/               # Module: consultation, clinical_vital
+â””â”€â”€ aiaudit/                # Module: ai_model_version, ai_triage_audit
 ```
 
-- **Domain:** JPA entities map đúng bảng trong `backend/db/migrations/`.
+- **Domain:** JPA entities map Ä‘Ãºng báº£ng trong `backend/db/migrations/`.
 - **Repository:** Spring Data JPA, tenant-scoped query qua service.
-- **Service:** Nghiệp vụ, gọi `TenantContext.getTenantIdOrThrow()` cho API theo tenant.
-- **API:** REST; tenant từ JWT (sau login) hoặc header `X-Tenant-Id`; xác thực JWT cho `/api/**` (trừ `/api/auth/login`, GET `/api/tenants/**`).
+- **Service:** Nghiá»‡p vá»¥, gá»i `TenantContext.getTenantIdOrThrow()` cho API theo tenant.
+- **API:** REST; tenant tá»« JWT (sau login) hoáº·c header `X-Tenant-Id`; xÃ¡c thá»±c JWT cho `/api/**` (trá»« `/api/auth/login`, GET `/api/tenants/**`).
 
-## Yêu cầu
+## YÃªu cáº§u
 
 - **JDK 17+**
-- **PostgreSQL** đã chạy migration `00001_initial_schema.sql`, `00002_*` (nếu có), `00003_seed_roles_and_admin.sql` (roles + user admin@example.com / password, tenant CLINIC_DEMO)
-- Biến môi trường hoặc `application-dev.yml`: `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
+- **PostgreSQL** Ä‘Ã£ cháº¡y migration `00001_initial_schema.sql`, `00002_*` (náº¿u cÃ³), `00003_seed_roles_and_admin.sql` (roles + user admin@example.com / password, tenant CLINIC_DEMO)
+- Biáº¿n mÃ´i trÆ°á»ng hoáº·c `application-dev.yml`: `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 
-## Chạy
+## Cháº¡y
 
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
 
-Profile mặc định: `dev`. Prod: `SPRING_PROFILES_ACTIVE=prod` và cấu hình `DB_URL`, `DB_USER`, `DB_PASSWORD`.
+Profile máº·c Ä‘á»‹nh: `dev`. Prod: `SPRING_PROFILES_ACTIVE=prod` vÃ  cáº¥u hÃ¬nh `DB_URL`, `DB_USER`, `DB_PASSWORD`.
 
 - **API:** http://localhost:8080
 - **Swagger UI:** http://localhost:8080/swagger-ui.html
@@ -59,14 +59,14 @@ Profile mặc định: `dev`. Prod: `SPRING_PROFILES_ACTIVE=prod` và cấu hìn
 
 ## Multi-tenancy
 
-- Header **`X-Tenant-Id`** (UUID): bắt buộc cho mọi API theo tenant (patient, scheduling, triage, queue, clinical).
-- Header **`X-Branch-Id`** (UUID): tùy chọn, chi nhánh hiện tại.
-- Filter `TenantFilter` set vào `TenantContext`; service dùng `TenantContext.getTenantIdOrThrow()`.
-- Sau khi tích hợp auth: set tenant từ token/session thay vì tin header (tránh client giả mạo).
+- Header **`X-Tenant-Id`** (UUID): báº¯t buá»™c cho má»i API theo tenant (patient, scheduling, triage, queue, clinical).
+- Header **`X-Branch-Id`** (UUID): tÃ¹y chá»n, chi nhÃ¡nh hiá»‡n táº¡i.
+- Filter `TenantFilter` set vÃ o `TenantContext`; service dÃ¹ng `TenantContext.getTenantIdOrThrow()`.
+- Sau khi tÃ­ch há»£p auth: set tenant tá»« token/session thay vÃ¬ tin header (trÃ¡nh client giáº£ máº¡o).
 
-## Cấu hình (dev)
+## Cáº¥u hÃ¬nh (dev)
 
-| Biến | Mặc định |
+| Biáº¿n | Máº·c Ä‘á»‹nh |
 |------|----------|
 | `DB_HOST` | localhost |
 | `DB_PORT` | 5432 |
@@ -78,21 +78,22 @@ Profile mặc định: `dev`. Prod: `SPRING_PROFILES_ACTIVE=prod` và cấu hìn
 
 ```bash
 mvn clean package
-# Hoặc bỏ qua test khi chưa có DB: mvn clean package -DskipTests
+# Hoáº·c bá» qua test khi chÆ°a cÃ³ DB: mvn clean package -DskipTests
 java -jar target/patient-flow-triage-0.1.0-SNAPSHOT.jar
 ```
 
-Test `PatientFlowApplicationTests` dùng profile `dev` và cần PostgreSQL đã chạy migration. Chạy test với DB thật hoặc dùng `-DskipTests` khi build.
+Test `CdmApplicationTests` dÃ¹ng profile `dev` vÃ  cáº§n PostgreSQL Ä‘Ã£ cháº¡y migration. Cháº¡y test vá»›i DB tháº­t hoáº·c dÃ¹ng `-DskipTests` khi build.
 
-## AI phân loại (Triage)
+## AI phÃ¢n loáº¡i (Triage)
 
-- **Provider:** `AiTriageProvider` (interface). Mặc định: `RuleBasedTriageProvider` (từ khóa lý do khám + sinh hiệu → acuity 1–5).
-- **Cấu hình:** `triage.ai.enabled`, `triage.ai.model-key`, `triage.ai.provider=rule-based`.
-- **Luồng:** POST /api/triage/suggest → gợi ý (không ghi audit). POST /api/triage/sessions với `useAiSuggestion=true` → gọi AI, tạo session, ghi `ai_triage_audit` (input/output, latency, model_version).
-- **Audit:** Mỗi lần gọi AI khi tạo session được ghi vào `ai_model_version` (tự tạo nếu chưa có) và `ai_triage_audit`.
+- **Provider:** `AiTriageProvider` (interface). Máº·c Ä‘á»‹nh: `RuleBasedTriageProvider` (tá»« khÃ³a lÃ½ do khÃ¡m + sinh hiá»‡u â†’ acuity 1â€“5).
+- **Cáº¥u hÃ¬nh:** `triage.ai.enabled`, `triage.ai.model-key`, `triage.ai.provider=rule-based`.
+- **Luá»“ng:** POST /api/triage/suggest â†’ gá»£i Ã½ (khÃ´ng ghi audit). POST /api/triage/sessions vá»›i `useAiSuggestion=true` â†’ gá»i AI, táº¡o session, ghi `ai_triage_audit` (input/output, latency, model_version).
+- **Audit:** Má»—i láº§n gá»i AI khi táº¡o session Ä‘Æ°á»£c ghi vÃ o `ai_model_version` (tá»± táº¡o náº¿u chÆ°a cÃ³) vÃ  `ai_triage_audit`.
 
-## Tài liệu
+## TÃ i liá»‡u
 
 - ERD: `docs/erd-patient-flow-triage-vi.md`
 - Schema SQL: `backend/db/migrations/00001_initial_schema.sql`
 - Roadmap: `docs/roadmap-tiep-theo.md`
+

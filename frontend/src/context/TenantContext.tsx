@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+﻿import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
 import type { TenantHeaders } from '@/api/client'
 
 type TenantContextValue = {
@@ -10,7 +10,7 @@ type TenantContextValue = {
 
 const TenantContext = createContext<TenantContextValue | null>(null)
 
-const STORAGE_KEY = 'patient-flow-tenant'
+const STORAGE_KEY = 'cdm-platform-tenant'
 
 function loadStored(): { tenantId: string | null; branchId: string | null } {
   try {
@@ -57,3 +57,4 @@ export function useTenant() {
   if (!ctx) throw new Error('useTenant must be used within TenantProvider')
   return ctx
 }
+

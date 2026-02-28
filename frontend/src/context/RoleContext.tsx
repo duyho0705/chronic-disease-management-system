@@ -1,19 +1,19 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+﻿import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
 
-/** Role chính theo thực tế phòng khám VN */
+/** Role chÃ­nh theo thá»±c táº¿ phÃ²ng khÃ¡m VN */
 export type Role = 'admin' | 'receptionist' | 'triage_nurse' | 'doctor' | 'clinic_manager' | 'pharmacist' | 'patient'
 
 const ROLES: { value: Role; label: string }[] = [
-  { value: 'admin', label: 'Quản trị hệ thống' },
-  { value: 'receptionist', label: 'Lễ tân' },
-  { value: 'triage_nurse', label: 'Y tá phân loại' },
-  { value: 'doctor', label: 'Bác sĩ' },
-  { value: 'clinic_manager', label: 'Quản lý phòng khám' },
-  { value: 'pharmacist', label: 'Dược sĩ' },
-  { value: 'patient', label: 'Bệnh nhân' },
+  { value: 'admin', label: 'Quáº£n trá»‹ há»‡ thá»‘ng' },
+  { value: 'receptionist', label: 'Lá»… tÃ¢n' },
+  { value: 'triage_nurse', label: 'Y tÃ¡ phÃ¢n loáº¡i' },
+  { value: 'doctor', label: 'BÃ¡c sÄ©' },
+  { value: 'clinic_manager', label: 'Quáº£n lÃ½ phÃ²ng khÃ¡m' },
+  { value: 'pharmacist', label: 'DÆ°á»£c sÄ©' },
+  { value: 'patient', label: 'Bá»‡nh nhÃ¢n' },
 ]
 
-const STORAGE_KEY = 'patient-flow-role'
+const STORAGE_KEY = 'cdm-platform-role'
 
 const VALID_ROLES: Role[] = ['admin', 'receptionist', 'triage_nurse', 'doctor', 'clinic_manager', 'pharmacist', 'patient']
 
@@ -58,3 +58,4 @@ export function useRole() {
   if (!ctx) throw new Error('useRole must be used within RoleProvider')
   return ctx
 }
+

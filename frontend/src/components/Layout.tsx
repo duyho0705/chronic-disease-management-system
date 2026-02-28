@@ -7,7 +7,8 @@ import { LogOut, Menu, Plus, X, Search, Bell, Settings, BriefcaseMedical } from 
 import { useState, useEffect } from 'react'
 import { STAFF_NAV } from '@/routes/staffNav'
 import { motion } from 'framer-motion'
-import { requestForToken, onForegroundMessage } from '@/firebase'
+import { requestForToken, onForegroundMessage, db } from '@/firebase'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import toast from 'react-hot-toast'
 
 export function Layout() {
@@ -37,7 +38,17 @@ export function Layout() {
     if (!user || !tenantId) return
 
     // Request token on layout mount
-    requestForToken().catch(err => console.warn('FCM token error:', err))
+    requestForToken().then(async (token) => {
+      if (token && user?.id) {
+        // Lưu token vào Firestore để Cloud Functions có thể truy cập
+        await setDoc(doc(db, 'users', user.id), {
+          fcmToken: token,
+          lastSeenAt: serverTimestamp(),
+          userType: 'DOCTOR',
+          name: user?.fullNameVi || ''
+        }, { merge: true }).catch(err => console.warn('Lỗi lưu token:', err));
+      }
+    }).catch(err => console.warn('FCM token error:', err))
 
     // Handle foreground push notifications
     const unsubscribe = onForegroundMessage((payload) => {

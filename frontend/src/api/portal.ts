@@ -285,6 +285,10 @@ export async function getAiChat(data: AiChatRequest, tenant: TenantHeaders | nul
     return post<AiChatResponse>('/portal/ai/assistant', data, tenant)
 }
 
+export async function sendChatPushNotification(data: any, tenant: TenantHeaders | null): Promise<void> {
+    return post<void>('/chat/notify', data, tenant)
+}
+
 export async function getAiPreTriage(symptoms: string, tenant: TenantHeaders | null): Promise<any> {
     return post<any>('/portal/ai/pre-triage', symptoms, tenant)
 }

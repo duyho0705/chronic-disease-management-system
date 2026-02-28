@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
     Sparkles,
@@ -26,14 +26,14 @@ export default function AiAssistant() {
     const [messages, setMessages] = useState<AiChatMessage[]>([
         {
             role: 'assistant',
-            content: `Xin chào ${user?.fullNameVi || 'bạn'}! Tôi là PatientFlow AI Assistant. Tôi có quyền truy cập vào hồ sơ y tế của bạn và có thể hỗ trợ các thông tin về sức khỏe, lịch hẹn hoặc giải thích đơn thuốc. Tôi có thể giúp gì cho bạn hôm nay?`
+            content: `Xin chÃ o ${user?.fullNameVi || 'báº¡n'}! TÃ´i lÃ  CDM AI Assistant Assistant. TÃ´i cÃ³ quyá»n truy cáº­p vÃ o há»“ sÆ¡ y táº¿ cá»§a báº¡n vÃ  cÃ³ thá»ƒ há»— trá»£ cÃ¡c thÃ´ng tin vá» sá»©c khá»e, lá»‹ch háº¹n hoáº·c giáº£i thÃ­ch Ä‘Æ¡n thuá»‘c. TÃ´i cÃ³ thá»ƒ giÃºp gÃ¬ cho báº¡n hÃ´m nay?`
         }
     ])
     const [suggestions, setSuggestions] = useState<string[]>([
-        "Tóm tắt sức khỏe của tôi",
-        "Tôi có lịch hẹn nào sắp tới không?",
-        "Giải thích đơn thuốc mới nhất",
-        "Tôi bị đau đầu, nên làm gì?"
+        "TÃ³m táº¯t sá»©c khá»e cá»§a tÃ´i",
+        "TÃ´i cÃ³ lá»‹ch háº¹n nÃ o sáº¯p tá»›i khÃ´ng?",
+        "Giáº£i thÃ­ch Ä‘Æ¡n thuá»‘c má»›i nháº¥t",
+        "TÃ´i bá»‹ Ä‘au Ä‘áº§u, nÃªn lÃ m gÃ¬?"
     ])
 
     const scrollRef = useRef<HTMLDivElement>(null)
@@ -58,7 +58,7 @@ export default function AiAssistant() {
         onError: () => {
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: "Rất tiếc, hệ thống AI đang gặp sự cố kết nối. Vui lòng thử lại sau giây lát."
+                content: "Ráº¥t tiáº¿c, há»‡ thá»‘ng AI Ä‘ang gáº·p sá»± cá»‘ káº¿t ná»‘i. Vui lÃ²ng thá»­ láº¡i sau giÃ¢y lÃ¡t."
             }])
         }
     })
@@ -81,12 +81,12 @@ export default function AiAssistant() {
                     </div>
                     <div>
                         <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                            Trợ lý AI Hỗ trợ
+                            Trá»£ lÃ½ AI Há»— trá»£
                             <span className="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest border border-blue-100">Pro</span>
                         </h1>
                         <p className="text-xs font-bold text-slate-400 flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            Đang trực tuyến • Sẵn sàng hỗ trợ 24/7
+                            Äang trá»±c tuyáº¿n â€¢ Sáºµn sÃ ng há»— trá»£ 24/7
                         </p>
                     </div>
                 </div>
@@ -94,7 +94,7 @@ export default function AiAssistant() {
                 <div className="hidden md:flex items-center gap-4">
                     <div className="bg-white border border-slate-100 px-4 py-2 rounded-xl flex items-center gap-3 shadow-sm">
                         <Activity className="w-4 h-4 text-emerald-500" />
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest underline decoration-dotted">Dữ liệu cá nhân hóa</span>
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest underline decoration-dotted">Dá»¯ liá»‡u cÃ¡ nhÃ¢n hÃ³a</span>
                     </div>
                 </div>
             </div>
@@ -130,7 +130,7 @@ export default function AiAssistant() {
                                             {msg.content}
                                         </div>
                                         <div className={`flex items-center gap-2 text-[10px] font-bold text-slate-300 ${msg.role === 'user' ? 'justify-end' : ''}`}>
-                                            {msg.role === 'assistant' ? 'PatientFlow AI' : 'Bệnh nhân'} • Vừa xong
+                                            {msg.role === 'assistant' ? 'CDM AI Assistant' : 'Bá»‡nh nhÃ¢n'} â€¢ Vá»«a xong
                                         </div>
                                     </div>
                                 </div>
@@ -175,7 +175,7 @@ export default function AiAssistant() {
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSend(input)}
-                                placeholder="Hỏi tôi về triệu chứng, đơn thuốc hoặc lịch hẹn..."
+                                placeholder="Há»i tÃ´i vá» triá»‡u chá»©ng, Ä‘Æ¡n thuá»‘c hoáº·c lá»‹ch háº¹n..."
                                 className="flex-1 bg-transparent py-4 text-sm md:text-base font-bold outline-none text-slate-700 placeholder:text-slate-300"
                             />
                             <button
@@ -188,7 +188,7 @@ export default function AiAssistant() {
                         </div>
                         <p className="mt-4 text-center text-[10px] font-bold text-slate-400 flex items-center justify-center gap-2 uppercase tracking-[0.2em]">
                             <Sparkles className="w-3 h-3 text-blue-400" />
-                            Dịch vụ AI chỉ mang tính chất tham khảo
+                            Dá»‹ch vá»¥ AI chá»‰ mang tÃ­nh cháº¥t tham kháº£o
                         </p>
                     </div>
                 </div>
@@ -207,23 +207,23 @@ export default function AiAssistant() {
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">AI Insights</span>
                             </div>
-                            <h3 className="text-xl font-black tracking-tight leading-tight">Hỗ trợ dựa trên dữ liệu của bạn</h3>
+                            <h3 className="text-xl font-black tracking-tight leading-tight">Há»— trá»£ dá»±a trÃªn dá»¯ liá»‡u cá»§a báº¡n</h3>
                             <div className="space-y-4 pt-4 border-t border-white/10">
                                 <div className="flex items-center gap-4 group/item">
                                     <div className="w-1 h-1 rounded-full bg-blue-500 group-hover/item:scale-[4] transition-transform" />
-                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tiền sử bệnh</p>
+                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tiá»n sá»­ bá»‡nh</p>
                                 </div>
                                 <div className="flex items-center gap-4 group/item">
                                     <div className="w-1 h-1 rounded-full bg-blue-500 group-hover/item:scale-[4] transition-transform" />
-                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Đơn thuốc hiện tại</p>
+                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">ÄÆ¡n thuá»‘c hiá»‡n táº¡i</p>
                                 </div>
                                 <div className="flex items-center gap-4 group/item">
                                     <div className="w-1 h-1 rounded-full bg-blue-500 group-hover/item:scale-[4] transition-transform" />
-                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Chỉ số sinh hiệu (Vitals)</p>
+                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Chá»‰ sá»‘ sinh hiá»‡u (Vitals)</p>
                                 </div>
                                 <div className="flex items-center gap-4 group/item">
                                     <div className="w-1 h-1 rounded-full bg-blue-500 group-hover/item:scale-[4] transition-transform" />
-                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Kết quả xét nghiệm</p>
+                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Káº¿t quáº£ xÃ©t nghiá»‡m</p>
                                 </div>
                             </div>
                         </div>
@@ -232,21 +232,21 @@ export default function AiAssistant() {
                     {/* Quick Tools */}
                     <div className="flex-1 bg-white border border-slate-100 rounded-[2.5rem] p-8 space-y-8 flex flex-col">
                         <div className="flex items-center justify-between">
-                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Công cụ nhanh</h4>
+                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">CÃ´ng cá»¥ nhanh</h4>
                             <HistoryIcon className="w-4 h-4 text-slate-200" />
                         </div>
 
                         <div className="space-y-3 flex-1">
                             <button className="w-full text-left p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-500 hover:bg-white transition-all group">
                                 <Stethoscope className="w-5 h-5 text-blue-500 mb-2 group-hover:scale-110 transition-transform" />
-                                <p className="text-sm font-black text-slate-900 mb-1">Kiểm tra triệu chứng</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Lập tức phân loại</p>
+                                <p className="text-sm font-black text-slate-900 mb-1">Kiá»ƒm tra triá»‡u chá»©ng</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Láº­p tá»©c phÃ¢n loáº¡i</p>
                             </button>
 
                             <button className="w-full text-left p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-500 hover:bg-white transition-all group">
                                 <MessageSquare className="w-5 h-5 text-emerald-500 mb-2 group-hover:scale-110 transition-transform" />
-                                <p className="text-sm font-black text-slate-900 mb-1">Ý kiến bác sĩ</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gửi yêu cầu bác sĩ</p>
+                                <p className="text-sm font-black text-slate-900 mb-1">Ã kiáº¿n bÃ¡c sÄ©</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gá»­i yÃªu cáº§u bÃ¡c sÄ©</p>
                             </button>
                         </div>
 
@@ -254,10 +254,10 @@ export default function AiAssistant() {
                         <div className="p-6 bg-rose-50 rounded-3xl border border-rose-100">
                             <div className="flex items-center gap-3 mb-2 text-rose-600">
                                 <AlertCircle className="w-5 h-5" />
-                                <span className="text-[11px] font-black uppercase tracking-widest">Khẩn cấp</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest">Kháº©n cáº¥p</span>
                             </div>
                             <p className="text-[10px] font-bold text-rose-500 leading-relaxed uppercase tracking-tight">
-                                Nếu bạn có các triệu chứng đe dọa tính mạng, vui lòng gọi cấp cứu trực tiếp tại quầy hoặc hotline.
+                                Náº¿u báº¡n cÃ³ cÃ¡c triá»‡u chá»©ng Ä‘e dá»a tÃ­nh máº¡ng, vui lÃ²ng gá»i cáº¥p cá»©u trá»±c tiáº¿p táº¡i quáº§y hoáº·c hotline.
                             </p>
                         </div>
                     </div>
@@ -271,3 +271,4 @@ export default function AiAssistant() {
         </div>
     )
 }
+

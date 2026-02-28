@@ -1,5 +1,5 @@
-const API_BASE = '/api'
-const TOKEN_KEY = 'patient-flow-token'
+﻿const API_BASE = '/api'
+const TOKEN_KEY = 'cdm-platform-token'
 
 export type TenantHeaders = {
   tenantId: string
@@ -123,3 +123,4 @@ export async function downloadFile(path: string, tenant: TenantHeaders | null, f
   link.click()
   link.remove()
 }
+

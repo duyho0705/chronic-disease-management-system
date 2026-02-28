@@ -1,5 +1,5 @@
-# ---------------------------------------------------------------------------
-# Patient Flow & Triage – Main configuration
+﻿# ---------------------------------------------------------------------------
+# Patient Flow & Triage â€“ Main configuration
 # Profiles: dev (default), prod
 # ---------------------------------------------------------------------------
 
@@ -77,10 +77,10 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: method
 
-# Auth (JWT) – secret nên đặt qua env trong prod
+# Auth (JWT) â€“ secret nÃªn Ä‘áº·t qua env trong prod
 auth:
   jwt:
-    secret: ${JWT_SECRET:patient-flow-triage-secret-key-min-256-bits-for-hs256-enterprise}
+    secret: ${JWT_SECRET:cdm-platform-triage-secret-key-min-256-bits-for-hs256-enterprise}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
 
 # AI Triage
@@ -123,6 +123,8 @@ cloudinary:
 logging:
   level:
     root: INFO
-    vn.clinic.patientflow: DEBUG
+    vn.clinic.cdm: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+

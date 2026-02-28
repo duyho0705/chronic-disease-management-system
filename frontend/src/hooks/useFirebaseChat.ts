@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
+import { sendChatPushNotification } from '@/api/portal';
 
 export interface ChatMessage {
     id?: string;
@@ -78,6 +79,19 @@ export function useFirebaseChat(tenantId: string | undefined | null, patientId: 
             ...(imageUrl ? { isImage: true, imageUrl } : {}),
             ...(fileUrl ? { fileUrl } : {})
         });
+
+        // Backend Push Notification
+        const recipientId = senderType === 'PATIENT' ? doctorId : patientId;
+        if (recipientId) {
+            sendChatPushNotification({
+                roomId,
+                senderType,
+                recipientId,
+                content,
+                isImage: !!imageUrl,
+                fileUrl
+            }, { tenantId: tenantId || '', branchId: '' }).catch(console.warn);
+        }
     };
 
     return { messages, loading, sendMessage, roomId };
