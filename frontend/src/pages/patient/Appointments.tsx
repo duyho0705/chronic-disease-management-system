@@ -12,7 +12,8 @@ import {
     Lightbulb,
     CalendarPlus,
     X,
-    Loader2
+    Loader2,
+    ChevronRight,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format, isAfter, isBefore, parseISO } from 'date-fns'
@@ -102,8 +103,8 @@ export default function PatientAppointments() {
                 {/* Header Section */}
                 <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Lịch hẹn</h2>
-                        <p className="text-slate-500 dark:text-slate-400">Quản lý và theo dõi các buổi khám của bạn</p>
+                        <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Lịch hẹn</h2>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-bold">Quản lý và theo dõi các buổi khám của bạn</p>
                     </div>
                     <button
                         onClick={() => setShowBooking(true)}
@@ -309,7 +310,7 @@ export default function PatientAppointments() {
                 </section>
             </aside>
 
-            {/* Booking Modal */}
+            {/* Booking Modal Redesign */}
             <AnimatePresence>
                 {showBooking && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -318,62 +319,122 @@ export default function PatientAppointments() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setShowBooking(false)}
-                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
                         />
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-white dark:bg-slate-900 rounded-[3rem] p-10 w-full max-w-lg relative z-10 shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto"
+                            className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-[720px] max-h-[90vh] flex flex-col relative z-10 shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-800"
                         >
-                            <button
-                                onClick={() => setShowBooking(false)}
-                                className="absolute top-8 right-8 p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all"
-                            >
-                                <X className="w-6 h-6 text-slate-300" />
-                            </button>
-
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Đặt lịch khám mới</h3>
-                            <p className="text-slate-400 font-bold text-xs mb-8">Chọn chi nhánh, ngày giờ phù hợp</p>
-
-                            <div className="space-y-6">
+                            {/* Modal Header */}
+                            <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                                 <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Chi nhánh</p>
-                                    <select
-                                        value={bookingData.branchId}
-                                        onChange={e => setBookingData({ ...bookingData, branchId: e.target.value })}
-                                        className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 font-bold text-sm text-slate-700 dark:text-slate-200 focus:border-emerald-500 outline-none transition-all"
-                                    >
-                                        <option value="">Chọn chi nhánh...</option>
-                                        {(branches || []).map((b: any) => (
-                                            <option key={b.id} value={b.id}>{b.nameVi || b.code}</option>
+                                    <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Đặt lịch khám mới</h2>
+                                    <p className="text-slate-500 text-sm font-bold mt-1">Hoàn thành các bước dưới đây để đặt lịch hẹn</p>
+                                </div>
+                                <button
+                                    onClick={() => setShowBooking(false)}
+                                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            {/* Modal Content */}
+                            <div className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar space-y-8">
+                                {/* Form Progress */}
+                                <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="size-6 rounded-full bg-[#4ade80] text-slate-900 flex items-center justify-center text-xs font-bold">1</span>
+                                        <span className="text-sm font-bold text-[#4ade80]">Thông tin khám</span>
+                                    </div>
+                                    <div className="h-px w-8 bg-slate-200 dark:bg-slate-800"></div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="size-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold">2</span>
+                                        <span className="text-sm font-bold text-slate-400">Xác nhận</span>
+                                    </div>
+                                </div>
+
+                                {/* Appointment Type Section */}
+                                <div>
+                                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-4">Hình thức khám</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {[
+                                            { id: 'Trực tiếp', label: 'Khám trực tiếp', sub: 'Tại cơ sở y tế', icon: MapPin },
+                                            { id: 'Online', label: 'Tư vấn trực tuyến', sub: 'Qua Video Call', icon: Video }
+                                        ].map((type) => (
+                                            <button
+                                                key={type.id}
+                                                onClick={() => setBookingData({ ...bookingData, appointmentType: type.id })}
+                                                className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${bookingData.appointmentType === type.id
+                                                    ? 'border-[#4ade80] bg-[#4ade80]/5'
+                                                    : 'border-slate-50 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700'
+                                                    }`}
+                                            >
+                                                <div className={`p-2 rounded-xl ${bookingData.appointmentType === type.id ? 'bg-[#4ade80] text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
+                                                    <type.icon className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <p className={`font-bold text-sm tracking-tight ${bookingData.appointmentType === type.id ? 'text-slate-900 dark:text-white' : 'text-slate-600'}`}>{type.label}</p>
+                                                    <p className="text-xs text-slate-400 font-medium">{type.sub}</p>
+                                                </div>
+                                            </button>
                                         ))}
-                                    </select>
+                                    </div>
                                 </div>
 
+                                {/* Branch Selection */}
                                 <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Ngày khám</p>
-                                    <input
-                                        type="date"
-                                        value={bookingData.appointmentDate}
-                                        min={format(new Date(), 'yyyy-MM-dd')}
-                                        onChange={e => setBookingData({ ...bookingData, appointmentDate: e.target.value, slotStartTime: '', slotEndTime: '' })}
-                                        className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 font-bold text-sm text-slate-700 dark:text-slate-200 focus:border-emerald-500 outline-none transition-all"
-                                    />
+                                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-4">Chi nhánh thực hiện</h3>
+                                    <div className="relative group">
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <MapPin className="w-5 h-5 text-[#4ade80]" />
+                                        </div>
+                                        <select
+                                            value={bookingData.branchId}
+                                            onChange={e => setBookingData({ ...bookingData, branchId: e.target.value })}
+                                            className="w-full pl-12 pr-12 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-[#4ade80]/50 text-slate-900 dark:text-white font-bold text-sm appearance-none outline-none transition-all cursor-pointer"
+                                        >
+                                            <option value="">Chọn cơ sở khám chữa bệnh...</option>
+                                            {(branches || []).map((b: any) => (
+                                                <option key={b.id} value={b.id}>{b.nameVi || b.code} - {b.address || 'Hệ thống Sống Khỏe'}</option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                                            <ChevronRight className="w-5 h-5 rotate-90" />
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {bookingData.branchId && bookingData.appointmentDate && (
+                                {/* Date & Time Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Date Selection */}
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Khung giờ</p>
+                                        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-4">Ngày khám</h3>
+                                        <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
+                                            <input
+                                                type="date"
+                                                value={bookingData.appointmentDate}
+                                                min={format(new Date(), 'yyyy-MM-dd')}
+                                                onChange={e => setBookingData({ ...bookingData, appointmentDate: e.target.value, slotStartTime: '', slotEndTime: '' })}
+                                                className="w-full bg-transparent font-bold text-sm text-slate-700 dark:text-slate-200 outline-none cursor-pointer"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Time Slots */}
+                                    <div>
+                                        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-4">Khung giờ</h3>
                                         <div className="grid grid-cols-3 gap-2">
                                             {(slots || []).length > 0 ? (slots || []).map((s: any, i: number) => (
                                                 <button
                                                     key={i}
                                                     onClick={() => setBookingData({ ...bookingData, slotStartTime: s.startTime, slotEndTime: s.endTime || '' })}
-                                                    className={`p-3 rounded-xl text-xs font-bold border transition-all ${bookingData.slotStartTime === s.startTime
+                                                    className={`py-3 rounded-xl text-xs font-bold border transition-all ${bookingData.slotStartTime === s.startTime
                                                         ? 'bg-[#4ade80] text-slate-900 border-[#4ade80] shadow-md'
                                                         : s.available === false
-                                                            ? 'bg-slate-100 text-slate-300 border-slate-100 cursor-not-allowed'
+                                                            ? 'bg-slate-100 dark:bg-slate-800 text-slate-300 border-transparent cursor-not-allowed opacity-40'
                                                             : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-700 hover:border-[#4ade80]'
                                                         }`}
                                                     disabled={s.available === false}
@@ -381,41 +442,35 @@ export default function PatientAppointments() {
                                                     {s.startTime}
                                                 </button>
                                             )) : (
-                                                <p className="col-span-3 text-center text-slate-400 text-xs font-bold py-4">Không có khung giờ trống</p>
+                                                <div className="col-span-3 py-6 flex flex-col items-center gap-2 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                                                    <Clock className="w-6 h-6 text-slate-200" />
+                                                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Không có giờ trống</p>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
-                                )}
-
-                                <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Loại khám</p>
-                                    <div className="flex gap-3">
-                                        {['Trực tiếp', 'Online'].map(type => (
-                                            <button
-                                                key={type}
-                                                onClick={() => setBookingData({ ...bookingData, appointmentType: type })}
-                                                className={`flex-1 p-3 rounded-xl text-xs font-bold border transition-all ${bookingData.appointmentType === type
-                                                    ? 'bg-[#4ade80] text-slate-900 border-[#4ade80]'
-                                                    : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-700'
-                                                    }`}
-                                            >
-                                                {type === 'Online' ? '🖥️' : '🏥'} {type}
-                                            </button>
-                                        ))}
-                                    </div>
                                 </div>
 
+                                {/* Notes */}
                                 <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Ghi chú (tùy chọn)</p>
+                                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-4">Lý do khám / Triệu chứng</h3>
                                     <textarea
                                         value={bookingData.notes}
                                         onChange={e => setBookingData({ ...bookingData, notes: e.target.value })}
-                                        placeholder="VD: Tái khám tim mạch, mang theo kết quả xét nghiệm..."
-                                        rows={2}
-                                        className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 font-medium text-sm text-slate-600 dark:text-slate-300 focus:border-emerald-500 outline-none transition-all resize-none"
+                                        className="w-full p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-[#4ade80]/50 text-slate-900 dark:text-white text-sm font-bold min-h-[100px] resize-none outline-none transition-all"
+                                        placeholder="Mô tả tình trạng sức khỏe của bạn hoặc các triệu chứng đang gặp phải..."
                                     />
                                 </div>
+                            </div>
 
+                            {/* Modal Footer */}
+                            <div className="px-8 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col sm:flex-row gap-3 items-center justify-end">
+                                <button
+                                    onClick={() => setShowBooking(false)}
+                                    className="w-full sm:w-auto px-8 py-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                                >
+                                    Hủy bỏ
+                                </button>
                                 <button
                                     onClick={() => {
                                         if (!bookingData.branchId) { toast.error('Vui lòng chọn chi nhánh'); return }
@@ -424,9 +479,9 @@ export default function PatientAppointments() {
                                         createMutation.mutate()
                                     }}
                                     disabled={createMutation.isPending}
-                                    className="w-full py-5 bg-[#4ade80] text-slate-900 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-[#4ade80]/20 hover:bg-[#4ade80]/90 transition-all flex items-center justify-center gap-3"
+                                    className="w-full sm:w-auto px-10 py-4 rounded-xl bg-[#4ade80] text-slate-900 font-bold text-sm shadow-xl shadow-[#4ade80]/20 hover:brightness-105 active:scale-95 transition-all flex items-center justify-center gap-3"
                                 >
-                                    {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CalendarPlus className="w-4 h-4" />}
+                                    {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
                                     Xác nhận đặt lịch
                                 </button>
                             </div>

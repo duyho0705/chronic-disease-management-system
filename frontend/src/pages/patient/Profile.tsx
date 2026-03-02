@@ -252,9 +252,8 @@ export default function PatientProfile() {
                         </div>
 
                         <p className="text-sm text-slate-500 dark:text-slate-400">
-                            Mã bệnh nhân: <span className="font-mono text-[#4ade80] font-semibold">#ID-{profile?.id?.slice(0, 8).toUpperCase()}</span>
                             {profile?.createdAt && (
-                                <> • Tham gia {new Date(profile.createdAt).toLocaleDateString('vi-VN', { month: '2-digit', year: 'numeric' })}</>
+                                <>Tham gia {new Date(profile.createdAt).toLocaleDateString('vi-VN', { month: '2-digit', year: 'numeric' })}</>
                             )}
                         </p>
 

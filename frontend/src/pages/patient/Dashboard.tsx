@@ -103,15 +103,21 @@ export default function PatientDashboard() {
 
     // Derived data from API
     const glucoseVital = useMemo(() => getVitalByType(dashboard?.lastVitals, 'BLOOD_GLUCOSE'), [dashboard?.lastVitals])
-    const bpVital = useMemo(() => getVitalByType(dashboard?.lastVitals, 'BLOOD_PRESSURE_SYS'), [dashboard?.lastVitals])
+    const sysVital = useMemo(() => getVitalByType(dashboard?.lastVitals, 'BLOOD_PRESSURE_SYS'), [dashboard?.lastVitals])
+    const diaVital = useMemo(() => getVitalByType(dashboard?.lastVitals, 'BLOOD_PRESSURE_DIA'), [dashboard?.lastVitals])
     const weightVital = useMemo(() => getVitalByType(dashboard?.lastVitals, 'WEIGHT'), [dashboard?.lastVitals])
 
     const glucoseChartData = useMemo(() => buildChartData(dashboard?.vitalHistory, 'BLOOD_GLUCOSE'), [dashboard?.vitalHistory])
     const bpChartData = useMemo(() => buildChartData(dashboard?.vitalHistory, 'BLOOD_PRESSURE_SYS'), [dashboard?.vitalHistory])
 
+    const bpCombinedValue = useMemo(() => {
+        if (!sysVital && !diaVital) return null
+        return `${sysVital?.valueNumeric || '—'}/${diaVital?.valueNumeric || '—'}`
+    }, [sysVital, diaVital])
+
     // Secondary metrics (heart rate, SpO2, weight + any others from lastVitals)
     const secondaryVitals = useMemo(() => {
-        const primary = ['BLOOD_GLUCOSE', 'BLOOD_PRESSURE_SYS']
+        const primary = ['BLOOD_GLUCOSE', 'BLOOD_PRESSURE_SYS', 'BLOOD_PRESSURE_DIA', 'TEMPERATURE']
         return dashboard?.lastVitals?.filter(v => !primary.includes(v.vitalType?.toUpperCase())) || []
     }, [dashboard?.lastVitals])
 
@@ -162,12 +168,12 @@ export default function PatientDashboard() {
                         />
                         <VitalTrendCard
                             title="Huyết áp (mmHg)"
-                            value={bpVital?.valueNumeric}
+                            value={bpCombinedValue}
                             unit="mmHg"
                             chartData={bpChartData}
                             isBar
-                            statusLabel={bpVital && bpVital.valueNumeric > 140 ? "Cao" : "Ổn định"}
-                            statusColor={bpVital && bpVital.valueNumeric > 140 ? "rose" : "emerald"}
+                            statusLabel={sysVital && sysVital.valueNumeric > 140 ? "Cao" : "Ổn định"}
+                            statusColor={sysVital && sysVital.valueNumeric > 140 ? "rose" : "emerald"}
                         />
                     </div>
 
@@ -233,7 +239,8 @@ function VitalInputModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
     const getUnitForType = (type: string) => {
         switch (type) {
             case 'BLOOD_GLUCOSE': return 'mmol/L'
-            case 'BLOOD_PRESSURE_SYS': return 'mmHg'
+            case 'BLOOD_PRESSURE_SYS':
+            case 'BLOOD_PRESSURE_DIA': return 'mmHg'
             case 'WEIGHT': return 'kg'
             case 'HEART_RATE': return 'bpm'
             case 'SPO2': return '%'
@@ -280,11 +287,11 @@ function VitalInputModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
                                     className="w-full p-5 bg-slate-50 border border-slate-100 rounded-[1.5rem] text-sm font-black focus:ring-4 focus:ring-emerald-500/10 outline-none appearance-none cursor-pointer transition-all"
                                 >
                                     <option value="BLOOD_GLUCOSE">Đường huyết (Blood Glucose)</option>
-                                    <option value="BLOOD_PRESSURE_SYS">Huyết áp (Blood Pressure)</option>
+                                    <option value="BLOOD_PRESSURE_SYS">Huyết áp Tâm thu (Systolic BP)</option>
+                                    <option value="BLOOD_PRESSURE_DIA">Huyết áp Tâm trương (Diastolic BP)</option>
                                     <option value="HEART_RATE">Nhịp tim (Heart Rate)</option>
                                     <option value="SPO2">Nồng độ Oxy (SpO2)</option>
                                     <option value="WEIGHT">Cân nặng (Weight)</option>
-                                    <option value="TEMPERATURE">Nhiệt độ (Temperature)</option>
                                 </select>
                             </div>
 

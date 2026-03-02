@@ -13,8 +13,11 @@ import {
     ChevronRight,
     Loader2,
     X,
+    Save,
+    Calendar,
+    Clock,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -27,16 +30,15 @@ const VITAL_CONFIG: Record<string, {
     icon: any
     color: string
     bgColor: string
+    ringColor: string
     normalRange: [number, number]
-    apiType: VitalType
+    apiType: string
 }> = {
-    BLOOD_GLUCOSE: { label: 'Đường huyết', unit: 'mmol/L', icon: Droplets, color: 'text-emerald-500', bgColor: 'bg-emerald-50', normalRange: [4.0, 7.0], apiType: 'BLOOD_GLUCOSE' },
-    BLOOD_PRESSURE_SYS: { label: 'Huyết áp (Thu)', unit: 'mmHg', icon: Activity, color: 'text-orange-500', bgColor: 'bg-orange-50', normalRange: [90, 140], apiType: 'BLOOD_PRESSURE_SYS' },
-    BLOOD_PRESSURE_DIA: { label: 'Huyết áp (Trương)', unit: 'mmHg', icon: Activity, color: 'text-orange-600', bgColor: 'bg-orange-50', normalRange: [60, 90], apiType: 'BLOOD_PRESSURE_DIA' },
-    HEART_RATE: { label: 'Nhịp tim', unit: 'bpm', icon: Heart, color: 'text-red-500', bgColor: 'bg-red-50', normalRange: [60, 100], apiType: 'HEART_RATE' },
-    WEIGHT: { label: 'Cân nặng', unit: 'kg', icon: Scale, color: 'text-blue-500', bgColor: 'bg-blue-50', normalRange: [40, 120], apiType: 'WEIGHT' },
-    SPO2: { label: 'Oxy SpO2', unit: '%', icon: Wind, color: 'text-cyan-500', bgColor: 'bg-cyan-50', normalRange: [94, 100], apiType: 'SPO2' },
-    TEMPERATURE: { label: 'Nhiệt độ', unit: '°C', icon: Activity, color: 'text-amber-500', bgColor: 'bg-amber-50', normalRange: [36.0, 37.5], apiType: 'TEMPERATURE' },
+    BLOOD_GLUCOSE: { label: 'Đường huyết', unit: 'mmol/L', icon: Droplets, color: 'text-emerald-500', bgColor: 'bg-emerald-50', ringColor: 'ring-emerald-500/10', normalRange: [4.0, 7.0], apiType: 'BLOOD_GLUCOSE' },
+    BLOOD_PRESSURE: { label: 'Huyết áp', unit: 'mmHg', icon: Activity, color: 'text-orange-600', bgColor: 'bg-orange-50', ringColor: 'ring-orange-500/10', normalRange: [90, 140], apiType: 'BLOOD_PRESSURE_SYS' },
+    HEART_RATE: { label: 'Nhịp tim', unit: 'bpm', icon: Heart, color: 'text-red-500', bgColor: 'bg-red-50', ringColor: 'ring-red-500/10', normalRange: [60, 100], apiType: 'HEART_RATE' },
+    WEIGHT: { label: 'Cân nặng', unit: 'kg', icon: Scale, color: 'text-blue-500', bgColor: 'bg-blue-50', ringColor: 'ring-blue-500/10', normalRange: [40, 120], apiType: 'WEIGHT' },
+    SPO2: { label: 'Oxy SpO2', unit: '%', icon: Wind, color: 'text-cyan-500', bgColor: 'bg-cyan-50', ringColor: 'ring-cyan-500/10', normalRange: [94, 100], apiType: 'SPO2' },
 }
 
 const TIME_FILTERS = [
@@ -58,11 +60,21 @@ function getVitalStatus(type: string, value: number): { label: string; className
 export default function PatientVitals() {
     const { headers } = useTenant()
     const queryClient = useQueryClient()
+    const dateInputRef = useRef<HTMLInputElement>(null)
+    const timeInputRef = useRef<HTMLInputElement>(null)
     const [selectedMetric, setSelectedMetric] = useState('BLOOD_GLUCOSE')
     const [timeFilter, setTimeFilter] = useState(1) // index of TIME_FILTERS
     const [showInputModal, setShowInputModal] = useState(false)
-    const [inputType, setInputType] = useState<VitalType>('BLOOD_GLUCOSE')
+    const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false)
+    const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false)
+    const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false)
+    const [isChartDropdownOpen, setIsChartDropdownOpen] = useState(false)
+    const [inputType, setInputType] = useState<VitalType | 'BLOOD_PRESSURE'>('BLOOD_GLUCOSE')
     const [inputValue, setInputValue] = useState('')
+    const [inputSysValue, setInputSysValue] = useState('')
+    const [inputDiaValue, setInputDiaValue] = useState('')
+    const [inputDate, setInputDate] = useState(new Date().toISOString().split('T')[0])
+    const [inputTime, setInputTime] = useState(new Date().toTimeString().slice(0, 5))
     const [inputNotes, setInputNotes] = useState('')
 
     const { data: dashboard, isLoading } = useQuery({
@@ -77,9 +89,11 @@ export default function PatientVitals() {
     const from = new Date(now.getTime() - filterDays * 24 * 60 * 60 * 1000).toISOString()
     const to = now.toISOString()
 
+    const apiMetric = selectedMetric === 'BLOOD_PRESSURE' ? 'BLOOD_PRESSURE_SYS' : selectedMetric
+
     const { data: trendData } = useQuery({
         queryKey: ['portal-vital-trends', selectedMetric, timeFilter],
-        queryFn: () => getPortalVitalTrends(selectedMetric, headers, from, to),
+        queryFn: () => getPortalVitalTrends(apiMetric, headers, from, to),
         enabled: !!headers?.tenantId
     })
 
@@ -96,15 +110,47 @@ export default function PatientVitals() {
         onError: () => toast.error('Có lỗi xảy ra.')
     })
 
-    const handleSubmitVital = () => {
-        if (!inputValue.trim()) { toast.error('Vui lòng nhập giá trị'); return }
-        const config = VITAL_CONFIG[inputType]
-        logMutation.mutate({
-            vitalType: inputType,
-            valueNumeric: parseFloat(inputValue),
-            unit: config.unit,
-            notes: inputNotes || undefined,
-        })
+    const handleSubmitVital = async () => {
+        const recordedAt = new Date(`${inputDate}T${inputTime}`).toISOString()
+
+        if (inputType === 'BLOOD_PRESSURE') {
+            if (!inputSysValue || !inputDiaValue) {
+                toast.error('Vui lòng nhập đầy đủ Huyết áp Tâm thu và Tâm trương')
+                return
+            }
+
+            // Log Sys
+            await logMutation.mutateAsync({
+                vitalType: 'BLOOD_PRESSURE_SYS',
+                valueNumeric: parseFloat(inputSysValue),
+                unit: 'mmHg',
+                notes: inputNotes || undefined,
+                recordedAt
+            })
+
+            // Log Dia
+            await logMutation.mutateAsync({
+                vitalType: 'BLOOD_PRESSURE_DIA',
+                valueNumeric: parseFloat(inputDiaValue),
+                unit: 'mmHg',
+                notes: inputNotes || undefined,
+                recordedAt
+            })
+        } else {
+            if (!inputValue.trim()) {
+                toast.error('Vui lòng nhập giá trị')
+                return
+            }
+
+            const config = VITAL_CONFIG[inputType]
+            await logMutation.mutateAsync({
+                vitalType: inputType as VitalType,
+                valueNumeric: parseFloat(inputValue),
+                unit: config?.unit || '',
+                notes: inputNotes || undefined,
+                recordedAt
+            })
+        }
     }
 
     if (isLoading) return (
@@ -114,9 +160,24 @@ export default function PatientVitals() {
     )
 
     // Helper: get latest vital by type from dashboard
-    const getVital = (type: string) => {
+    const getVitalValue = (type: string) => {
+        if (type === 'BLOOD_PRESSURE') {
+            const sys = dashboard?.lastVitals?.find((v: any) => v.vitalType?.toUpperCase() === 'BLOOD_PRESSURE_SYS')?.valueNumeric
+            const dia = dashboard?.lastVitals?.find((v: any) => v.vitalType?.toUpperCase() === 'BLOOD_PRESSURE_DIA')?.valueNumeric
+            if (sys || dia) return `${sys || '—'}/${dia || '—'}`
+            return '—'
+        }
         const v = dashboard?.lastVitals?.find((v: any) => v.vitalType?.toUpperCase() === type)
-        return v ? { value: v.valueNumeric, recordedAt: v.recordedAt } : null
+        return v ? v.valueNumeric : '—'
+    }
+
+    const getVitalStatusValue = (type: string) => {
+        if (type === 'BLOOD_PRESSURE') {
+            const sys = dashboard?.lastVitals?.find((v: any) => v.vitalType?.toUpperCase() === 'BLOOD_PRESSURE_SYS')?.valueNumeric
+            return sys ? getVitalStatus('BLOOD_PRESSURE', sys) : { label: 'Chưa có', className: 'bg-slate-100 text-slate-500' }
+        }
+        const v = dashboard?.lastVitals?.find((v: any) => v.vitalType?.toUpperCase() === type)
+        return v ? getVitalStatus(type, v.valueNumeric) : { label: 'Chưa có', className: 'bg-slate-100 text-slate-500' }
     }
 
     // Build chart data from trends
@@ -147,21 +208,25 @@ export default function PatientVitals() {
     const chartMax = Math.max(...chartData.map((d: any) => d.value), 1)
 
     return (
-        <div className="w-full space-y-8 p-6 md:p-8">
-            {/* Title and CTA */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                <div>
-                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Chỉ số sức khỏe</h2>
-                    <p className="text-slate-500 mt-1 font-medium">Theo dõi các chỉ số sinh tồn của bạn trong thời gian thực</p>
+        <div className="space-y-8 pb-20 py-8">
+            {/* 1. Header Card */}
+            <header className="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#4ade80]/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+
+                <div className="relative flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Chỉ số sức khỏe</h2>
+                        <p className="text-slate-500 mt-1 font-medium">Theo dõi các chỉ số sinh tồn của bạn trong thời gian thực</p>
+                    </div>
+                    <button
+                        onClick={() => setShowInputModal(true)}
+                        className="bg-[#4ade80] hover:bg-[#4ade80]/90 text-slate-900 px-6 py-3 rounded-2xl font-bold text-sm shadow-lg shadow-[#4ade80]/20 flex items-center justify-center gap-2 transition-all active:scale-95"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Nhập chỉ số mới
+                    </button>
                 </div>
-                <button
-                    onClick={() => setShowInputModal(true)}
-                    className="bg-[#4ade80] hover:bg-[#4ade80]/90 text-slate-900 px-6 py-3 rounded-2xl font-bold text-sm shadow-lg shadow-[#4ade80]/20 flex items-center justify-center gap-2 transition-all active:scale-95"
-                >
-                    <Plus className="w-5 h-5" />
-                    Nhập chỉ số mới
-                </button>
-            </div>
+            </header>
 
             {/* Time Filter */}
             <div className="flex bg-white dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-100 dark:border-slate-700 w-fit shadow-sm">
@@ -182,34 +247,37 @@ export default function PatientVitals() {
             {/* Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 {Object.entries(VITAL_CONFIG).map(([key, config]) => {
-                    const vital = getVital(key)
-                    const value = vital?.value ?? '—'
-                    const status = vital ? getVitalStatus(key, vital.value) : { label: 'Chưa có', className: 'bg-slate-100 text-slate-500' }
+                    const value = getVitalValue(key)
+                    const status = getVitalStatusValue(key)
                     const isSelected = selectedMetric === key
 
                     return (
                         <button
                             key={key}
                             onClick={() => setSelectedMetric(key)}
-                            className={`bg-white dark:bg-slate-800 p-5 rounded-3xl text-left transition-all hover:scale-[1.02] ${isSelected
-                                ? 'border-2 border-[#4ade80] shadow-xl shadow-[#4ade80]/5'
-                                : 'border border-slate-100 dark:border-slate-700'
+                            className={`bg-white dark:bg-slate-900 p-4 rounded-xl text-left transition-all border ${isSelected
+                                ? 'border-[#4ade80] ring-4 ring-[#4ade80]/10 shadow-lg'
+                                : 'border-slate-100 dark:border-slate-800 hover:border-[#4ade80]/50'
                                 }`}
                         >
                             <div className="flex justify-between items-start mb-4">
-                                <div className={`p-2.5 ${config.bgColor} ${config.color} rounded-2xl`}>
-                                    <config.icon className="w-6 h-6" />
+                                <div className={`p-2 ${config.bgColor} ${config.color} rounded-lg`}>
+                                    <config.icon className="w-5 h-5" />
                                 </div>
-                                <span className={`text-[10px] font-black px-2.5 py-1 rounded-full tracking-widest ${status.className}`}>
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter ${status.className}`}>
                                     {status.label}
                                 </span>
                             </div>
-                            <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">{config.label}</p>
+                            <p className="text-slate-500 text-[10px] font-semibold uppercase tracking-wider">{config.label}</p>
                             <div className="flex items-baseline gap-1 mt-1">
-                                <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
+                                <span className="text-2xl font-black text-slate-900 dark:text-white">
                                     {typeof value === 'number' ? value.toFixed(1) : value}
                                 </span>
-                                <span className="text-xs font-bold text-slate-400 uppercase">{config.unit}</span>
+                                <span className="text-xs text-slate-400 font-medium">{config.unit}</span>
+                            </div>
+                            <div className="mt-2 flex items-center gap-1 text-[#4ade80]">
+                                <span className="material-symbols-outlined text-sm">trending_down</span>
+                                <span className="text-[10px] font-bold">-2% so với hôm qua</span>
                             </div>
                         </button>
                     )
@@ -219,7 +287,7 @@ export default function PatientVitals() {
             {/* Chart and Analysis */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Chart Section */}
-                <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-7 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden group">
+                <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-7 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                         <div>
                             <h3 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">
@@ -230,16 +298,53 @@ export default function PatientVitals() {
                             </p>
                         </div>
                         <div className="relative">
-                            <select
-                                value={selectedMetric}
-                                onChange={(e) => setSelectedMetric(e.target.value)}
-                                className="appearance-none pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl text-xs font-bold text-slate-600 focus:ring-emerald-400/20 focus:border-emerald-400 outline-none transition-all cursor-pointer"
+                            <button
+                                onClick={() => setIsChartDropdownOpen(!isChartDropdownOpen)}
+                                className="flex items-center gap-3 pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 transition-all cursor-pointer relative"
                             >
-                                {Object.entries(VITAL_CONFIG).map(([key, cfg]) => (
-                                    <option key={key} value={key}>{cfg.label} ({cfg.unit})</option>
-                                ))}
-                            </select>
-                            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 rotate-90" />
+                                {(() => {
+                                    const cfg = VITAL_CONFIG[selectedMetric]
+                                    return (
+                                        <>
+                                            <div className={`p-1 ${cfg.bgColor} ${cfg.color} rounded-md shadow-sm`}>
+                                                <cfg.icon className="w-3.5 h-3.5" />
+                                            </div>
+                                            <span>{cfg.label} ({cfg.unit})</span>
+                                        </>
+                                    )
+                                })()}
+                                <ChevronRight className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 transition-transform ${isChartDropdownOpen ? '-rotate-90' : 'rotate-90'}`} />
+                            </button>
+
+                            <AnimatePresence>
+                                {isChartDropdownOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden py-1"
+                                    >
+                                        {Object.entries(VITAL_CONFIG).map(([key, cfg]) => (
+                                            <button
+                                                key={key}
+                                                onClick={() => {
+                                                    setSelectedMetric(key)
+                                                    setIsChartDropdownOpen(false)
+                                                }}
+                                                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                            >
+                                                <div className={`p-1.5 ${cfg.bgColor} ${cfg.color} rounded-md`}>
+                                                    <cfg.icon className="w-4 h-4" />
+                                                </div>
+                                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{cfg.label}</span>
+                                                {selectedMetric === key && (
+                                                    <div className="ml-auto w-1.5 h-1.5 bg-[#4ade80] rounded-full" />
+                                                )}
+                                            </button>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
 
@@ -264,21 +369,21 @@ export default function PatientVitals() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex items-center justify-center h-full text-slate-400 font-bold text-sm">
+                            <div className="flex items-center justify-center h-full text-slate-400 font-bold text-sm relative z-10">
                                 Chưa có dữ liệu trong khoảng thời gian này
                             </div>
                         )}
                         {/* Background Lines */}
-                        <div className="absolute inset-x-0 bottom-[calc(25%)] border-t border-slate-100 dark:border-slate-700/50"></div>
-                        <div className="absolute inset-x-0 bottom-[calc(50%)] border-t border-slate-100 dark:border-slate-700/50"></div>
-                        <div className="absolute inset-x-0 bottom-[calc(75%)] border-t border-slate-100 dark:border-slate-700/50"></div>
+                        <div className="absolute inset-x-0 bottom-[calc(25%)] border-t border-slate-100 dark:border-slate-800/50"></div>
+                        <div className="absolute inset-x-0 bottom-[calc(50%)] border-t border-slate-100 dark:border-slate-800/50"></div>
+                        <div className="absolute inset-x-0 bottom-[calc(75%)] border-t border-slate-100 dark:border-slate-800/50"></div>
                     </div>
                 </div>
 
                 {/* AI / Doctor Analysis Section */}
-                <div className="bg-[#4ade80]/5 dark:bg-[#4ade80]/10 p-7 rounded-[2rem] border border-[#4ade80]/10 flex flex-col gap-6">
+                <div className="bg-[#4ade80]/5 dark:bg-[#4ade80]/10 p-7 rounded-xl border border-[#4ade80]/10 flex flex-col gap-6">
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-[#4ade80]/10 text-[#4ade80] rounded-2xl">
+                        <div className="p-2.5 bg-[#4ade80]/10 text-[#4ade80] rounded-xl">
                             <Zap className="w-5 h-5 fill-[#4ade80]" />
                         </div>
                         <h3 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">Phân tích chuyên sâu</h3>
@@ -287,7 +392,7 @@ export default function PatientVitals() {
                     <div className="space-y-5 flex-1">
                         {/* Show health alerts if any */}
                         {dashboard?.healthAlerts && dashboard.healthAlerts.length > 0 ? (
-                            <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden">
+                            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
                                 <div className="absolute top-4 right-4 text-[#4ade80]/10 scale-150">
                                     <Activity className="w-16 h-16" />
                                 </div>
@@ -300,7 +405,7 @@ export default function PatientVitals() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden">
+                            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
                                 <div className="absolute top-4 right-4 text-[#4ade80]/10 scale-150">
                                     <Activity className="w-16 h-16" />
                                 </div>
@@ -310,7 +415,7 @@ export default function PatientVitals() {
                             </div>
                         )}
 
-                        <div className="bg-[#4ade80] rounded-3xl p-6 shadow-lg shadow-[#4ade80]/20 group relative overflow-hidden">
+                        <div className="bg-[#4ade80] rounded-xl p-6 shadow-lg shadow-[#4ade80]/20 group relative overflow-hidden">
                             <div className="absolute -bottom-2 -right-2 opacity-10 group-hover:scale-110 transition-transform duration-500">
                                 <Plus className="w-24 h-24 rotate-45" />
                             </div>
@@ -376,92 +481,324 @@ export default function PatientVitals() {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </div >
 
             {/* Input Vital Modal */}
             <AnimatePresence>
-                {showInputModal && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setShowInputModal(false)}
-                            className="absolute inset-0"
-                        />
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-white dark:bg-slate-900 rounded-[3rem] p-10 w-full max-w-md relative z-10 shadow-2xl border border-slate-100 dark:border-slate-800"
-                        >
-                            <button
+                {
+                    showInputModal && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
                                 onClick={() => setShowInputModal(false)}
-                                className="absolute top-8 right-8 p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all"
+                                className="absolute inset-0"
+                            />
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                className="bg-white dark:bg-slate-900 rounded-xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800 relative z-10"
                             >
-                                <X className="w-6 h-6 text-slate-300" />
-                            </button>
-
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Nhập chỉ số sức khỏe</h3>
-                            <p className="text-slate-400 font-bold text-xs mb-8">Ghi nhận chỉ số sinh hiệu hàng ngày</p>
-
-                            <div className="space-y-6">
-                                <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Loại chỉ số</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {Object.entries(VITAL_CONFIG).map(([key, cfg]) => (
-                                            <button
-                                                key={key}
-                                                onClick={() => setInputType(key as VitalType)}
-                                                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${inputType === key
-                                                    ? 'bg-[#4ade80] text-slate-900 shadow-md'
-                                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200'
-                                                    }`}
-                                            >
-                                                {cfg.label}
-                                            </button>
-                                        ))}
+                                {/* Modal Header */}
+                                <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Nhập chỉ số sức khỏe</h2>
+                                        <button
+                                            onClick={() => setShowInputModal(false)}
+                                            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                                        >
+                                            <X className="w-6 h-6" />
+                                        </button>
                                     </div>
                                 </div>
 
-                                <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">
-                                        Giá trị ({VITAL_CONFIG[inputType].unit})
-                                    </p>
-                                    <input
-                                        type="number"
-                                        step="0.1"
-                                        value={inputValue}
-                                        onChange={e => setInputValue(e.target.value)}
-                                        placeholder={`VD: ${VITAL_CONFIG[inputType].normalRange[0]}`}
-                                        className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 font-black text-lg text-slate-700 dark:text-slate-200 focus:border-emerald-500 outline-none transition-all"
-                                    />
+                                {/* Modal Content */}
+                                <div className="p-6 overflow-y-auto max-h-[70vh] space-y-5">
+                                    {/* Metric Type Selection - Custom Premium Dropdown */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Loại chỉ số</label>
+                                        <div className="relative">
+                                            <button
+                                                onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg h-12 px-4 flex items-center justify-between focus:ring-2 focus:ring-[#4ade80] transition-all"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    {(() => {
+                                                        const config = VITAL_CONFIG[inputType === 'BLOOD_PRESSURE' ? 'BLOOD_PRESSURE' : inputType]
+                                                        if (!config) return <Activity className="w-5 h-5 text-slate-400" />
+                                                        return (
+                                                            <div className={`p-1.5 ${config.bgColor} ${config.color} rounded-md`}>
+                                                                <config.icon className="w-4 h-4" />
+                                                            </div>
+                                                        )
+                                                    })()}
+                                                    <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                                                        {(inputType === 'BLOOD_PRESSURE' ? 'Huyết áp' : VITAL_CONFIG[inputType]?.label) || 'Chọn chỉ số'}
+                                                    </span>
+                                                </div>
+                                                <ChevronRight className={`w-5 h-5 text-slate-400 transition-transform ${isTypeDropdownOpen ? '-rotate-90' : 'rotate-90'}`} />
+                                            </button>
+
+                                            <AnimatePresence>
+                                                {isTypeDropdownOpen && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: -10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        exit={{ opacity: 0, y: -10 }}
+                                                        className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden py-1"
+                                                    >
+                                                        {[
+                                                            { key: 'BLOOD_PRESSURE', label: 'Huyết áp (Blood Pressure)', icon: Activity, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+                                                            { key: 'BLOOD_GLUCOSE', label: 'Đường huyết (Blood Glucose)', icon: Droplets, color: 'text-emerald-500', bgColor: 'bg-emerald-50' },
+                                                            { key: 'HEART_RATE', label: 'Nhịp tim (Heart Rate)', icon: Heart, color: 'text-red-500', bgColor: 'bg-red-50' },
+                                                            { key: 'WEIGHT', label: 'Cân nặng (Weight)', icon: Scale, color: 'text-blue-500', bgColor: 'bg-blue-50' },
+                                                            { key: 'SPO2', label: 'Nồng độ Oxy (SpO2)', icon: Wind, color: 'text-cyan-500', bgColor: 'bg-cyan-50' }
+                                                        ].map((opt) => (
+                                                            <button
+                                                                key={opt.key}
+                                                                onClick={() => {
+                                                                    setInputType(opt.key as any)
+                                                                    setIsTypeDropdownOpen(false)
+                                                                }}
+                                                                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                                            >
+                                                                <div className={`p-1.5 ${opt.bgColor} ${opt.color} rounded-md`}>
+                                                                    <opt.icon className="w-4 h-4" />
+                                                                </div>
+                                                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{opt.label}</span>
+                                                                {inputType === opt.key && (
+                                                                    <div className="ml-auto w-2 h-2 bg-[#4ade80] rounded-full" />
+                                                                )}
+                                                            </button>
+                                                        ))}
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    </div>
+
+                                    {/* Values Grid */}
+                                    {inputType === 'BLOOD_PRESSURE' ? (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tâm thu (mmHg)</label>
+                                                <input
+                                                    type="number"
+                                                    value={inputSysValue}
+                                                    onChange={e => setInputSysValue(e.target.value)}
+                                                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg h-12 px-4 focus:ring-2 focus:ring-[#4ade80] focus:border-transparent text-slate-900 dark:text-slate-100 outline-none transition-all"
+                                                    placeholder="120"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tâm trương (mmHg)</label>
+                                                <input
+                                                    type="number"
+                                                    value={inputDiaValue}
+                                                    onChange={e => setInputDiaValue(e.target.value)}
+                                                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg h-12 px-4 focus:ring-2 focus:ring-[#4ade80] focus:border-transparent text-slate-900 dark:text-slate-100 outline-none transition-all"
+                                                    placeholder="80"
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                                                Giá trị ({VITAL_CONFIG[inputType as string]?.unit})
+                                            </label>
+                                            <input
+                                                type="number"
+                                                step="0.1"
+                                                value={inputValue}
+                                                onChange={e => setInputValue(e.target.value)}
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg h-12 px-4 focus:ring-2 focus:ring-[#4ade80] focus:border-transparent text-slate-900 dark:text-slate-100 outline-none transition-all"
+                                                placeholder={`VD: ${VITAL_CONFIG[inputType as string]?.normalRange[0]}`}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Date and Time Grid - Hidden for Weight */}
+                                    {inputType !== 'WEIGHT' && (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {/* Custom Date Dropdown */}
+                                            <div className="relative">
+                                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Ngày đo</label>
+                                                <button
+                                                    onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
+                                                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg h-12 px-4 flex items-center justify-between focus:ring-2 focus:ring-[#4ade80] transition-all"
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <Calendar className="w-4 h-4 text-slate-400" />
+                                                        <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                                                            {inputDate === new Date().toISOString().split('T')[0]
+                                                                ? `Hôm nay, ${new Date(inputDate).toLocaleDateString('vi-VN')}`
+                                                                : new Date(inputDate).toLocaleDateString('vi-VN')}
+                                                        </span>
+                                                    </div>
+                                                    <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isDateDropdownOpen ? '-rotate-90' : 'rotate-90'}`} />
+                                                </button>
+
+                                                <AnimatePresence>
+                                                    {isDateDropdownOpen && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, y: -10 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            exit={{ opacity: 0, y: -10 }}
+                                                            className="absolute bottom-full mb-2 left-0 right-0 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl shadow-xl z-[60] overflow-hidden py-1"
+                                                        >
+                                                            {[
+                                                                { label: 'Hôm nay', value: new Date().toISOString().split('T')[0] },
+                                                                { label: 'Hôm qua', value: new Date(Date.now() - 86400000).toISOString().split('T')[0] },
+                                                            ].map((opt) => (
+                                                                <button
+                                                                    key={opt.value}
+                                                                    onClick={() => {
+                                                                        setInputDate(opt.value)
+                                                                        setIsDateDropdownOpen(false)
+                                                                    }}
+                                                                    className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                                                >
+                                                                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{opt.label}</span>
+                                                                    {inputDate === opt.value && (
+                                                                        <div className="w-2 h-2 bg-[#4ade80] rounded-full" />
+                                                                    )}
+                                                                </button>
+                                                            ))}
+                                                            <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
+                                                            <button
+                                                                onClick={() => dateInputRef.current?.showPicker()}
+                                                                className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                                            >
+                                                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Chọn ngày khác...</span>
+                                                                <input
+                                                                    ref={dateInputRef}
+                                                                    type="date"
+                                                                    className="sr-only"
+                                                                    onChange={(e) => {
+                                                                        if (e.target.value) {
+                                                                            setInputDate(e.target.value)
+                                                                            setIsDateDropdownOpen(false)
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </button>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+
+                                            {/* Custom Time Dropdown */}
+                                            <div className="relative">
+                                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Giờ đo</label>
+                                                <button
+                                                    onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
+                                                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg h-12 px-4 flex items-center justify-between focus:ring-2 focus:ring-[#4ade80] transition-all"
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <Clock className="w-4 h-4 text-slate-400" />
+                                                        <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                                                            {inputTime}
+                                                        </span>
+                                                    </div>
+                                                    <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isTimeDropdownOpen ? '-rotate-90' : 'rotate-90'}`} />
+                                                </button>
+
+                                                <AnimatePresence>
+                                                    {isTimeDropdownOpen && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, y: -10 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            exit={{ opacity: 0, y: -10 }}
+                                                            className="absolute bottom-full mb-2 left-0 right-0 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl shadow-xl z-[60] overflow-hidden py-1"
+                                                        >
+                                                            {[
+                                                                { label: 'Bây giờ', getValue: () => new Date().toTimeString().slice(0, 5) },
+                                                                { label: '30 phút trước', getValue: () => new Date(Date.now() - 30 * 60000).toTimeString().slice(0, 5) },
+                                                                { label: '1 giờ trước', getValue: () => new Date(Date.now() - 60 * 60000).toTimeString().slice(0, 5) },
+                                                            ].map((opt) => (
+                                                                <button
+                                                                    key={opt.label}
+                                                                    onClick={() => {
+                                                                        setInputTime(opt.getValue())
+                                                                        setIsTimeDropdownOpen(false)
+                                                                    }}
+                                                                    className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                                                >
+                                                                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{opt.label}</span>
+                                                                    {inputTime === opt.getValue() && (
+                                                                        <div className="w-2 h-2 bg-[#4ade80] rounded-full" />
+                                                                    )}
+                                                                </button>
+                                                            ))}
+                                                            <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
+                                                            <button
+                                                                onClick={() => timeInputRef.current?.showPicker()}
+                                                                className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                                            >
+                                                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Chọn giờ khác...</span>
+                                                                <input
+                                                                    ref={timeInputRef}
+                                                                    type="time"
+                                                                    className="sr-only"
+                                                                    onChange={(e) => {
+                                                                        if (e.target.value) {
+                                                                            setInputTime(e.target.value)
+                                                                            setIsTimeDropdownOpen(false)
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </button>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Notes */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Ghi chú / Triệu chứng</label>
+                                        <textarea
+                                            value={inputNotes}
+                                            onChange={e => setInputNotes(e.target.value)}
+                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-[#4ade80] focus:border-transparent text-slate-900 dark:text-slate-100 outline-none transition-all resize-none"
+                                            placeholder="Nhập tình trạng sức khỏe hiện tại của bạn hoặc cảm giác lúc này..."
+                                            rows={3}
+                                        />
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Ghi chú (tùy chọn)</p>
-                                    <textarea
-                                        value={inputNotes}
-                                        onChange={e => setInputNotes(e.target.value)}
-                                        placeholder="VD: Đo sau khi ăn sáng 1 tiếng..."
-                                        rows={2}
-                                        className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 font-medium text-sm text-slate-600 dark:text-slate-300 focus:border-emerald-500 outline-none transition-all resize-none"
-                                    />
+                                {/* Modal Footer */}
+                                <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex gap-3">
+                                    <button
+                                        onClick={() => setShowInputModal(false)}
+                                        className="flex-1 px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                    >
+                                        Hủy bỏ
+                                    </button>
+                                    <button
+                                        onClick={handleSubmitVital}
+                                        disabled={logMutation.isPending}
+                                        className="flex-[2] px-4 py-3 rounded-lg bg-[#4ade80] text-slate-900 font-bold shadow-lg shadow-[#4ade80]/20 hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
+                                    >
+                                        {logMutation.isPending ? (
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Save className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                                Lưu chỉ số
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
-
-                                <button
-                                    onClick={handleSubmitVital}
-                                    disabled={logMutation.isPending}
-                                    className="w-full py-5 bg-[#4ade80] text-slate-900 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-[#4ade80]/20 hover:bg-[#4ade80]/90 transition-all flex items-center justify-center gap-3"
-                                >
-                                    {logMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                                    Lưu chỉ số
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
+                            </motion.div>
+                        </div>
+                    )
+                }
             </AnimatePresence>
-        </div>
+
+        </div >
     )
 }

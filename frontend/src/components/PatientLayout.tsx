@@ -164,11 +164,11 @@ export function PatientLayout({ children }: PatientLayoutProps) {
                                 key={item.path}
                                 to={item.path}
                                 className={`flex items-center gap-4 px-5 py-3.5 rounded-full font-bold transition-all ${isActive
-                                    ? 'bg-emerald-500/10 text-emerald-500'
+                                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
                                     : 'text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-slate-300'
                                     }`}
                             >
-                                <item.icon className={`w-6 h-6 ${isActive ? 'text-emerald-500' : 'text-slate-900 dark:text-white'}`} />
+                                <item.icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-slate-900 dark:text-white'}`} />
                                 <span className="text-base tracking-tight">{item.label}</span>
                                 {isBilling && hasPendingInvoice && !isActive && (
                                     <span className="ml-auto w-2 h-2 bg-rose-500 rounded-full" />
