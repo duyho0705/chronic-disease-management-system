@@ -130,7 +130,7 @@ export default function AiAssistant() {
                                             {msg.content}
                                         </div>
                                         <div className={`flex items-center gap-2 text-[10px] font-bold text-slate-300 ${msg.role === 'user' ? 'justify-end' : ''}`}>
-                                            {msg.role === 'assistant' ? 'CDM AI Assistant' : 'Bá»‡nh nhÃ¢n'} â€¢ Vá»«a xong
+                                            {msg.role === 'assistant' ? 'CDM AI Assistant' : 'Bệnh nhân'} • Vừa xong
                                         </div>
                                     </div>
                                 </div>

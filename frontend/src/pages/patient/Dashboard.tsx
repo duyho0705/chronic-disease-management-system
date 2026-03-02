@@ -179,7 +179,11 @@ export default function PatientDashboard() {
                 <div className="space-y-8">
                     <HealthAlertsWidget alerts={healthAlerts} />
                     <AppointmentWidget appointment={dashboard?.nextAppointment} navigate={navigate} />
-                    <DoctorChatWidget doctorName={dashboard?.assignedDoctorName} navigate={navigate} />
+                    <DoctorChatWidget
+                        doctorName={dashboard?.assignedDoctorName}
+                        doctorAvatar={dashboard?.assignedDoctorAvatar}
+                        navigate={navigate}
+                    />
                 </div>
             </div>
 
@@ -334,11 +338,17 @@ function ProfileSummary({ dashboard, weightVital }: { dashboard: any, weightVita
             className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-8 items-center"
         >
             <div className="h-24 w-24 rounded-full bg-[#4ade80]/20 flex items-center justify-center overflow-hidden border-4 border-[#4ade80]/10 shadow-inner">
-                <img
-                    alt="Patient Avatar"
-                    className="h-full w-full object-cover"
-                    src={dashboard?.patientAvatar || "https://lh3.googleusercontent.com/aida-public/AB6AXuDtszSUkFV8-ySPzx5ShEcygZMGlLkCDs4d0864MNknx5EExH89OU4c8yPh8OVN1hs4lphO6fiLk2zNxiEVtKYNCEmFI8wlHiQWp_eNhWhDrDTnx0CzMMhMxEazQTGHz9vkoPO8nr1skAG0vHgWNL9WYSMCVUQCb0F38yyb4j9YXgtT9zCiHC8m8luedS4ciJqp8z63x9_AVk2Iy6aAsM3rPa-p8uNkLf-Ai8Ztas1voDuD-ytltUPtIAtEVk2Zdfo5YiyAOwuAFVk"}
-                />
+                {dashboard?.patientAvatar ? (
+                    <img
+                        alt="Patient Avatar"
+                        className="h-full w-full object-cover"
+                        src={dashboard.patientAvatar}
+                    />
+                ) : (
+                    <div className="w-full h-full bg-[#4ade80] text-slate-900 flex items-center justify-center text-3xl font-black">
+                        {dashboard?.patientName?.charAt(0) || 'P'}
+                    </div>
+                )}
             </div>
             <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                 <InfoBlock label="Chẩn đoán" value={dashboard?.recentVisits?.[0]?.diagnosisNotes} color="text-[#4ade80]" />
@@ -552,24 +562,30 @@ function AppointmentWidget({ appointment, navigate }: { appointment: any, naviga
             {appointment ? (
                 <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[2rem] border-l-8 border-emerald-400">
                     <p className="text-[10px] font-black text-emerald-500 tracking-widest mb-1">{new Date(appointment.appointmentDate).toLocaleDateString('vi-VN')}</p>
-                    <p className="text-base font-black text-slate-900 dark:text-white">{appointment.appointmentType || 'Khám định kỳ'}</p>
-                    <div className="mt-2 text-xs text-slate-500 font-bold"><Clock className="w-3 h-3 inline mr-1" /> {appointment.startTime} - {appointment.endTime}</div>
+                    <p className="text-base font-black text-slate-900 dark:text-white">{appointment.appointmentType}</p>
+                    <div className="mt-2 text-xs text-slate-500 font-bold"><Clock className="w-3 h-3 inline mr-1" /> {appointment.startTime} - {appointment.endTime} {appointment.branchName ? `• ${appointment.branchName}` : ''}</div>
                 </div>
-            ) : <p className="text-center py-4 text-slate-400 text-xs">Không có lịch sắp tới</p>}
+            ) : <p className="text-center py-4 text-slate-400 text-xs font-bold">Không có lịch sắp tới</p>}
         </div>
     )
 }
 
-function DoctorChatWidget({ doctorName, navigate }: { doctorName?: string, navigate: any }) {
+function DoctorChatWidget({ doctorName, doctorAvatar, navigate }: { doctorName?: string, doctorAvatar?: string, navigate: any }) {
     return (
         <motion.div
             whileHover={{ scale: 1.02 }}
             className="bg-emerald-400 rounded-[2rem] p-5 flex items-center gap-4 shadow-xl shadow-emerald-400/20 group cursor-pointer"
             onClick={() => navigate('/patient/chat')}
         >
-            <div className="h-14 w-14 rounded-2xl bg-slate-900 relative overflow-hidden"><img alt="Doctor" className="object-cover h-full w-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcFUhTbj4SPfWKM3951CEKYvigAczulFrCd8MjzxK28AaIMv7rvM-pUcSN0_6i5RwtX13a876QeZic-WXjKbruzJO_MU1VLhaf8sTaTC6xMBJBLlegIlBVQ7-ay4KFBKDc9Kp4d4VxiW4W55X3BgzMhYJVpEUOsX5zvapaAutwwZ5jNXGYRXvYYdfIxJ3NoXT7vE_s_WQFoBz8nq_gOTbZG2UuGnw6hWILVqM-4JvKFVl6gyFJVzgir_vEEj_UoPOP31YKYoxzHN8" /></div>
+            <div className="h-14 w-14 rounded-2xl bg-slate-900 relative overflow-hidden flex items-center justify-center text-emerald-400 text-xl font-black">
+                {doctorAvatar ? (
+                    <img alt="Doctor" className="object-cover h-full w-full" src={doctorAvatar} />
+                ) : (
+                    doctorName?.charAt(0) || 'D'
+                )}
+            </div>
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-slate-900 truncate">{doctorName || 'BS. CDMS'}</p>
+                <p className="text-sm font-black text-slate-900 truncate">{doctorName || 'Chưa phân công'}</p>
                 <p className="text-[10px] text-slate-900/60 font-black tracking-widest">Bác sĩ phụ trách</p>
             </div>
             <Link to="/patient/chat" className="bg-slate-900 p-3 rounded-2xl text-emerald-400 shadow-xl"><Send className="w-5 h-5 fill-current" /></Link>

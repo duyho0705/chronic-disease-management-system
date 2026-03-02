@@ -165,6 +165,8 @@ export interface PatientDto {
   ethnicity?: string
   isActive?: boolean
   avatarUrl?: string
+  height?: string
+  weight?: string
   createdAt?: string
   updatedAt?: string
 }
@@ -183,6 +185,8 @@ export interface UpdatePatientProfileRequest {
   ethnicity?: string
   cccd?: string
   isActive?: boolean
+  height?: string
+  weight?: string
 }
 
 export interface ChangePasswordRequest {
@@ -422,6 +426,9 @@ export interface AppointmentDto {
   status: string
   appointmentType?: string
   notes?: string
+  doctorName?: string
+  doctorSpecialty?: string
+  doctorAvatar?: string
 }
 
 export interface PatientDashboardDto {
@@ -442,6 +449,7 @@ export interface PatientDashboardDto {
   bloodType?: string
   chronicConditions?: string
   assignedDoctorName?: string
+  assignedDoctorAvatar?: string
 }
 
 export interface LabResultDto {

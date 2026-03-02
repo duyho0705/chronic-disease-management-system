@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Patient Profile - Chronic Disease Management</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ade80",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#122017",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+    <div class="relative flex min-h-screen w-full bg-background-light dark:bg-background-dark overflow-x-hidden">
+        <!-- Sidebar Navigation -->
+        <aside
+            class="w-64 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between p-6 bg-white dark:bg-slate-900 sticky top-0 h-screen">
+            <div class="flex flex-col gap-8">
+                <!-- Branding/User Mini Profile -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-primary/20 rounded-full p-1 border border-primary/30">
+                        <img alt="User Avatar" class="size-10 rounded-full object-cover"
+                            data-alt="Professional portrait of a middle-aged man"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIE7cpqMQYwxvywaZd9d-dqNN8Tu5ZbEDoO88OfW5JlfRDSo6ELN3KBizhgI71yp74XfKyLpesBzh29HTyLQZq-5mdJYd4CEzvZby6qxuDhH3CJCOLbkX1jRT2ABLdQjjRPlILMBvUeHuPSuTHKO7rfSrXBY2hk25NO59ueGygYg1GURQS_WPSyQsOBeAekYpLwpQe410234aMcVN-iQf7zv40w3tSn26GA7D8RXkyNl6DE1q-8itPnObvllx-n2UUumXLQbxiIB0" />
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-slate-900 dark:text-slate-100 text-sm font-bold leading-tight">Nguyễn Văn A</h1>
+                        <p class="text-primary text-xs font-medium">ID: P-99283</p>
+                    </div>
+                </div>
+                <!-- Nav Links -->
+                <nav class="flex flex-col gap-2">
+                    <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        <span class="text-sm font-medium">Dashboard</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">medication</span>
+                        <span class="text-sm font-medium">Prescriptions</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                        <span class="text-sm font-medium">Appointments</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">monitoring</span>
+                        <span class="text-sm font-medium">Health Metrics</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">chat</span>
+                        <span class="text-sm font-medium">Messages</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 bg-primary text-slate-900 rounded-lg" href="#">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">person</span>
+                        <span class="text-sm font-bold">Profile</span>
+                    </a>
+                </nav>
+            </div>
+            <button
+                class="flex w-full items-center justify-center gap-2 rounded-xl h-11 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">
+                <span class="material-symbols-outlined text-sm">logout</span>
+                <span>Logout</span>
+            </button>
+        </aside>
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col max-w-5xl mx-auto px-6 py-8">
+            <!-- Profile Header -->
+            <header
+                class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 mb-6">
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    <div class="relative">
+                        <img alt="Profile Large" class="size-32 rounded-full border-4 border-primary/20 object-cover"
+                            data-alt="Detailed portrait of the patient Nguyen Van A"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbiJ7I6ctWWGnLQNqOglT3drtEvxoxgYwECbwnYBCihONL1qNBKpbHcL2VeMYUVBj31tQd7ASwCsOQomYDGohIQ2rXA8jbkkTL4YM-fQv-tjNXzsQCNAQaHW7nG9UMdlyukB3l3PUh4hEh7vuj6jVuptgmzF1tXf-qIYhm_A4v8uOwZc5wDGnVt7nJTqMvmi9Wh6zLunQYlemDuQWa26BnYtYKxxG7LoL4xdQW2RXEPZBLTGvX4w5JtK0Q0ycV_kMsrUEhwFQLZtA" />
+                        <div
+                            class="absolute bottom-1 right-1 bg-primary text-white p-1.5 rounded-full border-2 border-white dark:border-slate-900">
+                            <span class="material-symbols-outlined text-sm block">edit</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="flex flex-col md:flex-row md:items-center gap-3 mb-2">
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Nguyễn Văn A</h2>
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/20 text-primary border border-primary/30">
+                                Active - Under Observation
+                            </span>
+                        </div>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Patient ID: <span
+                                class="font-mono text-primary font-semibold">#99283</span> • Joined Jan 2023</p>
+                        <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                            <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                                <span class="material-symbols-outlined text-primary text-lg">bloodtype</span>
+                                <span>O+ Positive</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                                <span class="material-symbols-outlined text-primary text-lg">height</span>
+                                <span>172 cm</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                                <span class="material-symbols-outlined text-primary text-lg">weight</span>
+                                <span>68 kg</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2 w-full md:w-auto">
+                        <button
+                            class="px-6 py-2.5 bg-primary text-slate-900 font-bold rounded-lg hover:bg-primary/90 transition-colors">Download
+                            Report</button>
+                        <button
+                            class="px-6 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Edit
+                            Profile</button>
+                    </div>
+                </div>
+            </header>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Column: Personal & Contact -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Personal Information -->
+                    <section
+                        class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">person</span>
+                                Personal Information
+                            </h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+                            <div class="border-b border-slate-100 dark:border-slate-800 pb-2">
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Full Name
+                                </p>
+                                <p class="text-sm font-medium">Nguyễn Văn A</p>
+                            </div>
+                            <div class="border-b border-slate-100 dark:border-slate-800 pb-2">
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Date of
+                                    Birth</p>
+                                <p class="text-sm font-medium">15 May 1975 (48 years old)</p>
+                            </div>
+                            <div class="border-b border-slate-100 dark:border-slate-800 pb-2">
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Gender</p>
+                                <p class="text-sm font-medium">Male</p>
+                            </div>
+                            <div class="border-b border-slate-100 dark:border-slate-800 pb-2">
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Blood Type
+                                </p>
+                                <p class="text-sm font-medium">O+ (Positive)</p>
+                            </div>
+                            <div class="border-b border-slate-100 dark:border-slate-800 pb-2">
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Height</p>
+                                <p class="text-sm font-medium">172 cm</p>
+                            </div>
+                            <div class="border-b border-slate-100 dark:border-slate-800 pb-2">
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Weight</p>
+                                <p class="text-sm font-medium">68 kg</p>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Contact Information -->
+                    <section
+                        class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">contact_page</span>
+                                Contact Information
+                            </h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="size-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-slate-400">call</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400 font-semibold">Phone Number</p>
+                                    <p class="text-sm font-medium">+84 90 123 4567</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="size-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-slate-400">mail</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400 font-semibold">Email Address</p>
+                                    <p class="text-sm font-medium">nguyen.vana@email.com</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="size-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-slate-400">location_on</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400 font-semibold">Home Address</p>
+                                    <p class="text-sm font-medium">123 Le Loi Street, District 1, Ho Chi Minh City,
+                                        Vietnam</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!-- Right Column: Medical History & Emergency -->
+                <div class="space-y-6">
+                    <!-- Medical History Summary -->
+                    <section
+                        class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+                        <h3 class="text-lg font-bold flex items-center gap-2 mb-6">
+                            <span class="material-symbols-outlined text-primary">history_edu</span>
+                            Medical Summary
+                        </h3>
+                        <div class="space-y-5">
+                            <div>
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Chronic
+                                    Conditions</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        class="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full text-xs font-bold border border-red-100 dark:border-red-900/30">Diabetes
+                                        Type 2</span>
+                                    <span
+                                        class="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full text-xs font-bold border border-red-100 dark:border-red-900/30">Hypertension</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Allergies
+                                </p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        class="px-3 py-1 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-full text-xs font-bold border border-orange-100 dark:border-orange-900/30">Penicillin</span>
+                                    <span
+                                        class="px-3 py-1 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-full text-xs font-bold border border-orange-100 dark:border-orange-900/30">Peanuts</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Ongoing
+                                    Medications</p>
+                                <ul class="text-sm space-y-2 text-slate-600 dark:text-slate-300">
+                                    <li class="flex items-center gap-2 italic">
+                                        <span class="size-1.5 rounded-full bg-primary"></span>
+                                        Metformin 500mg
+                                    </li>
+                                    <li class="flex items-center gap-2 italic">
+                                        <span class="size-1.5 rounded-full bg-primary"></span>
+                                        Lisinopril 10mg
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Emergency Contact -->
+                    <section
+                        class="bg-primary/10 dark:bg-primary/5 rounded-xl p-6 border-2 border-dashed border-primary/30">
+                        <h3 class="text-lg font-bold flex items-center gap-2 mb-4 text-slate-900 dark:text-slate-100">
+                            <span class="material-symbols-outlined text-primary"
+                                style="font-variation-settings: 'FILL' 1">emergency_home</span>
+                            Emergency Contact
+                        </h3>
+                        <div class="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-sm">
+                            <p class="text-sm font-bold text-slate-900 dark:text-slate-100">Nguyễn Thị B</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Relationship: Wife</p>
+                            <div class="flex items-center gap-2 text-primary">
+                                <span class="material-symbols-outlined text-lg">call</span>
+                                <span class="text-sm font-bold">+84 91 987 6543</span>
+                            </div>
+                        </div>
+                        <button
+                            class="w-full mt-4 text-xs font-bold text-slate-400 hover:text-primary transition-colors uppercase tracking-widest text-center">
+                            Update Emergency Info
+                        </button>
+                    </section>
+                </div>
+            </div>
+            <footer class="mt-12 py-6 border-t border-slate-200 dark:border-slate-800 text-center">
+                <p class="text-xs text-slate-400">© 2024 ChronicCare Management. All medical data is encrypted and HIPAA
+                    compliant.</p>
+            </footer>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -315,10 +315,10 @@ export default function PatientVitals() {
                                 <Plus className="w-24 h-24 rotate-45" />
                             </div>
                             <h4 className="text-xs font-black text-slate-900 flex items-center gap-2 mb-2 uppercase tracking-[0.2em]">
-                                <Info className="w-4 h-4" /> Lời khuyên vàng
+                                <Info className="w-4 h-4" /> Lời khuyên sức khỏe
                             </h4>
                             <p className="text-sm text-slate-900 font-bold leading-relaxed">
-                                Uống đủ 2L nước mỗi ngày và hạn chế caffeine sau 14:00 để ổn định nhịp tim và giấc ngủ của bạn.
+                                {dashboard?.healthAlerts?.[0] || 'Hãy duy trì thói quen theo dõi sức khỏe hàng ngày để bác sĩ có thể tư vấn chính xác nhất cho bạn.'}
                             </p>
                         </div>
                     </div>

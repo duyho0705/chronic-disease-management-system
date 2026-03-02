@@ -36,7 +36,7 @@ export default function PatientChatDoctor() {
     const [isVideoCallOpen, setIsVideoCallOpen] = useState(false)
 
     const { user } = useAuth()
-    const patientId = user?.id || 'pat-001' // Fallback to map with mock data
+    const patientId = user?.id || ''
 
     // Fetch available doctors
     const { data: doctors, isLoading: loadingDoctors } = useQuery({
@@ -321,12 +321,12 @@ export default function PatientChatDoctor() {
                             <div className="grid grid-cols-2 gap-3 mt-6">
                                 <div className="bg-slate-100/50 dark:bg-slate-800 p-3 rounded-2xl border border-slate-200/50 dark:border-slate-700">
                                     <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-1">Kinh nghiệm</p>
-                                    <p className="text-sm font-black text-slate-700 dark:text-slate-200">{selectedDoctor.experience || '10 năm'}</p>
+                                    <p className="text-sm font-black text-slate-700 dark:text-slate-200">{selectedDoctor.experience || '---'}</p>
                                 </div>
                                 <div className="bg-slate-100/50 dark:bg-slate-800 p-3 rounded-2xl border border-slate-200/50 dark:border-slate-700">
                                     <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-1">Đánh giá</p>
                                     <p className="text-sm font-black text-slate-700 dark:text-slate-200 flex items-center justify-center gap-1">
-                                        {selectedDoctor.rating || '4.9'} <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+                                        {selectedDoctor.rating || '---'} {selectedDoctor.rating && <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />}
                                     </p>
                                 </div>
                             </div>
@@ -336,7 +336,7 @@ export default function PatientChatDoctor() {
                             <section>
                                 <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Giới thiệu</h4>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                    Chuyên gia điều trị các bệnh lý mãn tính, đặc biệt là tiểu đường tuýp 2 và cao huyết áp. Tốt nghiệp Đại học Y Dược TP.HCM.
+                                    {selectedDoctor.biography || 'Đang cập nhật...'}
                                 </p>
                             </section>
 
