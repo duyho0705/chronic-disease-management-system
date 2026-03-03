@@ -9,8 +9,6 @@ import {
     Wind,
     Scale,
     Droplets,
-    Zap,
-    Info,
     ChevronRight,
     Loader2,
     Save,
@@ -28,9 +26,18 @@ import {
     Thermometer,
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useMemo, useRef } from 'react'
-import { AreaChart, Area, ResponsiveContainer } from 'recharts'
+import {
+    AreaChart,
+    Area,
+    ResponsiveContainer,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip
+} from 'recharts'
 import toast from 'react-hot-toast'
 import type { TriageVitalDto } from '@/types/api'
 
@@ -109,7 +116,7 @@ function buildChartData(vitalHistory: TriageVitalDto[] | undefined, type: string
 
     return last7.map(v => ({
         d: dayLabels[new Date(v.recordedAt).getDay()],
-        v: v.valueNumeric
+        chiSo: v.valueNumeric
     }))
 }
 
@@ -161,6 +168,27 @@ export default function PatientDashboard() {
     // Prescription info
     const latestPrescription = dashboard?.latestPrescription
 
+    const getTrend = (type: string) => {
+        const history = dashboard?.vitalHistory || []
+        const sorted = history
+            .filter(v => v.vitalType?.toUpperCase() === type.toUpperCase())
+            .sort((a, b) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime())
+
+        if (sorted.length < 2) return null
+        const latest = sorted[0].valueNumeric
+        const prev = sorted[1].valueNumeric
+        if (!prev) return null
+        const diff = latest - prev
+        return {
+            percent: Math.abs((diff / prev) * 100).toFixed(1),
+            isUp: diff > 0,
+            isDown: diff < 0
+        }
+    }
+
+    const glucoseTrend = useMemo(() => getTrend('BLOOD_GLUCOSE'), [dashboard?.vitalHistory])
+    const bpTrend = useMemo(() => getTrend('BLOOD_PRESSURE_SYS'), [dashboard?.vitalHistory])
+
     const { mutate: confirmMedication } = useMutation({
         mutationFn: (med: any) => logMedicationTaken({
             medicationReminderId: med.id,
@@ -192,15 +220,17 @@ export default function PatientDashboard() {
                             gradientId="glucoseGrad"
                             statusLabel={glucoseVital && glucoseVital.valueNumeric > 6 ? "Cận cao" : "Ổn định"}
                             statusColor={glucoseVital && glucoseVital.valueNumeric > 6 ? "amber" : "emerald"}
+                            trend={glucoseTrend}
                         />
                         <VitalTrendCard
                             title="Huyết áp (mmHg)"
                             value={bpCombinedValue}
                             unit="mmHg"
                             chartData={bpChartData}
-                            isBar
+                            gradientId="bpGrad"
                             statusLabel={sysVital && sysVital.valueNumeric > 140 ? "Cao" : "Ổn định"}
                             statusColor={sysVital && sysVital.valueNumeric > 140 ? "rose" : "emerald"}
+                            trend={bpTrend}
                         />
                     </div>
 
@@ -223,6 +253,7 @@ export default function PatientDashboard() {
             <VitalInputModal
                 isOpen={isVitalModalOpen}
                 onClose={() => setIsVitalModalOpen(false)}
+                lastVitals={dashboard?.lastVitals}
             />
 
             <footer className="h-12" />
@@ -230,7 +261,7 @@ export default function PatientDashboard() {
     )
 }
 
-function VitalInputModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+function VitalInputModal({ isOpen, onClose, lastVitals }: { isOpen: boolean, onClose: () => void, lastVitals?: TriageVitalDto[] }) {
     const { headers } = useTenant()
     const queryClient = useQueryClient()
     const dateInputRef = useRef<HTMLInputElement>(null)
@@ -303,7 +334,18 @@ function VitalInputModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
         }
     }
 
-    return (
+    const getLatestValue = (type: string) => {
+        if (type === 'BLOOD_PRESSURE') {
+            const sys = lastVitals?.find(v => v.vitalType?.toUpperCase() === 'BLOOD_PRESSURE_SYS')?.valueNumeric
+            const dia = lastVitals?.find(v => v.vitalType?.toUpperCase() === 'BLOOD_PRESSURE_DIA')?.valueNumeric
+            if (sys || dia) return `${sys || '—'}/${dia || '—'}`
+            return '—'
+        }
+        const v = lastVitals?.find(v => v.vitalType?.toUpperCase() === type.toUpperCase())
+        return v ? v.valueNumeric : '—'
+    }
+
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
@@ -395,6 +437,14 @@ function VitalInputModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
+                                </div>
+
+                                {/* Latest Value Reference */}
+                                <div className="mt-3 flex items-center gap-2 px-1">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
+                                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                                        Chỉ số gần nhất: <span className="text-slate-900 dark:text-slate-100">{getLatestValue(inputType)}</span> {VITAL_CONFIG[inputType === 'BLOOD_PRESSURE' ? 'BLOOD_PRESSURE' : inputType]?.unit || ''}
+                                    </span>
                                 </div>
                             </div>
 
@@ -615,7 +665,8 @@ function VitalInputModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
                     </motion.div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     )
 }
 
@@ -684,11 +735,10 @@ function HealthMetricsHeader({ onAddClick }: { onAddClick: () => void }) {
     )
 }
 
-function VitalTrendCard({ title, value, unit, chartData, gradientId, statusLabel, statusColor, isBar }: any) {
+function VitalTrendCard({ title, value, unit, chartData, gradientId, statusLabel, statusColor, isBar, trend }: any) {
     return (
-        <motion.div
-            whileHover={{ y: -5 }}
-            className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all"
+        <div
+            className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all"
         >
             <div className="flex justify-between items-start mb-4">
                 <div>
@@ -696,9 +746,10 @@ function VitalTrendCard({ title, value, unit, chartData, gradientId, statusLabel
                     <div className="flex items-baseline gap-2 mt-2">
                         <p className="text-4xl font-black text-slate-900 dark:text-white">{value || '—'}</p>
                         {value && <span className="text-xs font-bold text-slate-400">{unit}</span>}
-                        {value && (
-                            <div className={`text-${statusColor === 'emerald' ? 'emerald' : 'rose'}-500 text-xs font-bold flex items-center bg-${statusColor === 'emerald' ? 'emerald' : 'rose'}-50 dark:bg-${statusColor === 'emerald' ? 'emerald' : 'rose'}-900/20 px-1.5 py-0.5 rounded-lg`}>
-                                {statusColor === 'emerald' ? <TrendingDown className="w-3 h-3 mr-1" /> : <TrendingUp className="w-3 h-3 mr-1" />} 1.0%
+                        {trend && (
+                            <div className={`${trend.isUp ? 'text-rose-500 bg-rose-50' : 'text-emerald-500 bg-emerald-50'} dark:bg-opacity-10 text-xs font-bold flex items-center px-1.5 py-0.5 rounded-lg`}>
+                                {trend.isUp ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
+                                {trend.percent}%
                             </div>
                         )}
                     </div>
@@ -713,26 +764,50 @@ function VitalTrendCard({ title, value, unit, chartData, gradientId, statusLabel
                 {isBar ? (
                     <div className="h-full flex items-end gap-2 px-1">
                         {chartData.map((item: any, i: number) => {
-                            const h = item.v > 0 ? Math.max(0.2, Math.min(1, item.v / 160)) : 0.5
+                            const h = item.chiSo > 0 ? Math.max(0.2, Math.min(1, item.chiSo / 160)) : 0.5
                             return (
                                 <div key={i} style={{ height: `${h * 100}%` }} className="flex-1 bg-[#4ade80]/20 rounded-t-lg hover:bg-[#4ade80] transition-colors cursor-pointer group relative">
                                     <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[8px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                        {item.v > 0 ? item.v : '—'}
+                                        {item.chiSo > 0 ? item.chiSo : '—'}
                                     </div>
                                 </div>
                             )
                         })}
                     </div>
                 ) : (
-                    <ResponsiveContainer width="99%" height={128}>
-                        <AreaChart data={chartData}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={chartData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
                             <defs>
                                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#4ade80" stopOpacity={0.2} />
-                                    <stop offset="100%" stopColor="#4ade80" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#4ade80" stopOpacity={0.3} />
+                                    <stop offset="95%" stopColor="#4ade80" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <Area type="monotone" dataKey="v" stroke="#4ade80" strokeWidth={3} fill={`url(#${gradientId})`} dot={false} />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#4ade80" strokeOpacity={0.05} />
+                            <XAxis hide dataKey="d" />
+                            <YAxis hide domain={['auto', 'auto']} />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#0f172a',
+                                    border: 'none',
+                                    borderRadius: '12px',
+                                    padding: '8px 12px',
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                                }}
+                                itemStyle={{ color: '#4ade80', fontSize: '10px', fontWeight: 'bold' }}
+                                labelStyle={{ color: '#64748b', fontSize: '8px', marginBottom: '4px' }}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="chiSo"
+                                stroke="#4ade80"
+                                strokeWidth={3}
+                                fillOpacity={1}
+                                fill={`url(#${gradientId})`}
+                                dot={false}
+                                activeDot={{ r: 4, fill: '#4ade80', strokeWidth: 0 }}
+                                animationDuration={1500}
+                            />
                         </AreaChart>
                     </ResponsiveContainer>
                 )}
@@ -740,7 +815,7 @@ function VitalTrendCard({ title, value, unit, chartData, gradientId, statusLabel
             <div className="flex justify-between mt-4 text-[10px] font-black text-slate-300 tracking-widest border-t border-slate-50 dark:border-slate-800 pt-3">
                 {chartData.map((item: any, i: number) => <span key={i}>{item.d}</span>)}
             </div>
-        </motion.div>
+        </div>
     )
 }
 
@@ -770,7 +845,7 @@ function SecondaryVitalsGrid({ vitals }: { vitals: TriageVitalDto[] }) {
 
 function MedicationWidget({ reminders, onConfirm }: { reminders: any[], onConfirm: (med: any) => void }) {
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/30">
                 <h3 className="font-black flex items-center gap-3 text-sm tracking-widest text-slate-800 dark:text-slate-200">
                     <Pill className="w-5 h-5 text-emerald-500" />
@@ -830,13 +905,13 @@ function PrescriptionWidget({ prescription }: { prescription: any }) {
 
 function HealthAlertsWidget({ alerts }: { alerts: string[] }) {
     if (alerts.length === 0) return (
-        <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 p-5 rounded-[2rem] shadow-sm">
+        <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 p-5 rounded-xl shadow-sm">
             <div className="flex items-center gap-3 text-emerald-600 mb-3 font-black text-xs tracking-widest"><Check className="w-5 h-5" /> Sức khỏe Ổn định</div>
             <p className="text-sm text-emerald-700 font-bold">Các chỉ số của bạn ở mức bình thường!</p>
         </div>
     )
     return (
-        <div className="bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 p-5 rounded-[2rem] shadow-sm">
+        <div className="bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 p-5 rounded-xl shadow-sm">
             <div className="flex items-center gap-3 text-rose-600 mb-3 font-black text-xs tracking-widest"><AlertTriangle className="w-5 h-5" /> Cảnh báo</div>
             {alerts.map((a, i) => <p key={i} className="text-sm text-rose-700 font-bold leading-relaxed">{a}</p>)}
         </div>
@@ -846,12 +921,12 @@ function HealthAlertsWidget({ alerts }: { alerts: string[] }) {
 function AppointmentWidget({ appointment, navigate }: { appointment: any, navigate: any }) {
     return (
         <div
-            className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => navigate('/patient/appointments')}
         >
             <h3 className="font-black mb-6 flex items-center gap-3 text-sm tracking-widest text-slate-800 dark:text-slate-200"><Calendar className="w-5 h-5 text-emerald-500" /> Lịch khám</h3>
             {appointment ? (
-                <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[2rem] border-l-8 border-emerald-400">
+                <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border-l-8 border-emerald-400">
                     <p className="text-[10px] font-black text-emerald-500 tracking-widest mb-1">{new Date(appointment.appointmentDate).toLocaleDateString('vi-VN')}</p>
                     <p className="text-base font-black text-slate-900 dark:text-white">{appointment.appointmentType}</p>
                     <div className="mt-2 text-xs text-slate-500 font-bold"><Clock className="w-3 h-3 inline mr-1" /> {appointment.startTime} - {appointment.endTime} {appointment.branchName ? `• ${appointment.branchName}` : ''}</div>
@@ -865,7 +940,7 @@ function DoctorChatWidget({ doctorName, doctorAvatar, navigate }: { doctorName?:
     return (
         <motion.div
             whileHover={{ scale: 1.02 }}
-            className="bg-emerald-400 rounded-[2rem] p-5 flex items-center gap-4 shadow-xl shadow-emerald-400/20 group cursor-pointer"
+            className="bg-emerald-400 rounded-xl p-5 flex items-center gap-4 shadow-xl shadow-emerald-400/20 group cursor-pointer"
             onClick={() => navigate('/patient/chat')}
         >
             <div className="h-14 w-14 rounded-2xl bg-slate-900 relative overflow-hidden flex items-center justify-center text-emerald-400 text-xl font-black">

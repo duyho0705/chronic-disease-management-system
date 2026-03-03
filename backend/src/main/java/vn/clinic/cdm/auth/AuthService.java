@@ -64,11 +64,6 @@ public class AuthService {
         List<String> rawRoles = identityService.getRoleCodesForUserInTenantAndBranch(user.getId(), tenantId, branchId);
         List<String> roles = new ArrayList<>(rawRoles);
 
-        // Mọi tài khoản đăng nhập vô đều có mặc định role là PATIENT
-        if (!roles.contains(ManagementConstants.Roles.PATIENT)) {
-            roles.add(ManagementConstants.Roles.PATIENT);
-        }
-
         List<String> permissions = identityService.getPermissionCodesForUserInTenantAndBranch(user.getId(), tenantId,
                 branchId);
         identityService.updateLastLoginAt(user);
@@ -173,12 +168,6 @@ public class AuthService {
                     branchId);
             List<String> roles = new ArrayList<>(rawRoles);
 
-            // ÉP QUYỀN PATIENT: Đảm bảo mọi user đăng nhập đều có quyền PATIENT mặc định
-            if (!roles.contains(ManagementConstants.Roles.PATIENT)) {
-                log.info("Social User {} is missing PATIENT role. Adding automatically.", email);
-                roles.add(ManagementConstants.Roles.PATIENT);
-            }
-
             List<String> permissions = identityService.getPermissionCodesForUserInTenantAndBranch(user.getId(),
                     tenantId, branchId);
 
@@ -245,11 +234,6 @@ public class AuthService {
                     List<String> rawRoles = identityService.getRoleCodesForUserInTenantAndBranch(user.getId(), tenantId,
                             null);
                     List<String> roles = new ArrayList<>(rawRoles);
-
-                    // Đảm bảo mọi user refresh token đều có quyền PATIENT mặc định
-                    if (!roles.contains(ManagementConstants.Roles.PATIENT)) {
-                        roles.add(ManagementConstants.Roles.PATIENT);
-                    }
 
                     List<String> permissions = identityService.getPermissionCodesForUserInTenantAndBranch(user.getId(),
                             tenantId, null);

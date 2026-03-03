@@ -3,36 +3,21 @@ import { useAuth } from '@/context/AuthContext'
 import { useTenant } from '@/context/TenantContext'
 import { TenantSelect } from './TenantSelect'
 
-import { LogOut, Menu, Plus, X, Search, Bell, Settings, BriefcaseMedical } from 'lucide-react'
+import { LogOut, Menu, X, Search, Bell, Settings, BriefcaseMedical } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { STAFF_NAV } from '@/routes/staffNav'
-import { motion } from 'framer-motion'
 import { requestForToken, onForegroundMessage, db } from '@/firebase'
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import toast from 'react-hot-toast'
 
 export function Layout() {
-  const [currentTime, setCurrentTime] = useState(new Date())
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
-    return () => clearInterval(timer)
-  }, [])
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const { tenantId, branchId } = useTenant()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const formatDateVi = (date: Date) => {
-    const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7']
-    const months = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
-    return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}`
-  }
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
-  }
 
   useEffect(() => {
     if (!user || !tenantId) return
@@ -77,27 +62,22 @@ export function Layout() {
     navigate('/', { replace: true, state: { openLogin: true } })
   }
 
-  // Determine theme based on role - Clinic Manager uses Emerald like Patient Portal
-  const activeColorClass = 'bg-emerald-500/10 text-emerald-500'
-  const indicatorColorClass = 'bg-emerald-500'
-  const iconActiveColorClass = 'text-emerald-500'
+
 
   return (
-    <div className="min-h-screen bg-background-light-blue dark:bg-background-dark-blue flex">
-      {/* Sidebar - Desktop matching Dashboard.html */}
-      <aside className="hidden w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 md:flex md:flex-col md:fixed md:inset-y-0 shadow-xl shadow-slate-200/20 z-40">
-        <div className="p-8 flex items-center gap-3">
-          <div className="bg-emerald-500 text-white p-2 rounded-lg">
-            <BriefcaseMedical className="h-6 w-6" strokeWidth={2.5} />
-          </div>
-          <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tightest uppercase">AI CDM System</h2>
-        </div>
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0f172a] flex">
+      {/* Sidebar - Desktop matching Patient Layout */}
+      <aside className="hidden md:flex flex-col fixed inset-y-0 left-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-6 z-40">
+        <Link to="/" className="flex items-center gap-3 mb-10 px-2 hover:opacity-80 transition-opacity">
+          <BriefcaseMedical className="h-9 w-9 text-emerald-500" strokeWidth={2.5} />
+          <h1 className="font-semibold text-2xl text-slate-800 dark:text-slate-100 leading-none tracking-tight">Sống Khỏe</h1>
+        </Link>
 
-        <nav className="flex-1 px-4 space-y-1 overflow-y-auto overflow-x-hidden">
+        <nav className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden">
           {visibleNav.map((item, idx) => {
             if (item.type === 'header') {
               return (
-                <div key={idx} className="px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">
+                <div key={idx} className="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mt-4 first:mt-0">
                   {item.label}
                 </div>
               )
@@ -108,22 +88,15 @@ export function Layout() {
               <Link
                 key={idx}
                 to={to || '#'}
-                className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl font-bold text-sm transition-all group relative ${isActive
-                  ? activeColorClass
-                  : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                className={`flex items-center gap-4 px-5 py-3.5 rounded-full font-bold transition-all ${isActive
+                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                  : 'text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-slate-300'
                   }`}
               >
-                {Icon && <Icon className={`w-5 h-5 transition-colors ${isActive ? iconActiveColorClass : 'text-slate-400 group-hover:text-slate-500'}`} />}
-                <span className="flex-1 truncate">{label}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="activeNav"
-                    className={`absolute left-0 w-1.5 h-6 ${indicatorColorClass} rounded-r-full`}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
+                {Icon && <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-slate-900 dark:text-white'}`} />}
+                <span className="flex-1 truncate text-base tracking-tight">{label}</span>
                 {item.badge && (
-                  <span className="w-5 h-5 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full font-black shadow-lg shadow-red-500/20">
+                  <span className={`w-5 h-5 ${isActive ? 'bg-white/20 text-white' : 'bg-red-500 text-white'} text-[10px] flex items-center justify-center rounded-full font-black`}>
                     {item.badge}
                   </span>
                 )}
@@ -132,28 +105,23 @@ export function Layout() {
           })}
         </nav>
 
-        <div className="p-6 mt-auto">
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 transition-all">
-            <div className="flex items-center gap-4 mb-5">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-sm shadow-sm ring-2 ring-white">
-                  {user?.fullNameVi?.split(' ').pop()?.substring(0, 2).toUpperCase() || 'AD'}
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-black text-slate-900 dark:text-white truncate">{user?.fullNameVi || 'Quản lý Admin'}</p>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter truncate">{user?.email || 'admin@clinic.vn'}</p>
-              </div>
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 px-2 mb-4">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-sm border-2 border-white shadow-sm">
+              {user?.fullNameVi?.split(' ').pop()?.substring(0, 2).toUpperCase() || 'BS'}
             </div>
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              Đăng xuất
-            </button>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.fullNameVi || 'Bác sĩ'}</p>
+              <p className="text-[10px] font-bold text-slate-400 truncate">{user?.email || 'doctor@clinic.vn'}</p>
+            </div>
           </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 w-full px-4 py-3 text-slate-400 font-bold hover:text-rose-500 hover:bg-rose-50 rounded-2xl transition-all group"
+          >
+            <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <span className="text-sm">Đăng xuất</span>
+          </button>
         </div>
       </aside>
 
@@ -164,25 +132,23 @@ export function Layout() {
 
       {/* Mobile Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 transform bg-white dark:bg-slate-900 transition-transform duration-300 ease-out md:hidden shadow-2xl ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-white dark:bg-slate-900 transition-transform duration-300 ease-out md:hidden shadow-2xl ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
-        <div className="flex h-20 items-center justify-between px-8 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex h-20 items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="bg-emerald-500 text-white p-1.5 rounded-lg">
-              <BriefcaseMedical className="h-6 w-6" strokeWidth={2.5} />
-            </div>
-            <span className="font-black text-slate-800 dark:text-slate-100 text-lg tracking-tightest uppercase">AI CDM System</span>
+            <BriefcaseMedical className="h-9 w-9 text-emerald-500" strokeWidth={2.5} />
+            <span className="font-semibold text-xl text-slate-800 dark:text-slate-100 tracking-tight">Sống Khỏe</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors">
             <X className="w-6 h-6" />
           </button>
         </div>
-        <div className="flex flex-col gap-1 p-6 overflow-y-auto">
+        <div className="flex flex-col gap-2 p-6 overflow-y-auto">
           {visibleNav.map((item, idx) => {
             if (item.type === 'header') {
               return (
-                <div key={idx} className="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">
+                <div key={idx} className="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mt-2">
                   {item.label}
                 </div>
               )
@@ -192,15 +158,15 @@ export function Layout() {
                 key={idx}
                 to={item.to || '#'}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-4 rounded-2xl px-5 py-4 text-sm font-bold transition-all ${location.pathname === item.to
-                  ? `bg-emerald-500 text-white shadow-lg shadow-emerald-400/20`
-                  : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+                className={`flex items-center gap-4 rounded-full px-5 py-3.5 font-bold transition-all ${location.pathname === item.to
+                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                  : 'text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-slate-300'
                   }`}
               >
-                {item.icon && <item.icon className="h-5 w-5" />}
-                <span className="flex-1 truncate">{item.label}</span>
+                {item.icon && <item.icon className={`h-6 w-6 ${location.pathname === item.to ? 'text-white' : 'text-slate-900 dark:text-white'}`} />}
+                <span className="flex-1 truncate text-base tracking-tight">{item.label}</span>
                 {item.badge && (
-                  <span className="ml-auto w-5 h-5 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full font-black">
+                  <span className={`ml-auto w-5 h-5 ${location.pathname === item.to ? 'bg-white/20 text-white' : 'bg-red-500 text-white'} text-[10px] flex items-center justify-center rounded-full font-black`}>
                     {item.badge}
                   </span>
                 )}
@@ -211,8 +177,8 @@ export function Layout() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col md:pl-72 min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] relative">
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200/60 bg-white/80 dark:bg-slate-900/80 px-8 backdrop-blur-md">
+      <div className="flex-1 flex flex-col md:pl-64 min-h-screen relative">
+        <header className="fixed top-0 right-0 left-0 md:left-64 h-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-8 flex items-center justify-between z-30">
           <div className="flex flex-1 items-center gap-8">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -221,47 +187,47 @@ export function Layout() {
               <Menu className="h-6 w-6" />
             </button>
 
-            {/* Global Search Bar - Exact w-96 from HTML */}
-            <div className="relative flex-1 max-w-[24rem] group hidden md:block">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-emerald-500 transition-colors" />
-              <input
-                type="text"
-                placeholder="Tìm kiếm bệnh nhân, bác sĩ, báo cáo..."
-                className="w-full pl-12 pr-4 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-none rounded-lg text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 transition-all font-display"
-              />
+            {/* Global Search Bar */}
+            <div className="hidden md:flex flex-1 max-w-xl">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm bệnh nhân, bác sĩ, báo cáo..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <button className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all relative group">
-                <Bell className="w-5 h-5 group-hover:text-emerald-500" />
-                <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm"></span>
-              </button>
-              <button className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all group">
-                <Settings className="w-5 h-5 group-hover:text-emerald-500" />
-              </button>
-            </div>
-
-            <div className="h-8 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block mx-1"></div>
-
-            <div className="text-right hidden sm:block min-w-[120px]">
-              <p className="text-[14px] font-bold text-slate-900 dark:text-white mb-0.5">{formatDateVi(currentTime)}</p>
-              <p className="text-[12px] text-slate-400 font-medium uppercase tracking-widest">{formatTime(currentTime)}</p>
-            </div>
-
-            {/* Add Patient Button from HTML */}
-            <button
-              onClick={() => navigate('/reception')}
-              className="bg-emerald-500 shadow-emerald-500/20 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all hidden sm:flex"
-            >
-              <Plus className="w-4 h-4" />
-              Thêm bệnh nhân
+          <div className="flex items-center gap-4">
+            <button className="p-2.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 relative group transition-all">
+              <Bell className="w-5 h-5 text-slate-500 group-hover:text-emerald-500" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
             </button>
+            <button className="p-2.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 group transition-all">
+              <Settings className="w-5 h-5 text-slate-500 group-hover:text-emerald-500" />
+            </button>
+
+            <div className="h-8 w-[1px] bg-slate-200 dark:bg-slate-800 mx-2" />
+
+            <div className="flex items-center gap-3">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-bold text-slate-900 dark:text-white leading-none">
+                  {user?.fullNameVi || 'Bác sĩ'}
+                </p>
+                <p className="text-[10px] font-bold text-slate-400 mt-1">
+                  {user?.roles?.[0]?.toUpperCase() || 'DOCTOR'}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-sm border-2 border-white shadow-sm">
+                {user?.fullNameVi?.charAt(0) || 'B'}
+              </div>
+            </div>
           </div>
         </header>
 
-        <main className={`flex-1 flex flex-col min-h-0 w-full ${location.pathname.includes('/chat') ? '' : 'p-8 max-w-[1600px] mx-auto'}`}>
+        <main className={`flex-1 flex flex-col min-h-0 w-full pt-20 ${location.pathname.includes('/chat') ? '' : 'px-4 md:px-6 pb-12'}`}>
           {location.pathname === '/' ? (
             <Outlet />
           ) : location.pathname === '/dashboard' && !tenantId ? (

@@ -157,11 +157,11 @@ public class PatientPortalService {
 
                         if (isAbnormal(sorted.get(0))) {
                                 if (sorted.size() >= 3 && isAbnormal(sorted.get(1)) && isAbnormal(sorted.get(2))) {
-                                        alerts.add("Cáº£nh bÃ¡o: Chá»‰ sá»‘ " + getVitalLabel(type)
-                                                        + " báº¥t thÆ°á»ng liÃªn tiáº¿p trong 3 lÆ°á»£t Ä‘o gáº§n nháº¥t.");
+                                        alerts.add("Cảnh báo: Chỉ số " + getVitalLabel(type)
+                                                        + " bất thường liên tiếp trong 3 lượt đo gần nhất.");
                                 } else {
-                                        alerts.add("LÆ°u Ã½: Chá»‰ sá»‘ " + getVitalLabel(type)
-                                                        + " hiá»‡n táº¡i Ä‘ang á»Ÿ má»©c báº¥t thÆ°á»ng.");
+                                        alerts.add("Lưu ý: Chỉ số " + getVitalLabel(type)
+                                                        + " hiện tại đang ở mức bất thường.");
                                 }
                         }
                 }
@@ -191,13 +191,13 @@ public class PatientPortalService {
         private String getVitalLabel(String type) {
                 switch (type.toUpperCase()) {
                         case "BLOOD_GLUCOSE":
-                                return "ÄÆ°á»ng huyáº¿t";
+                                return "Đường huyết";
                         case "BLOOD_PRESSURE_SYS":
-                                return "Huyáº¿t Ã¡p tÃ¢m thu";
+                                return "Huyết áp tâm thu";
                         case "BLOOD_PRESSURE_DIA":
-                                return "Huyáº¿t Ã¡p tÃ¢m trÆ°Æ¡ng";
+                                return "Huyết áp tâm trương";
                         case "HEART_RATE":
-                                return "Nhá»‹p tim";
+                                return "Nhịp tim";
                         case "SPO2":
                                 return "SpO2";
                         default:
@@ -239,7 +239,7 @@ public class PatientPortalService {
         public MedicationDosageLogDto markMedicationTaken(Patient p, MedicationDosageLogDto dto) {
                 if (dto.getMedicationReminderId() != null) {
                         medicationService.recordDose(dto.getMedicationReminderId(), "TAKEN",
-                                        "Ghi nháº­n bá»Ÿi bá»‡nh nhÃ¢n");
+                                        "Ghi nhận bởi bệnh nhân");
                 }
                 return dto;
         }
