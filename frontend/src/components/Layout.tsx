@@ -64,18 +64,13 @@ export function Layout() {
 
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark font-display flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-display flex">
       {/* ═══════════ Sidebar - Desktop (matching FontText.html) ═══════════ */}
       <aside className="hidden md:flex flex-col fixed inset-y-0 left-0 w-72 bg-white dark:bg-slate-900 border-r border-primary/10 z-40">
         {/* Brand */}
         <Link to="/" className="p-6 flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="w-10 h-10 bg-primary flex items-center justify-center rounded-xl text-white">
-            <BriefcaseMedical className="w-5 h-5" strokeWidth={2.5} />
-          </div>
-          <div>
-            <h1 className="text-xl font-extrabold text-slate-900 dark:text-white leading-none">Sống Khỏe</h1>
-            <p className="text-xs text-primary font-semibold uppercase tracking-wider">Hệ thống quản lý</p>
-          </div>
+          <BriefcaseMedical className="h-9 w-9 text-emerald-500" strokeWidth={2.5} />
+          <h1 className="font-semibold text-2xl text-slate-800 dark:text-slate-100 leading-none tracking-tight">Sống Khỏe</h1>
         </Link>
 
         {/* Nav */}
@@ -146,13 +141,8 @@ export function Layout() {
       >
         <div className="flex h-20 items-center justify-between px-6 border-b border-primary/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary flex items-center justify-center rounded-xl text-white">
-              <BriefcaseMedical className="w-5 h-5" strokeWidth={2.5} />
-            </div>
-            <div>
-              <span className="font-extrabold text-xl text-slate-900 dark:text-white leading-none">Sống Khỏe</span>
-              <p className="text-xs text-primary font-semibold uppercase tracking-wider">Hệ thống quản lý</p>
-            </div>
+            <BriefcaseMedical className="h-9 w-9 text-emerald-500" strokeWidth={2.5} />
+            <span className="font-semibold text-2xl text-slate-800 dark:text-slate-100 leading-none tracking-tight">Sống Khỏe</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors">
             <X className="w-6 h-6" />
@@ -192,7 +182,7 @@ export function Layout() {
       </aside>
 
       {/* ═══════════ Main Content Area ═══════════ */}
-      <main className="flex-1 md:ml-72 flex flex-col min-h-screen">
+      <main className="flex-1 md:ml-72 flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
         {/* ─── Top Bar (sticky, matching FontText.html) ─── */}
         <header className="h-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-primary/5 px-8 flex items-center justify-between sticky top-0 z-10">
           <div className="flex items-center gap-4">
@@ -236,7 +226,7 @@ export function Layout() {
         </header>
 
         {/* ─── Page Content ─── */}
-        <div className={`flex-1 flex flex-col min-h-0 w-full ${location.pathname.includes('/chat') ? '' : 'p-8'}`}>
+        <div className={`flex-1 flex flex-col min-h-0 w-full overflow-x-hidden ${location.pathname.includes('/chat') ? '' : 'p-8'}`}>
           <Outlet />
         </div>
       </main>

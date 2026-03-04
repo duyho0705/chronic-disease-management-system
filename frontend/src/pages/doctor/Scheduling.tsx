@@ -44,14 +44,7 @@ export default function Scheduling() {
         <div className="flex flex-col gap-8 animate-in fade-in duration-700 font-display">
             {/* ─── Header Section ─── */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="space-y-1">
-                    <h2 className="text-3xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">
-                        Lịch hẹn & Điều phối
-                    </h2>
-                    <p className="text-slate-500 dark:text-slate-400">
-                        Quản lý lịch khám, tư vấn trực tuyến và điều phối phòng khám chuyên sâu.
-                    </p>
-                </div>
+
                 <div className="flex flex-wrap gap-2">
                     {branches && branches.length > 0 && (
                         <select className="rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-primary/20 focus:border-primary shadow-sm min-w-[180px]">
