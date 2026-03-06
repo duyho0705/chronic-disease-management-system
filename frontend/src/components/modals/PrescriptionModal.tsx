@@ -226,7 +226,7 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                                         {items.length === 0 ? (
                                             <tr>
-                                                <td colSpan={3} className="px-5 py-8 text-center text-slate-400 font-medium">
+                                                <td colSpan={5} className="px-5 py-8 text-center text-slate-400 font-medium">
                                                     Chưa có thuốc nào trong đơn
                                                 </td>
                                             </tr>
@@ -236,6 +236,7 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                                                     <div className="font-bold text-slate-900 dark:text-white">{med.productNameCustom}</div>
                                                 </td>
                                                 <td className="px-5 py-4 text-sm font-medium text-slate-600 dark:text-slate-400">{med.dosageInstruction}</td>
+                                                <td className="px-5 py-4 text-sm font-bold text-slate-900 dark:text-white">-</td>
                                                 <td className="px-5 py-4 text-sm font-bold text-slate-900 dark:text-white">{med.quantity} viên/lọ</td>
                                                 <td className="px-5 py-4 text-right">
                                                     <button onClick={() => handleRemoveItem(idx)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all">
