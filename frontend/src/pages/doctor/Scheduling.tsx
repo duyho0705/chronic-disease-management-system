@@ -14,6 +14,7 @@ import {
     XCircle,
     PlusCircle as AddIcon,
 } from 'lucide-react'
+import { AppointmentModal } from '@/components/modals/AppointmentModal'
 
 export default function Scheduling() {
     const { headers, tenantId } = useTenant()
@@ -34,6 +35,7 @@ export default function Scheduling() {
     const [selectedBranch, setSelectedBranch] = useState('Tất cả chi nhánh')
     const [isDiseaseDropdownOpen, setIsDiseaseDropdownOpen] = useState(false)
     const [selectedDisease, setSelectedDisease] = useState('Tất cả loại bệnh')
+    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false)
 
     if (isLoading) {
         return (
@@ -138,7 +140,10 @@ export default function Scheduling() {
                             </AnimatePresence>
                         </div>
                     )}
-                    <button className="bg-gradient-to-r from-primary to-primary/80 text-slate-900 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-primary/20 active:scale-95">
+                    <button 
+                        onClick={() => setIsAppointmentModalOpen(true)}
+                        className="bg-gradient-to-r from-primary to-primary/80 text-slate-900 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-primary/20 active:scale-95"
+                    >
                         <PlusCircle className="w-5 h-5" />
                         <span>Đặt lịch mới</span>
                     </button>
@@ -290,7 +295,10 @@ export default function Scheduling() {
                             )}
 
                             {/* Add slot button */}
-                            <button className="w-full p-6 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-3 text-slate-400 hover:text-primary hover:border-primary hover:bg-primary/5 transition-all group">
+                            <button 
+                                onClick={() => setIsAppointmentModalOpen(true)}
+                                className="w-full p-6 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-3 text-slate-400 hover:text-primary hover:border-primary hover:bg-primary/5 transition-all group"
+                            >
                                 <AddIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                 <span className="text-xs font-black uppercase tracking-widest">Đặt lịch cho giờ trống tiếp theo</span>
                             </button>
@@ -309,6 +317,11 @@ export default function Scheduling() {
                     </div>
                 </div>
             </div>
+
+            <AppointmentModal
+                isOpen={isAppointmentModalOpen}
+                onClose={() => setIsAppointmentModalOpen(false)}
+            />
         </div>
     )
 }

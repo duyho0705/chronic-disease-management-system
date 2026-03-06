@@ -121,7 +121,7 @@ export function DoctorDashboard() {
         },
         {
             label: 'Tin nhắn mới',
-            value: (dashboard?.unreadMessages?.length ?? 0).toString().padStart(2, '0'),
+            value: (dashboard?.unreadMessages?.length ?? 0).toString(),
             icon: Mail,
             color: 'text-amber-500',
             bg: 'bg-amber-100 dark:bg-amber-900/30'

@@ -28,6 +28,7 @@ import toast from 'react-hot-toast'
 import type { PatientChatConversationDto, PatientChatMessageDto } from '@/types/api'
 import VideoCall from '@/components/VideoCall'
 import { Link } from 'react-router-dom'
+import { PrescriptionModal } from '@/components/modals/PrescriptionModal'
 
 interface ExtendedConversation extends PatientChatConversationDto {
     risk?: 'HIGH' | 'WARNING' | 'NORMAL';
@@ -115,6 +116,7 @@ export default function DoctorChat() {
     const [searchTerm, setSearchTerm] = useState('')
     const [isVideoCallOpen, setIsVideoCallOpen] = useState(false)
     const [isSending, setIsSending] = useState(false)
+    const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false)
 
     // 2. Fetch Chat History (Realtime)
     const { messages: firebaseHistory, loading: loadingHistory, sendMessage } = useFirebaseChat(
@@ -475,13 +477,13 @@ export default function DoctorChat() {
                                 </div>
                                 <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-primary transition-colors" />
                             </Link>
-                            <Link to="/staff/prescriptions" className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
+                            <button onClick={() => setIsPrescriptionModalOpen(true)} className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <Pill className="w-4 h-4 text-primary" />
                                     <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Kê đơn thuốc điện tử</span>
                                 </div>
                                 <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-primary transition-colors" />
-                            </Link>
+                            </button>
                             <button className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <HistoryIcon className="w-4 h-4 text-primary" />
@@ -513,6 +515,13 @@ export default function DoctorChat() {
                     onClose={() => setIsVideoCallOpen(false)}
                 />
             )}
+
+            <PrescriptionModal
+                isOpen={isPrescriptionModalOpen}
+                onClose={() => setIsPrescriptionModalOpen(false)}
+                patientId={selectedPatientId!}
+                patientName={selectedConv?.patientName}
+            />
         </div>
     );
 }
