@@ -96,7 +96,7 @@ export default function PatientHistory() {
                             ) : (
                                 <div className="py-12 text-center bg-white dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 border-dashed">
                                     <Pill className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                                    <p className="text-slate-400 font-bold text-sm">Hiện tại bạn không có đơn thuốc đang điều trị</p>
+                                    <p className="text-slate-400 font-bold text-sm">Hiện tại bạn không có đơn thuốc điện tử đang điều trị</p>
                                 </div>
                             )}
                         </div>
@@ -104,14 +104,14 @@ export default function PatientHistory() {
 
                     {/* Prescription History Table */}
                     <section className="mt-10">
-                        <h2 className="text-xl font-bold mb-4">Lịch sử đơn thuốc</h2>
+                        <h2 className="text-xl font-bold mb-4">Lịch sử đơn thuốc điện tử</h2>
                         <div className="bg-white dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 overflow-hidden shadow-sm">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm">
                                     <thead>
                                         <tr className="bg-slate-50 dark:bg-slate-800/80 text-slate-400 uppercase text-[10px] font-black tracking-widest">
                                             <th className="px-6 py-4">NGÀY CẤP</th>
-                                            <th className="px-6 py-4">BÁC SĨ KÊ ĐƠN</th>
+                                            <th className="px-6 py-4">BÁC SĨ KÊ ĐƠN ĐIỆN TỬ</th>
                                             <th className="px-6 py-4">CHẨN ĐOÁN</th>
                                             <th className="px-6 py-4">TRẠNG THÁI</th>
                                             <th className="px-6 py-4"></th>
@@ -136,7 +136,7 @@ export default function PatientHistory() {
                                             </tr>
                                         )) : (
                                             <tr>
-                                                <td colSpan={5} className="px-6 py-12 text-center text-slate-400 font-bold italic">Chưa có lịch sử đơn thuốc</td>
+                                                <td colSpan={5} className="px-6 py-12 text-center text-slate-400 font-bold italic">Chưa có lịch sử đơn thuốc điện tử</td>
                                             </tr>
                                         )}
                                     </tbody>

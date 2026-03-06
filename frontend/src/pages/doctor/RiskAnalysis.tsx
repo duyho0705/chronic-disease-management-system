@@ -22,14 +22,12 @@ import { motion } from 'framer-motion'
 
 export function RiskAnalysis() {
     return (
-        <div className="flex-1 space-y-8 animate-in fade-in duration-700">
-
-
+        <div className="flex-1 p-8 space-y-8 animate-in fade-in duration-700 bg-background-light dark:bg-background-dark font-display min-h-[calc(100vh-80px)]">
             {/* Statistics Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <motion.div
                     whileHover={{ y: -4 }}
-                    className="bg-white dark:bg-slate-900 p-6 rounded-[13px] border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group transition-all"
+                    className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group transition-all"
                 >
                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
                         <AlertTriangle className="w-16 h-16 text-red-500" />
@@ -46,7 +44,7 @@ export function RiskAnalysis() {
 
                 <motion.div
                     whileHover={{ y: -4 }}
-                    className="bg-white dark:bg-slate-900 p-6 rounded-[13px] border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group transition-all"
+                    className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group transition-all"
                 >
                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
                         <BellRing className="w-16 h-16 text-amber-500" />
@@ -63,7 +61,7 @@ export function RiskAnalysis() {
 
                 <motion.div
                     whileHover={{ y: -4 }}
-                    className="bg-white dark:bg-slate-900 p-6 rounded-[13px] border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group transition-all"
+                    className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group transition-all"
                 >
                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
                         <ShieldCheck className="w-16 h-16 text-emerald-500" />
@@ -82,7 +80,7 @@ export function RiskAnalysis() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Priority List */}
                 <div className="lg:col-span-2 flex flex-col gap-6">
-                    <section className="bg-white dark:bg-slate-900 rounded-[13px] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+                    <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
                         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
                             <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <AlertCircle className="w-5 h-5 text-red-500" /> Danh sách ưu tiên can thiệp
@@ -132,7 +130,7 @@ export function RiskAnalysis() {
                                                 {[
                                                     { icon: Send, color: 'text-emerald-600', bg: 'hover:bg-emerald-50', title: 'Gửi cảnh báo' },
                                                     { icon: PhoneCall, color: 'text-red-500', bg: 'hover:bg-red-50', title: 'Gọi khẩn cấp' },
-                                                    { icon: ClipboardList, color: 'text-slate-600', bg: 'hover:bg-slate-100', title: 'Sửa toa thuốc' }
+                                                    { icon: ClipboardList, color: 'text-slate-600', bg: 'hover:bg-slate-100', title: 'Sửa đơn thuốc điện tử' }
                                                 ].map((action, idx) => (
                                                     <button
                                                         key={idx}
@@ -234,7 +232,7 @@ export function RiskAnalysis() {
                     </section>
 
                     {/* Risk Trend Chart */}
-                    <section className="bg-white dark:bg-slate-900 rounded-[13px] border border-slate-200 dark:border-slate-800 shadow-sm p-8">
+                    <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8">
                         <div className="flex justify-between items-center mb-10">
                             <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <BarChart3 className="w-5 h-5 text-emerald-600" /> Xu hướng rủi ro (7 ngày qua)
@@ -278,7 +276,7 @@ export function RiskAnalysis() {
                 {/* Sidebar: AI Insights & Quick Actions */}
                 <div className="flex flex-col gap-8">
                     {/* AI Insights */}
-                    <section className="bg-emerald-50/50 dark:bg-emerald-900/10 rounded-[13px] border border-emerald-100 dark:border-emerald-900/30 p-8 flex flex-col gap-6 relative overflow-hidden group">
+                    <section className="bg-emerald-50/50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 p-8 flex flex-col gap-6 relative overflow-hidden group">
                         <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-200/20 dark:bg-emerald-900/20 rounded-full blur-3xl transition-all group-hover:scale-110"></div>
 
                         <div className="flex items-center gap-3 relative z-10">
@@ -294,7 +292,7 @@ export function RiskAnalysis() {
                                 { icon: Pill, color: 'text-red-500', title: 'Vi phạm phác đồ', desc: 'Bệnh nhân Tâm quên uống thuốc 2 liều Insulin gần nhất.' },
                                 { icon: TrendingDown, color: 'text-emerald-500', title: 'Cải thiện tích cực', desc: 'Cần xem xét giảm liều Statins cho bệnh nhân Nguyễn Thị Hoa.' }
                             ].map((insight, idx) => (
-                                <div key={idx} className="bg-white dark:bg-slate-900 p-4 rounded-[13px] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+                                <div key={idx} className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
                                     <div className="flex gap-4">
                                         <insight.icon className={`w-5 h-5 shrink-0 mt-0.5 ${insight.color}`} />
                                         <div>
@@ -312,18 +310,18 @@ export function RiskAnalysis() {
                     </section>
 
                     {/* Quick Actions */}
-                    <section className="bg-white dark:bg-slate-900 rounded-[13px] border border-slate-200 dark:border-slate-800 shadow-sm p-8">
+                    <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8">
                         <h3 className="font-bold text-slate-900 dark:text-white mb-6">Phím tắt khẩn cấp</h3>
                         <div className="grid grid-cols-2 gap-4">
-                            <button className="flex flex-col items-center justify-center gap-3 p-5 rounded-[13px] bg-red-50 dark:bg-red-900/10 text-red-600 border border-red-100 dark:border-red-900/30 hover:bg-red-100/50 transition-all group scale-100 active:scale-95">
+                            <button className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-red-50 dark:bg-red-900/10 text-red-600 border border-red-100 dark:border-red-900/30 hover:bg-red-100/50 transition-all group scale-100 active:scale-95">
                                 <LifeBuoy className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 <span className="text-[10px] font-black uppercase tracking-tighter">Cấp cứu</span>
                             </button>
-                            <button className="flex flex-col items-center justify-center gap-3 p-5 rounded-[13px] bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 border border-emerald-100 dark:border-emerald-900/30 hover:bg-emerald-100/50 transition-all group scale-100 active:scale-95">
+                            <button className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 border border-emerald-100 dark:border-emerald-900/30 hover:bg-emerald-100/50 transition-all group scale-100 active:scale-95">
                                 <Video className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 <span className="text-[10px] font-black uppercase tracking-tighter">Tele-Health</span>
                             </button>
-                            <button className="flex flex-col items-center justify-center gap-3 p-5 rounded-[13px] bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 transition-all col-span-2 group scale-100 active:scale-95">
+                            <button className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 transition-all col-span-2 group scale-100 active:scale-95">
                                 <div className="flex items-center gap-3">
                                     <FileText className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                     <span className="text-[10px] font-black uppercase tracking-widest">Xuất báo cáo rủi ro (.pdf)</span>

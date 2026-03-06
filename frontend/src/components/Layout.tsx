@@ -7,6 +7,7 @@ import { STAFF_NAV } from '@/routes/staffNav'
 import { requestForToken, onForegroundMessage, db } from '@/firebase'
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import toast from 'react-hot-toast'
+import { SettingsModal } from '@/components/modals/SettingsModal'
 
 export function Layout() {
   const location = useLocation()
@@ -14,6 +15,7 @@ export function Layout() {
   const { user, logout } = useAuth()
   const { tenantId } = useTenant()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
 
 
@@ -68,16 +70,16 @@ export function Layout() {
       <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden lg:flex flex-col sticky top-0 h-screen z-50">
         <div className="p-6 flex items-center gap-3">
           <div className="size-10 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20">
-            <span className="material-symbols-outlined font-bold">health_and_safety</span>
+            <span className="material-symbols-outlined font-bold">medical_services</span>
           </div>
           <h1 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-none">Sống Khỏe</h1>
         </div>
 
-        <nav className="flex-1 px-4 space-y-1.5 mt-4 overflow-y-auto overflow-x-hidden scrollbar-hide">
+        <nav className="flex-1 px-4 space-y-2.5 mt-6 overflow-y-auto overflow-x-hidden scrollbar-hide">
           {visibleNav.map((item, idx) => {
             if (item.type === 'header') {
               return (
-                <div key={idx} className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-6 first:mt-2">
+                <div key={idx} className="px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-8 first:mt-2">
                   {item.label}
                 </div>
               )
@@ -90,7 +92,7 @@ export function Layout() {
             if (label.toLowerCase().includes('bệnh nhân')) iconName = 'group'
             if (label.toLowerCase().includes('lịch hẹn')) iconName = 'calendar_today'
             if (label.toLowerCase().includes('tin nhắn') || label.toLowerCase().includes('chat')) iconName = 'chat_bubble'
-            if (label.toLowerCase().includes('đơn thuốc')) iconName = 'pill'
+            if (label.toLowerCase().includes('đơn thuốc')) iconName = 'description'
             if (label.toLowerCase().includes('phân tích')) iconName = 'monitoring'
             if (label.toLowerCase().includes('báo cáo')) iconName = 'description'
             if (label.toLowerCase().includes('quản lý')) iconName = 'admin_panel_settings'
@@ -99,13 +101,13 @@ export function Layout() {
               <Link
                 key={idx}
                 to={to || '#'}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/80'
+                className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all duration-300 group ${isActive
+                  ? 'bg-primary/10 text-primary shadow-sm shadow-primary/5'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:translate-x-1'
                   }`}
               >
                 <span
-                  className={`material-symbols-outlined text-[22px] transition-transform duration-200 group-hover:scale-110 ${isActive ? 'fill-[1]' : ''}`}
+                  className={`material-symbols-outlined text-[24px] transition-all duration-300 group-hover:scale-110 ${isActive ? 'fill-[1]' : ''}`}
                   style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}
                 >
                   {iconName}
@@ -122,13 +124,13 @@ export function Layout() {
         </nav>
 
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-1">
-          <Link
-            to="/settings"
-            className="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors group"
+          <button
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors group"
           >
             <span className="material-symbols-outlined text-[20px] group-hover:rotate-45 transition-transform duration-500">settings</span>
             <span className="font-bold text-sm tracking-tight">Cài đặt</span>
-          </Link>
+          </button>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors group"
@@ -172,6 +174,28 @@ export function Layout() {
               {item.label}
             </Link>
           ))}
+        </div>
+        <div className="mt-auto p-4 border-t border-slate-100 dark:border-slate-800 space-y-1">
+          <button
+            onClick={() => {
+              setSidebarOpen(false)
+              setIsSettingsModalOpen(true)
+            }}
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 transition-colors"
+          >
+            <span className="material-symbols-outlined text-xl">settings</span>
+            Cài đặt
+          </button>
+          <button
+            onClick={() => {
+              setSidebarOpen(false)
+              handleLogout()
+            }}
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <span className="material-symbols-outlined text-xl">logout</span>
+            Đăng xuất
+          </button>
         </div>
       </aside>
 
@@ -231,6 +255,11 @@ export function Layout() {
           <div className="h-12 w-full shrink-0"></div>
         </div>
       </main>
+
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+      />
     </div>
   )
 }

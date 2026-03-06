@@ -886,7 +886,7 @@ function PrescriptionWidget({ prescription }: { prescription: any }) {
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-6">
             <h3 className="font-black flex items-center gap-3 text-sm tracking-widest text-slate-800 dark:text-slate-200 mb-4">
                 <Pill className="w-5 h-5 text-blue-500" />
-                Toa thuốc hiện tại
+                Đơn thuốc điện tử hiện tại
             </h3>
             <div className="space-y-3">
                 {prescription.items?.map((item: any, idx: number) => (

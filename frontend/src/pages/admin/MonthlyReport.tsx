@@ -223,7 +223,7 @@ export function MonthlyReport() {
                             <tr className="bg-slate-50/50 dark:bg-slate-800/30 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
                                 <th className="px-10 py-6">Bác sĩ</th>
                                 <th className="px-10 py-6">Số ca đã khám</th>
-                                <th className="px-10 py-6">Toa thuốc đã kê</th>
+                                <th className="px-10 py-6">Đơn thuốc điện tử đã kê</th>
                                 <th className="px-10 py-6 text-right">Đánh giá trung bình</th>
                             </tr>
                         </thead>

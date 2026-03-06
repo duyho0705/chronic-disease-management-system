@@ -20,7 +20,7 @@ import { ManagerDashboard } from './admin/ManagerDashboard'
 const ROLE_ACTIONS: Record<Role, { to: string; label: string; desc: string; icon: any; color: string }[]> = {
   admin: [
     { to: '/reception', label: 'Tiếp nhận', desc: 'Đăng ký và check-in', icon: Users, color: 'emerald' },
-    { to: '/consultation', label: 'Khám & Điều trị', desc: 'Phiên khám & kê đơn', icon: Stethoscope, color: 'emerald' },
+    { to: '/consultation', label: 'Khám & Điều trị', desc: 'Phiên khám & kê đơn thuốc điện tử', icon: Stethoscope, color: 'emerald' },
     { to: '/analytics', label: 'Thống kê', desc: 'Xu hướng & chỉ số KPI', icon: BarChart2, color: 'indigo' },
     { to: '/admin', label: 'Quản trị', desc: 'Quản trị hệ thống', icon: Settings, color: 'slate' },
   ],
@@ -32,7 +32,7 @@ const ROLE_ACTIONS: Record<Role, { to: string; label: string; desc: string; icon
     { to: '/reception', label: 'Tiếp nhận', desc: 'Đăng ký bệnh nhân', icon: Users, color: 'emerald' },
   ],
   doctor: [
-    { to: '/consultation', label: 'Khám & Điều trị', desc: 'Khám & kê đơn', icon: Stethoscope, color: 'emerald' },
+    { to: '/consultation', label: 'Khám & Điều trị', desc: 'Khám & kê đơn thuốc điện tử', icon: Stethoscope, color: 'emerald' },
     { to: '/scheduling', label: 'Lịch hẹn', desc: 'Quản lý lịch hẹn', icon: Calendar, color: 'amber' },
     { to: '/chat', label: 'Tư vấn từ xa', desc: 'Chat với bệnh nhân', icon: MessageSquare, color: 'indigo' },
   ],
@@ -41,7 +41,7 @@ const ROLE_ACTIONS: Record<Role, { to: string; label: string; desc: string; icon
     { to: '/reports', label: 'Báo cáo', desc: 'Tổng kết & can thiệp', icon: FileText, color: 'rose' },
   ],
   pharmacist: [
-    { to: '/consultation', label: 'Đơn thuốc', desc: 'Quản lý đơn thuốc', icon: Pill, color: 'purple' },
+    { to: '/consultation', label: 'Đơn thuốc điện tử', desc: 'Quản lý đơn thuốc điện tử', icon: Pill, color: 'purple' },
   ],
   patient: [
     { to: '/patient', label: 'Sức khỏe', desc: 'Theo dõi sinh hiệu', icon: Activity, color: 'emerald' },

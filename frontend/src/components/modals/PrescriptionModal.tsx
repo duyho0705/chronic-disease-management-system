@@ -43,7 +43,7 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                             <div className="bg-primary/20 p-2.5 rounded-lg text-primary">
                                 <span className="material-symbols-outlined text-2xl">description</span>
                             </div>
-                            <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Kê đơn thuốc mới</h2>
+                            <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Kê đơn thuốc điện tử</h2>
                         </div>
                         <button
                             onClick={() => {

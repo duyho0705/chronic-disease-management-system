@@ -30,7 +30,7 @@ export const STAFF_NAV: StaffNavItem[] = [
   { to: '/dashboard', label: 'Tổng quan', icon: LayoutDashboard, type: 'link', roles: ['clinic_manager', 'admin', 'doctor'] },
   { to: '/patients', label: 'Danh sách bệnh nhân', icon: Users, roles: ['doctor', 'clinic_manager', 'admin'], type: 'link' },
   { to: '/analytics', label: 'Phân tích nguy cơ', icon: Activity, roles: ['doctor', 'clinic_manager', 'admin'], type: 'link' },
-  { to: '/prescriptions', label: 'Toa thuốc', icon: ClipboardList, roles: ['doctor', 'admin'], type: 'link' },
+  { to: '/prescriptions', label: 'Đơn thuốc điện tử', icon: ClipboardList, roles: ['doctor', 'admin'], type: 'link' },
   { to: '/scheduling', label: 'Lịch hẹn khám', icon: Calendar, roles: ['doctor', 'admin'], type: 'link' },
   { to: '/chat', label: 'Tin nhắn', icon: MessageSquare, roles: ['doctor', 'admin'], badge: 3, type: 'link' },
 

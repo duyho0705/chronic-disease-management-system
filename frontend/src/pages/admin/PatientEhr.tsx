@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { PrescriptionModal } from '@/components/modals/PrescriptionModal'
+import { AppointmentModal } from '@/components/modals/AppointmentModal'
 
 export function PatientEhr() {
     const navigate = useNavigate()
     const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false)
+    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false)
 
     return (
         <div className="font-display bg-background-light dark:bg-background-dark p-8">
@@ -33,7 +35,7 @@ export function PatientEhr() {
                             className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:opacity-90 text-sm font-semibold shadow-lg shadow-primary/20 transition-all font-bold"
                         >
                             <span className="material-symbols-outlined text-lg">medical_services</span>
-                            Kê đơn thuốc
+                            Kê đơn thuốc điện tử
                         </button>
                     </div>
                 </div>
@@ -88,14 +90,22 @@ export function PatientEhr() {
                             </div>
                         </div>
                         <div className="flex flex-col gap-2 mt-4">
-                            <button className="w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-slate-800 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:shadow-md transition-all active:scale-[0.98]">
+                            <button
+                                type="button"
+                                onClick={() => setIsAppointmentModalOpen(true)}
+                                className="w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-slate-800 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:shadow-md transition-all active:scale-[0.98]"
+                            >
                                 <span className="flex items-center gap-2">
                                     <span className="material-symbols-outlined text-primary text-xl">event_available</span>
-                                    Đặt lịch khám mới
+                                    Đặt lịch tái khám
                                 </span>
                                 <span className="material-symbols-outlined text-slate-300 text-lg">chevron_right</span>
                             </button>
-                            <button className="w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-slate-800 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:shadow-md transition-all active:scale-[0.98]">
+                            <button
+                                type="button"
+                                onClick={() => navigate('/chat')}
+                                className="w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-slate-800 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:shadow-md transition-all active:scale-[0.98]"
+                            >
                                 <span className="flex items-center gap-2">
                                     <span className="material-symbols-outlined text-primary text-xl">forum</span>
                                     Gửi tin nhắn tư vấn
@@ -254,6 +264,13 @@ export function PatientEhr() {
                 onClose={() => setIsPrescriptionModalOpen(false)}
                 patientName="Nguyễn Văn A"
             />
+
+            <AppointmentModal
+                isOpen={isAppointmentModalOpen}
+                onClose={() => setIsAppointmentModalOpen(false)}
+                patientName="Nguyễn Văn A"
+                patientId="BN0892"
+            />
         </div>
     )
 }
@@ -274,8 +291,8 @@ function VitalCard({ icon, label, value, unit, status, statusColor }: { icon: st
     return (
         <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
             <div className="flex items-center justify-between mb-2">
-                <span className={`material-symbols-outlined ${iconColors[statusColor]}`}>{icon}</span>
-                <span className={`text-[10px] font-extrabold ${colorClasses[statusColor]} px-1.5 py-0.5 rounded uppercase`}>
+                <span className={`material - symbols - outlined ${iconColors[statusColor]} `}>{icon}</span>
+                <span className={`text - [10px] font - extrabold ${colorClasses[statusColor]} px - 1.5 py - 0.5 rounded uppercase`}>
                     {status}
                 </span>
             </div>
@@ -291,8 +308,8 @@ function VitalCard({ icon, label, value, unit, status, statusColor }: { icon: st
 function TimelineItem({ date, tag, title, content, diagnosis, isActive }: { date: string, tag: string, title: string, content: string, diagnosis?: string, isActive: boolean }) {
     return (
         <div className="relative pl-10">
-            <div className={`absolute left-0 top-1 size-6 ${isActive ? 'bg-primary/20' : 'bg-slate-200 dark:bg-slate-700'} rounded-full flex items-center justify-center`}>
-                <div className={`size-2.5 ${isActive ? 'bg-primary' : 'bg-slate-400'} rounded-full`}></div>
+            <div className={`absolute left - 0 top - 1 size - 6 ${isActive ? 'bg-primary/20' : 'bg-slate-200 dark:bg-slate-700'} rounded - full flex items - center justify - center`}>
+                <div className={`size - 2.5 ${isActive ? 'bg-primary' : 'bg-slate-400'} rounded - full`}></div>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <p className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">{date}</p>
@@ -317,10 +334,10 @@ function MedicationItem({ name, instruction, status, daysLeft, isStopped }: { na
     return (
         <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-primary/30 transition-colors">
             <div className="flex justify-between items-start">
-                <h4 className={`font-bold text-sm ${isStopped ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-200'}`}>{name}</h4>
-                <span className={`text-[10px] font-extrabold uppercase ${isStopped ? 'text-slate-400' : 'text-primary'}`}>{status}</span>
+                <h4 className={`font - bold text - sm ${isStopped ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-200'} `}>{name}</h4>
+                <span className={`text - [10px] font - extrabold uppercase ${isStopped ? 'text-slate-400' : 'text-primary'} `}>{status}</span>
             </div>
-            <p className={`text-xs mt-1 font-semibold ${isStopped ? 'text-slate-400' : 'text-slate-500'}`}>{instruction}</p>
+            <p className={`text - xs mt - 1 font - semibold ${isStopped ? 'text-slate-400' : 'text-slate-500'} `}>{instruction}</p>
             {!isStopped && daysLeft && (
                 <div className="mt-3 flex items-center gap-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                     <span className="material-symbols-outlined text-sm">schedule</span>

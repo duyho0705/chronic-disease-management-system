@@ -1,7 +1,8 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { createPortal } from 'react-dom'
 import { PrescriptionModal } from '@/components/modals/PrescriptionModal'
+import { AppointmentModal } from '@/components/modals/AppointmentModal'
+import { AdviceModal } from '@/components/modals/AdviceModal'
 import { useNavigate } from 'react-router-dom'
 import { useTenant } from '@/context/TenantContext'
 import { useQuery } from '@tanstack/react-query'
@@ -17,12 +18,6 @@ import {
     FileText,
     Send,
     Loader2,
-    ChevronDown,
-    X,
-    Video,
-    MapPin,
-    ChevronLeft,
-    ChevronRight,
 } from 'lucide-react'
 
 import {
@@ -40,8 +35,7 @@ import { getDoctorDashboard, getDoctorPatients } from '@/api/doctor'
 export function DoctorDashboard() {
     const { headers, tenantId } = useTenant()
     const navigate = useNavigate()
-    const [timeRange, setTimeRange] = useState('7 ngày qua')
-    const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false)
+    const [timeRange] = useState('7 ngày qua')
     const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false)
     const [isAdviceModalOpen, setIsAdviceModalOpen] = useState(false)
     const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false)
@@ -65,13 +59,9 @@ export function DoctorDashboard() {
         enabled: !!tenantId
     })
 
-    const { data: patientList, isLoading: loadingPatients } = useQuery({
-        queryKey: ['doctor-patients', tenantId],
-        queryFn: () => getDoctorPatients(headers, 0, 5),
-        enabled: !!tenantId
-    })
 
-    if (loadingDash || loadingPatients) {
+
+    if (loadingDash) {
         return (
             <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
                 <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
@@ -126,7 +116,7 @@ export function DoctorDashboard() {
 
             <div className="space-y-8 pb-12 animate-in fade-in duration-700 font-display">
                 {/* ─── Summary Cards ─── */}
-                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
                     {stats.map((stat, i) => (
                         <motion.div
                             key={i}
@@ -145,8 +135,8 @@ export function DoctorDashboard() {
                                     </span>
                                 )}
                             </div>
-                            <h3 className="text-slate-500 text-sm font-medium">{stat.label}</h3>
-                            <p className={`text-3xl font-extrabold mt-1 ${stat.isWarning ? 'text-red-500' : 'text-slate-900 dark:text-white'}`}>{stat.value}</p>
+                            <h3 className="text-slate-500 text-sm font-medium mb-1">{stat.label}</h3>
+                            <p className={`text-4xl font-extrabold ${stat.isWarning ? 'text-red-500' : 'text-slate-900 dark:text-white'}`}>{stat.value}</p>
                         </motion.div>
                     ))}
                 </section>
@@ -162,7 +152,7 @@ export function DoctorDashboard() {
                             <button onClick={() => navigate('/patients')} className="text-primary text-sm font-bold hover:underline">Xem tất cả</button>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             {dashboard?.riskPatients && dashboard.riskPatients.length > 0 ? (
                                 dashboard.riskPatients.slice(0, 3).map((risk: any, i: number) => (
                                     <motion.div
@@ -170,7 +160,7 @@ export function DoctorDashboard() {
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.3 + (i * 0.1) }}
-                                        className={`bg-white dark:bg-slate-900 p-4 rounded-2xl border-l-4 ${risk.riskLevel === 'CRITICAL' ? 'border-l-red-500' : 'border-l-amber-500'
+                                        className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border-l-[6px] ${risk.riskLevel === 'CRITICAL' ? 'border-l-red-500' : 'border-l-amber-500'
                                             } border-y border-r border-primary/5 flex items-center justify-between shadow-sm group hover:border-primary transition-all cursor-pointer`}
                                         onClick={() => navigate(`/patients/${risk.patientId}/ehr`)}
                                     >
@@ -216,8 +206,8 @@ export function DoctorDashboard() {
                         </div>
 
                         {/* ─── Health Trend Chart Preview ─── */}
-                        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-primary/5 shadow-sm">
-                            <div className="flex items-center justify-between mb-8">
+                        <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-primary/5 shadow-sm">
+                            <div className="flex items-center justify-between mb-10">
                                 <div>
                                     <h3 className="font-bold text-slate-900 dark:text-white">Xu hướng sức khỏe cộng đồng</h3>
                                     <p className="text-xs text-slate-500">Thống kê dữ liệu lâm sàng theo tuần</p>
@@ -229,7 +219,7 @@ export function DoctorDashboard() {
                                 </div>
                             </div>
 
-                            <div className="h-56 w-full">
+                            <div className="h-72 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={communityHealthData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                         <defs>
@@ -281,20 +271,20 @@ export function DoctorDashboard() {
                         {/* Quick Actions */}
                         <section>
                             <h2 className="text-xl font-extrabold mb-4">Thao tác nhanh</h2>
-                            <div className="grid grid-cols-1 gap-3">
+                            <div className="grid grid-cols-1 gap-5">
                                 <button
                                     onClick={() => setIsPrescriptionModalOpen(true)}
-                                    className="flex items-center gap-4 p-4 bg-white dark:bg-slate-900 hover:border-primary transition-all rounded-2xl border border-primary/10 shadow-sm text-left group"
+                                    className="flex items-center gap-4 p-5 bg-white dark:bg-slate-900 hover:border-primary transition-all rounded-2xl border border-primary/10 shadow-sm text-left group"
                                 >
                                     <div className="w-10 h-10 bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white rounded-xl flex items-center justify-center transition-colors">
                                         <FileText className="w-5 h-5" />
                                     </div>
-                                    <span className="font-bold text-sm">Kê đơn thuốc mới</span>
+                                    <span className="font-bold text-sm">Kê đơn thuốc điện tử</span>
                                 </button>
 
                                 <button
                                     onClick={() => setIsAdviceModalOpen(true)}
-                                    className="flex items-center gap-4 p-4 bg-white dark:bg-slate-900 hover:border-primary transition-all rounded-2xl border border-primary/10 shadow-sm text-left group"
+                                    className="flex items-center gap-4 p-5 bg-white dark:bg-slate-900 hover:border-primary transition-all rounded-2xl border border-primary/10 shadow-sm text-left group"
                                 >
                                     <div className="w-10 h-10 bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white rounded-xl flex items-center justify-center transition-colors">
                                         <Send className="w-5 h-5" />
@@ -304,7 +294,7 @@ export function DoctorDashboard() {
 
                                 <button
                                     onClick={() => setIsAppointmentModalOpen(true)}
-                                    className="flex items-center gap-4 p-4 bg-white dark:bg-slate-900 hover:border-primary transition-all rounded-2xl border border-primary/10 shadow-sm text-left group"
+                                    className="flex items-center gap-4 p-5 bg-white dark:bg-slate-900 hover:border-primary transition-all rounded-2xl border border-primary/10 shadow-sm text-left group"
                                 >
                                     <div className="w-10 h-10 bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white rounded-xl flex items-center justify-center transition-colors">
                                         <CalendarIcon className="w-5 h-5" />
@@ -322,7 +312,7 @@ export function DoctorDashboard() {
                             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-primary/5 shadow-sm divide-y divide-primary/5 overflow-hidden">
                                 {dashboard?.upcomingAppointments && dashboard.upcomingAppointments.length > 0 ? (
                                     dashboard.upcomingAppointments.slice(0, 3).map((apt: any, i: number) => (
-                                        <div key={i} className="p-4 flex items-center gap-4 hover:bg-primary/5 transition-colors cursor-pointer" onClick={() => navigate('/scheduling')}>
+                                        <div key={i} className="p-5 flex items-center gap-5 hover:bg-primary/5 transition-colors cursor-pointer" onClick={() => navigate('/scheduling')}>
                                             <div className="flex-shrink-0 text-center">
                                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Hôm nay</p>
                                                 <p className="text-lg font-extrabold text-primary leading-none">{apt.startTime?.slice(0, 5)}</p>
@@ -358,169 +348,15 @@ export function DoctorDashboard() {
             />
 
             {/* Advice Modal */}
-            <AnimatePresence>
-                {isAdviceModalOpen && createPortal(
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] p-4">
-                        <div className="fixed inset-0" onClick={() => setIsAdviceModalOpen(false)} />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="relative bg-white dark:bg-slate-900 w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col h-auto z-10"
-                        >
-                            {/* Header */}
-                            <div className="px-6 py-4 border-b border-primary/10 flex justify-between items-center bg-white dark:bg-slate-900">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-primary/20 p-2 rounded-lg text-primary">
-                                        <span className="material-symbols-outlined text-2xl text-primary">medical_services</span>
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Gửi lời khuyên chuyên môn</h2>
-                                        <p className="text-slate-500 dark:text-slate-400 text-xs">Bác sĩ gửi khuyến nghị sức khỏe trực tiếp cho bệnh nhân</p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => setIsAdviceModalOpen(false)}
-                                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
+            <AdviceModal
+                isOpen={isAdviceModalOpen}
+                onClose={() => setIsAdviceModalOpen(false)}
+            />
 
-                            {/* Content */}
-                            <div className="p-6 space-y-5">
-                                <div className="bg-primary/5 rounded-lg p-4 flex items-center justify-between border border-primary/10">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
-                                            <Send className="w-6 h-6 text-primary opacity-50" />
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Bệnh nhân nhận</p>
-                                            <p className="text-slate-900 dark:text-slate-100 font-bold">Nguyễn Văn A</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Mã bệnh nhân</p>
-                                        <p className="text-primary font-mono font-bold">BN-12345678</p>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div className="flex flex-col gap-1.5">
-                                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Lời khuyên của bác sĩ</label>
-                                        <textarea
-                                            rows={6}
-                                            className="w-full p-4 bg-white dark:bg-slate-800 border-2 border-primary/10 rounded-xl focus:border-primary outline-none transition-all resize-none font-medium placeholder:text-slate-400"
-                                            placeholder="Nhập khuyến nghị..."
-                                            defaultValue={`Dựa trên kết quả đo huyết áp 3 ngày gần đây có dấu hiệu tăng cao đột ngột vào buổi sáng. 
-
-Bác sĩ khuyến nghị:
-1. Tiếp tục duy trì thuốc Amlodipine 5mg đúng giờ.
-2. Hạn chế sử dụng muối và các chất kích thích.
-3. Cần đến phòng khám sớm để làm xét nghiệm máu tổng quát.`}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Footer */}
-                            <div className="px-6 py-5 bg-slate-50 dark:bg-slate-900/50 border-t border-primary/10 flex items-center justify-end gap-3">
-                                <button
-                                    onClick={() => setIsAdviceModalOpen(false)}
-                                    className="px-5 py-2.5 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
-                                >
-                                    Hủy bỏ
-                                </button>
-                                <button
-                                    onClick={() => setIsAdviceModalOpen(false)}
-                                    className="px-6 py-2.5 bg-primary text-slate-900 rounded-xl font-black shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-[0.98] flex items-center gap-2"
-                                >
-                                    <Send className="w-5 h-5" />
-                                    Lưu & Gửi lời khuyên
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>,
-                    document.body
-                )}
-            </AnimatePresence>
-
-            {/* Appointment Modal */}
-            <AnimatePresence>
-                {isAppointmentModalOpen && createPortal(
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] p-4">
-                        <div className="fixed inset-0" onClick={() => setIsAppointmentModalOpen(false)} />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="relative bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col z-10"
-                        >
-                            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-primary/20 p-2.5 rounded-xl text-primary">
-                                        <CalendarIcon className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Đặt lịch tái khám</h2>
-                                </div>
-                                <button
-                                    onClick={() => setIsAppointmentModalOpen(false)}
-                                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
-
-                            <div className="p-6 space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-4">
-                                        <div className="space-y-1.5">
-                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Chọn ngày</label>
-                                            <input type="date" className="w-full p-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-xl focus:border-primary outline-none transition-all font-bold" />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Loại lịch hẹn</label>
-                                            <select className="w-full p-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-xl focus:border-primary outline-none transition-all font-bold appearance-none">
-                                                <option>Khám định kỳ</option>
-                                                <option>Xét nghiệm</option>
-                                                <option>Tư vấn chuyên sâu</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Chọn khung giờ</label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'].map((time) => (
-                                                <button key={time} className="p-2.5 border-2 border-slate-100 dark:border-slate-800 rounded-xl text-sm font-bold hover:border-primary hover:text-primary transition-all">
-                                                    {time}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
-                                <button
-                                    onClick={() => setIsAppointmentModalOpen(false)}
-                                    className="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                                >
-                                    Hủy bỏ
-                                </button>
-                                <button
-                                    onClick={() => setIsAppointmentModalOpen(false)}
-                                    className="px-5 py-2.5 text-sm font-bold text-slate-900 bg-primary hover:bg-primary/90 rounded-lg transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
-                                >
-                                    <Send className="w-5 h-5" />
-                                    Lưu & Gửi thông báo
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>,
-                    document.body
-                )}
-            </AnimatePresence>
+            <AppointmentModal
+                isOpen={isAppointmentModalOpen}
+                onClose={() => setIsAppointmentModalOpen(false)}
+            />
         </div>
     )
 }

@@ -154,7 +154,7 @@ export default function DoctorChat() {
     const quickResponses = [
         { label: 'Gửi khuyến nghị', icon: Activity, color: 'bg-primary/10 text-primary' },
         { label: 'Gửi cảnh báo', icon: AlertTriangle, color: 'bg-red-100 text-red-600' },
-        { label: 'Đơn thuốc mới', icon: Pill, color: 'bg-blue-100 text-blue-600' },
+        { label: 'Đơn thuốc điện tử', icon: Pill, color: 'bg-blue-100 text-blue-600' },
     ]
 
     if (loadingConvs) {
@@ -478,7 +478,7 @@ export default function DoctorChat() {
                             <Link to="/staff/prescriptions" className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <Pill className="w-4 h-4 text-primary" />
-                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Kê đơn thuốc</span>
+                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Kê đơn thuốc điện tử</span>
                                 </div>
                                 <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-primary transition-colors" />
                             </Link>

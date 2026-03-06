@@ -1,13 +1,17 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PrescriptionModal } from '@/components/modals/PrescriptionModal'
+import { AppointmentModal } from '@/components/modals/AppointmentModal'
+import { ChevronDown, Plus } from 'lucide-react'
 
 export function PatientList() {
     const navigate = useNavigate()
     const [selectedRisk, setSelectedRisk] = useState<string | null>(null)
     const [selectedDisease, setSelectedDisease] = useState('Tất cả loại bệnh')
+    const [isDiseaseDropdownOpen, setIsDiseaseDropdownOpen] = useState(false)
     const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false)
+    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false)
     const [selectedPatientName, setSelectedPatientName] = useState('')
 
     const patients = [
@@ -88,43 +92,73 @@ export function PatientList() {
     return (
         <div className="font-display bg-background-light dark:bg-background-dark p-8">
             {/* Filters Section */}
-            <div className="flex flex-wrap items-center gap-4 mb-6">
-                <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Mức độ nguy cơ:</span>
-                    <button
-                        onClick={() => setSelectedRisk(selectedRisk === 'Nguy cơ cao' ? null : 'Nguy cơ cao')}
-                        className={`px-4 py-1.5 rounded-lg text-sm font-bold border transition-all ${selectedRisk === 'Nguy cơ cao' ? 'bg-red-500 text-white border-red-600' : 'bg-red-100 text-red-600 border-red-200 hover:bg-red-200'}`}
-                    >
-                        Nguy cơ cao
-                    </button>
-                    <button
-                        onClick={() => setSelectedRisk(selectedRisk === 'Cần theo dõi' ? null : 'Cần theo dõi')}
-                        className={`px-4 py-1.5 rounded-lg text-sm font-bold border transition-all ${selectedRisk === 'Cần theo dõi' ? 'bg-orange-500 text-white border-orange-600' : 'bg-orange-100 text-orange-600 border-orange-200 hover:bg-orange-200'}`}
-                    >
-                        Cần theo dõi
-                    </button>
-                    <button
-                        onClick={() => setSelectedRisk(selectedRisk === 'Bình thường' ? null : 'Bình thường')}
-                        className={`px-4 py-1.5 rounded-lg text-sm font-bold border transition-all ${selectedRisk === 'Bình thường' ? 'bg-green-500 text-white border-green-600' : 'bg-green-100 text-green-600 border-green-200 hover:bg-green-200'}`}
-                    >
-                        Bình thường
-                    </button>
+            <div className="flex flex-wrap items-center gap-6 mb-10">
+                <div className="flex items-center gap-3 bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-100 dark:border-slate-800 mr-2">Mức độ nguy cơ:</span>
+                    <div className="flex gap-2 pr-2">
+                        <button
+                            onClick={() => setSelectedRisk(selectedRisk === 'Nguy cơ cao' ? null : 'Nguy cơ cao')}
+                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-tighter ${selectedRisk === 'Nguy cơ cao' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-red-50 text-red-500 hover:bg-red-100'}`}
+                        >
+                            Nguy cơ cao
+                        </button>
+                        <button
+                            onClick={() => setSelectedRisk(selectedRisk === 'Cần theo dõi' ? null : 'Cần theo dõi')}
+                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-tighter ${selectedRisk === 'Cần theo dõi' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30' : 'bg-amber-50 text-amber-500 hover:bg-amber-100'}`}
+                        >
+                            Cần theo dõi
+                        </button>
+                        <button
+                            onClick={() => setSelectedRisk(selectedRisk === 'Bình thường' ? null : 'Bình thường')}
+                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-tighter ${selectedRisk === 'Bình thường' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-emerald-50 text-emerald-500 hover:bg-emerald-100'}`}
+                        >
+                            Bình thường
+                        </button>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Loại bệnh:</span>
-                    <select
-                        value={selectedDisease}
-                        onChange={(e) => setSelectedDisease(e.target.value)}
-                        className="bg-transparent border-none text-sm font-semibold focus:ring-0 py-1 cursor-pointer pr-8 text-slate-700 dark:text-slate-200"
+
+                <div className="relative group">
+                    <button
+                        onClick={() => setIsDiseaseDropdownOpen(!isDiseaseDropdownOpen)}
+                        className="flex items-center gap-4 bg-white dark:bg-slate-900 px-6 py-3 rounded-full border border-slate-200 dark:border-slate-800 shadow-sm group hover:border-primary transition-all cursor-pointer min-w-[240px]"
                     >
-                        <option>Tất cả loại bệnh</option>
-                        <option>Tiểu đường</option>
-                        <option>Cao huyết áp</option>
-                        <option>Tim mạch</option>
-                    </select>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap">Loại bệnh:</span>
+                        <span className="text-sm font-bold text-slate-700 dark:text-slate-200 flex-1 text-left">{selectedDisease}</span>
+                        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isDiseaseDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <AnimatePresence>
+                        {isDiseaseDropdownOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl z-50 overflow-hidden py-1"
+                            >
+                                {['Tất cả loại bệnh', 'Tiểu đường', 'Cao huyết áp', 'Tim mạch', 'Bệnh thận', 'Phổi tắc nghẽn'].map((disease) => (
+                                    <button
+                                        key={disease}
+                                        onClick={() => {
+                                            setSelectedDisease(disease)
+                                            setIsDiseaseDropdownOpen(false)
+                                        }}
+                                        className="w-full px-6 py-3 text-left hover:bg-primary/10 transition-colors flex items-center justify-between group/item"
+                                    >
+                                        <span className={`text-sm font-bold ${selectedDisease === disease ? 'text-primary' : 'text-slate-600 dark:text-slate-400'}`}>
+                                            {disease}
+                                        </span>
+                                        {selectedDisease === disease && (
+                                            <div className="size-2 bg-primary rounded-full shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
+                                        )}
+                                    </button>
+                                ))}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
-                <button className="ml-auto flex items-center gap-2 px-4 py-2 bg-primary text-white font-bold rounded-xl shadow-md hover:bg-primary/90 transition-all active:scale-95">
-                    <span className="material-symbols-outlined">person_add</span>
+
+                <button className="ml-auto flex items-center gap-3 px-8 py-4 bg-primary text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all active:scale-95">
+                    <Plus className="w-4 h-4" />
                     <span>Thêm bệnh nhân</span>
                 </button>
             </div>
@@ -203,6 +237,16 @@ export function PatientList() {
                                             </button>
                                             <button
                                                 className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
+                                                title="Đặt lịch tái khám"
+                                                onClick={() => {
+                                                    setSelectedPatientName(patient.name)
+                                                    setIsAppointmentModalOpen(true)
+                                                }}
+                                            >
+                                                <span className="material-symbols-outlined text-xl">event_available</span>
+                                            </button>
+                                            <button
+                                                className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
                                                 title="Nhắn tin"
                                                 onClick={() => navigate('/chat')}
                                             >
@@ -210,7 +254,7 @@ export function PatientList() {
                                             </button>
                                             <button
                                                 className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
-                                                title="Kê đơn"
+                                                title="Kê đơn thuốc điện tử"
                                                 onClick={() => {
                                                     setSelectedPatientName(patient.name)
                                                     setIsPrescriptionModalOpen(true)
@@ -251,6 +295,12 @@ export function PatientList() {
             <PrescriptionModal
                 isOpen={isPrescriptionModalOpen}
                 onClose={() => setIsPrescriptionModalOpen(false)}
+                patientName={selectedPatientName}
+            />
+
+            <AppointmentModal
+                isOpen={isAppointmentModalOpen}
+                onClose={() => setIsAppointmentModalOpen(false)}
                 patientName={selectedPatientName}
             />
         </div>
