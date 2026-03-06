@@ -1,15 +1,119 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { searchPharmacyProducts, createDoctorPrescription } from '@/api/doctor'
+import { useTenant } from '@/context/TenantContext'
+import toast from 'react-hot-toast'
 
 interface PrescriptionModalProps {
     isOpen: boolean
     onClose: () => void
     patientName?: string
+    patientId?: string
 }
 
-export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Văn A' }: PrescriptionModalProps) {
+export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Văn A', patientId }: PrescriptionModalProps) {
+    const { headers, tenantId } = useTenant()
+    const queryClient = useQueryClient()
+
     const [isAddMedicationOpen, setIsAddMedicationOpen] = useState(false)
+    const [diagnosis, setDiagnosis] = useState('')
+    const [notes, setNotes] = useState('')
+    
+    // Prescription items list
+    const [items, setItems] = useState<any[]>([])
+
+    // Search query
+    const [searchQuery, setSearchQuery] = useState('')
+    // Debounced search query (in real app, use a hook)
+    const [debouncedSearch, setDebouncedSearch] = useState('')
+
+    // Form inputs for new medication
+    const [newMedData, setNewMedData] = useState({
+        productId: '',
+        productNameCustom: '',
+        quantity: 1,
+        dosageInstruction: '',
+        unitPrice: 0
+    })
+
+    const { data: searchResults } = useQuery({
+        queryKey: ['pharmacy-search', tenantId, debouncedSearch],
+        queryFn: () => searchPharmacyProducts(headers, debouncedSearch, 0, 10),
+        enabled: !!debouncedSearch && isAddMedicationOpen
+    })
+
+    const createMutation = useMutation({
+        mutationFn: (data: any) => createDoctorPrescription(data, headers),
+        onSuccess: () => {
+            toast.success("Đã kê đơn thuốc thành công!")
+            queryClient.invalidateQueries({ queryKey: ['doctor-prescriptions'] })
+            // Reset state
+            setItems([])
+            setDiagnosis('')
+            setNotes('')
+            onClose()
+            setIsAddMedicationOpen(false)
+        },
+        onError: () => {
+            toast.error("Lỗi khi thêm đơn thuốc")
+        }
+    })
+
+    const handleSearchChange = (e: any) => {
+        setSearchQuery(e.target.value)
+        // simple debounce
+        setTimeout(() => setDebouncedSearch(e.target.value), 300)
+    }
+
+    const selectProduct = (product: any) => {
+        setNewMedData({
+            ...newMedData,
+            productId: product.id,
+            productNameCustom: product.nameVi,
+            unitPrice: product.standardPrice || 0
+        })
+        setSearchQuery(product.nameVi)
+        setDebouncedSearch('') // hide dropdown
+    }
+
+    const handleAddMedication = () => {
+        if (!newMedData.productNameCustom || !newMedData.dosageInstruction || newMedData.quantity <= 0) {
+            toast.error("Vui lòng điền đủ thông tin thuốc")
+            return
+        }
+        setItems([...items, { ...newMedData }])
+        setIsAddMedicationOpen(false)
+        setNewMedData({ productId: '', productNameCustom: '', quantity: 1, dosageInstruction: '', unitPrice: 0 })
+        setSearchQuery('')
+    }
+
+    const handleRemoveItem = (index: number) => {
+        setItems(items.filter((_, i) => i !== index))
+    }
+
+    const handleSubmit = () => {
+        if (!patientId) {
+            toast.error("Không xác định được bệnh nhân")
+            return
+        }
+        if (items.length === 0) {
+            toast.error("Vui lòng thêm ít nhất một thuốc vào đơn")
+            return
+        }
+        createMutation.mutate({
+            patientId,
+            notes: notes ? `Chẩn đoán: ${diagnosis}\n${notes}` : `Chẩn đoán: ${diagnosis}`,
+            items: items.map(i => ({
+                productId: i.productId || undefined,
+                productNameCustom: i.productNameCustom,
+                quantity: i.quantity,
+                dosageInstruction: i.dosageInstruction,
+                unitPrice: i.unitPrice
+            }))
+        })
+    }
 
     if (!isOpen) return null
 
@@ -83,9 +187,10 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Chẩn đoán hiện tại</label>
                                 <input
                                     type="text"
-                                    defaultValue="Viêm họng cấp / Theo dõi đái tháo đường"
+                                    value={diagnosis}
+                                    onChange={(e) => setDiagnosis(e.target.value)}
                                     className="w-full px-4 py-3 rounded-lg border-2 border-primary/5 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 focus:ring-0 focus:border-primary outline-none transition-all text-slate-900 dark:text-white font-medium"
-                                    placeholder="Nhập chẩn đoán..."
+                                    placeholder="Ví dụ: Viêm họng cấp / Theo dõi đái tháo đường..."
                                 />
                             </div>
                         </div>
@@ -119,20 +224,21 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                        {[
-                                            { name: 'Metformin 500mg', note: 'Uống sau khi ăn', dose: '1 viên', freq: 'Sáng 1, Tối 1', duration: '30 ngày' },
-                                            { name: 'Paracetamol 500mg', note: 'Khi sốt trên 38.5 độ', dose: '1 viên', freq: 'Cách 4-6 giờ', duration: '5 ngày' }
-                                        ].map((med, idx) => (
+                                        {items.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={3} className="px-5 py-8 text-center text-slate-400 font-medium">
+                                                    Chưa có thuốc nào trong đơn
+                                                </td>
+                                            </tr>
+                                        ) : items.map((med, idx) => (
                                             <tr key={idx} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                                                 <td className="px-5 py-4">
-                                                    <div className="font-bold text-slate-900 dark:text-white">{med.name}</div>
-                                                    <div className="text-[11px] font-medium text-slate-400 group-hover:text-slate-500">{med.note}</div>
+                                                    <div className="font-bold text-slate-900 dark:text-white">{med.productNameCustom}</div>
                                                 </td>
-                                                <td className="px-5 py-4 text-sm font-medium text-slate-600 dark:text-slate-400">{med.dose}</td>
-                                                <td className="px-5 py-4 text-sm font-medium text-slate-600 dark:text-slate-400">{med.freq}</td>
-                                                <td className="px-5 py-4 text-sm font-bold text-slate-900 dark:text-white">{med.duration}</td>
+                                                <td className="px-5 py-4 text-sm font-medium text-slate-600 dark:text-slate-400">{med.dosageInstruction}</td>
+                                                <td className="px-5 py-4 text-sm font-bold text-slate-900 dark:text-white">{med.quantity} viên/lọ</td>
                                                 <td className="px-5 py-4 text-right">
-                                                    <button className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all">
+                                                    <button onClick={() => handleRemoveItem(idx)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all">
                                                         <span className="material-symbols-outlined text-xl">delete</span>
                                                     </button>
                                                 </td>
@@ -152,6 +258,8 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                                 </label>
                                 <textarea
                                     rows={2}
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
                                     placeholder="Nhập lời dặn thêm..."
                                     className="w-full px-4 py-2.5 rounded-lg border-2 border-primary/5 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 focus:ring-0 focus:border-primary outline-none transition-all resize-none text-slate-900 dark:text-white font-medium"
                                 />
@@ -199,14 +307,16 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                             Hủy
                         </button>
                         <button
-                            onClick={() => {
-                                onClose()
-                                setIsAddMedicationOpen(false)
-                            }}
-                            className="px-8 py-2.5 rounded-xl font-black bg-primary text-slate-900 hover:shadow-[0_8px_20px_-4px_rgba(74,222,128,0.4)] transition-all active:scale-[0.98] flex items-center gap-2 group"
+                            onClick={handleSubmit}
+                            disabled={createMutation.isPending}
+                            className="px-8 py-2.5 rounded-xl font-black bg-primary text-slate-900 hover:shadow-[0_8px_20px_-4px_rgba(74,222,128,0.4)] transition-all active:scale-[0.98] flex items-center gap-2 group disabled:opacity-70"
                         >
-                            <span className="material-symbols-outlined text-xl group-hover:translate-x-0.5 transition-transform">send</span>
-                            Lưu & Gửi
+                            {createMutation.isPending ? 'Đang lưu...' : (
+                                <>
+                                    <span className="material-symbols-outlined text-xl group-hover:translate-x-0.5 transition-transform">send</span>
+                                    Lưu & Gửi
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
@@ -257,7 +367,7 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                             <div className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-hide">
                                 <div className="space-y-4">
                                     {/* Search Medication */}
-                                    <div className="flex flex-col gap-1.5">
+                                    <div className="flex flex-col gap-1.5 relative">
                                         <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tên thuốc</label>
                                         <div className="relative group">
                                             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-primary group-focus-within:scale-110 transition-transform">
@@ -267,64 +377,46 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                                                 className="w-full h-11 pl-10 pr-4 bg-white dark:bg-slate-800 border-2 border-primary/10 focus:border-primary focus:ring-0 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 transition-all font-bold"
                                                 placeholder="Tìm kiếm tên thuốc..."
                                                 type="text"
+                                                value={searchQuery}
+                                                onChange={handleSearchChange}
                                             />
                                         </div>
+
+                                        {/* Dropdown Results */}
+                                        {debouncedSearch && searchResults?.content && searchResults.content.length > 0 && (
+                                            <div className="absolute top-[70px] left-0 w-full bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 max-h-48 overflow-y-auto z-50">
+                                                {searchResults.content.map((product: any) => (
+                                                    <div
+                                                        key={product.id}
+                                                        onClick={() => selectProduct(product)}
+                                                        className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700/50 last:border-0"
+                                                    >
+                                                        <p className="font-bold text-sm text-slate-900 dark:text-white">{product.nameVi}</p>
+                                                        {product.genericName && <p className="text-xs text-slate-500">{product.genericName}</p>}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {debouncedSearch && searchResults?.content?.length === 0 && (
+                                            <div className="absolute top-[70px] left-0 w-full bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 p-4 text-center text-sm text-slate-500 z-50">
+                                                Không tìm thấy thuốc nào khớp.
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Dosage & Frequency */}
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="flex flex-col gap-1.5">
-                                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Liều dùng</label>
+                                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Số lượng</label>
                                             <div className="relative group">
                                                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                                     <span className="material-symbols-outlined text-xl">medication</span>
                                                 </div>
                                                 <input
                                                     className="w-full h-11 pl-10 pr-4 bg-white dark:bg-slate-800 border-2 border-primary/10 focus:border-primary focus:ring-0 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 font-bold"
-                                                    placeholder="Ví dụ: 1 viên"
-                                                    type="text"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col gap-1.5">
-                                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tần suất</label>
-                                            <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                                    <span className="material-symbols-outlined text-xl">repeat</span>
-                                                </div>
-                                                <input
-                                                    className="w-full h-11 pl-10 pr-4 bg-white dark:bg-slate-800 border-2 border-primary/10 focus:border-primary focus:ring-0 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 font-bold"
-                                                    placeholder="Ví dụ: Sáng 1, Tối 1"
-                                                    type="text"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Duration & Start Date */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="flex flex-col gap-1.5">
-                                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Thời gian</label>
-                                            <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                                    <span className="material-symbols-outlined text-xl">schedule</span>
-                                                </div>
-                                                <input
-                                                    className="w-full h-11 pl-10 pr-4 bg-white dark:bg-slate-800 border-2 border-primary/10 focus:border-primary focus:ring-0 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 font-bold"
-                                                    placeholder="Ví dụ: 30 ngày"
-                                                    type="text"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col gap-1.5">
-                                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Ngày bắt đầu</label>
-                                            <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                                    <span className="material-symbols-outlined text-xl">calendar_today</span>
-                                                </div>
-                                                <input
-                                                    className="w-full h-11 pl-10 pr-4 bg-white dark:bg-slate-800 border-2 border-primary/10 focus:border-primary focus:ring-0 rounded-lg text-slate-900 dark:text-slate-100 font-bold"
-                                                    type="date"
+                                                    type="number"
+                                                    min={1}
+                                                    value={newMedData.quantity}
+                                                    onChange={(e) => setNewMedData({ ...newMedData, quantity: parseInt(e.target.value) || 1 })}
                                                 />
                                             </div>
                                         </div>
@@ -332,15 +424,17 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
 
                                     {/* Note */}
                                     <div className="flex flex-col gap-1.5">
-                                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Ghi chú hướng dẫn</label>
+                                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Hướng dẫn sử dụng</label>
                                         <div className="relative group">
                                             <div className="absolute top-3 left-3.5 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                                 <span className="material-symbols-outlined text-xl">edit_note</span>
                                             </div>
                                             <textarea
                                                 className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border-2 border-primary/10 focus:border-primary focus:ring-0 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 resize-none font-medium"
-                                                placeholder="Ghi chú: Uống sau khi ăn..."
+                                                placeholder="VD: Ngày uổng 2 lần, mỗi lần 1 viên sau ăn..."
                                                 rows={2}
+                                                value={newMedData.dosageInstruction}
+                                                onChange={(e) => setNewMedData({ ...newMedData, dosageInstruction: e.target.value })}
                                             />
                                         </div>
                                     </div>
@@ -364,7 +458,7 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
                                     Hủy bỏ
                                 </button>
                                 <button
-                                    onClick={() => setIsAddMedicationOpen(false)}
+                                    onClick={handleAddMedication}
                                     className="px-7 py-2 bg-primary text-slate-900 rounded-xl font-black hover:shadow-[0_8px_20px_-4px_rgba(74,222,128,0.4)] transition-all active:scale-[0.98] flex items-center gap-2 group"
                                 >
                                     <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">add_circle</span>

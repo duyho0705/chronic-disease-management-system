@@ -91,8 +91,19 @@ export async function getPatientClinicalSummary(
 }
 
 // ═══════════════════════════════════════════════════
-//  Quản lý Đơn thuốc Điện tử
-// ═══════════════════════════════════════════════════
+
+/** Danh mục Thuốc (Search) để thêm vào đơn */
+export async function searchPharmacyProducts(
+    headers: TenantHeaders | null,
+    search: string = '',
+    page = 0,
+    size = 20
+): Promise<PagedResponse<any>> {
+    return get<PagedResponse<any>>(
+        `/doctor-portal/pharmacy/products?search=${encodeURIComponent(search)}&page=${page}&size=${size}`,
+        headers
+    )
+}
 
 /** Danh sách đơn thuốc do bác sĩ kê (phân trang) */
 export async function getDoctorPrescriptions(
@@ -113,6 +124,18 @@ export async function getDoctorPrescriptionById(
 ): Promise<PrescriptionDto> {
     return get<PrescriptionDto>(
         `/doctor-portal/prescriptions/${id}`,
+        headers
+    )
+}
+
+/** Tạo đơn thuốc mới */
+export async function createDoctorPrescription(
+    data: any,
+    headers: TenantHeaders | null
+): Promise<PrescriptionDto> {
+    return post<PrescriptionDto>(
+        `/doctor-portal/prescriptions`,
+        data,
         headers
     )
 }

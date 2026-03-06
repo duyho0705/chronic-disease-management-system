@@ -10,7 +10,6 @@ import vn.clinic.cdm.api.dto.auth.LoginRequest;
 import vn.clinic.cdm.api.dto.auth.LoginResponse;
 import vn.clinic.cdm.config.JwtProperties;
 import vn.clinic.cdm.config.JwtUtil;
-import vn.clinic.cdm.common.ManagementConstants;
 import vn.clinic.cdm.common.exception.ApiException;
 import vn.clinic.cdm.common.exception.ErrorCode;
 import vn.clinic.cdm.identity.domain.IdentityUser;

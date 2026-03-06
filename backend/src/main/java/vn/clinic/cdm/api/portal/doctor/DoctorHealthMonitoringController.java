@@ -3,7 +3,6 @@ package vn.clinic.cdm.api.portal.doctor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,6 @@ import java.util.UUID;
 @RequestMapping("/api/doctor-portal/patients/{patientId}/health")
 @RequiredArgsConstructor
 @Tag(name = "Doctor Health Monitoring", description = "Theo dõi chỉ số sức khỏe bệnh nhân dành cho bác sĩ")
-@Slf4j
 @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
 public class DoctorHealthMonitoringController {
 
