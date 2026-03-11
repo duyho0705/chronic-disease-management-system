@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTenant } from '@/context/TenantContext'
 import { getTenant, getTenantByCode, getBranches } from '@/api/tenants'
-import type { TenantDto, TenantBranchDto } from '@/types/api'
+import type { TenantDto, TenantBranchDto } from '@/api-client'
 import { CustomSelect } from './CustomSelect'
 import { MapPin, Building, RotateCcw, Search } from 'lucide-react'
 

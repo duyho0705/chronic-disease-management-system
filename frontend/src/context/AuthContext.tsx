@@ -1,7 +1,10 @@
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react'
-import { getStoredToken } from '@/api/client'
-import * as authApi from '@/api/auth'
-import type { AuthUserDto, LoginRequest, RegisterRequest, LoginResponse, SocialLoginRequest } from '@/types/api'
+import { getStoredToken, setStoredToken } from '@/api/client'
+import { AuthService, OpenAPI } from '@/api-client'
+import type { AuthUserDto, LoginRequest, RegisterRequest, LoginResponse, SocialLoginRequest } from '@/api-client'
+
+// Configure OpenAPI globally
+OpenAPI.BASE = 'http://localhost:8080'
 
 type AuthContextValue = {
   user: AuthUserDto | null
@@ -35,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const normalizedUser = {
       ...u,
-      roles: u.roles.map(mapRole),
+      roles: (u.roles || []).map(mapRole),
     }
     setUserState(normalizedUser)
   }, [])
@@ -48,15 +51,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false)
       return
     }
+    // Set token globally for OpenAPI
+    OpenAPI.TOKEN = t
     try {
-      const u = await authApi.me()
-      setUser(u)
-      setToken(t)
+      const res = await AuthService.me()
+      if (res.success && res.data) {
+        setUser(res.data)
+        setToken(t)
+      } else {
+        throw new Error("Failed to get user")
+      }
     } catch (err: any) {
       console.error('Failed to refresh user:', err)
-      // Only logout and clear state if it's an authentication error (401)
-      if (err.status === 401 || err.errorCode === 'UNAUTHORIZED' || err.message?.includes('401')) {
-        authApi.logout()
+      const errStatus = err?.status || err?.body?.status || err?.errorCode
+      if (errStatus === 401 || errStatus === 'UNAUTHORIZED' || err?.message?.includes('401')) {
+        AuthService.logout().catch(() => {})
+        setStoredToken(null)
+        OpenAPI.TOKEN = undefined
         setUser(null)
         setToken(null)
       }
@@ -71,9 +82,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (req: LoginRequest) => {
-      const res = await authApi.login(req)
-      setToken(res.token)
-      setUser(res.user)
+      const apiRes = await AuthService.login(req)
+      const res = apiRes.data!
+      setStoredToken(res.token!)
+      setToken(res.token!)
+      OpenAPI.TOKEN = res.token!
+      setUser(res.user!)
       return res
     },
     [setUser]
@@ -81,9 +95,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const socialLogin = useCallback(
     async (req: SocialLoginRequest) => {
-      const res = await authApi.socialLogin(req)
-      setToken(res.token)
-      setUser(res.user)
+      const apiRes = await AuthService.socialLogin(req)
+      const res = apiRes.data!
+      setStoredToken(res.token!)
+      setToken(res.token!)
+      OpenAPI.TOKEN = res.token!
+      setUser(res.user!)
       return res
     },
     [setUser]
@@ -91,16 +108,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(
     async (req: RegisterRequest) => {
-      const res = await authApi.register(req)
-      setToken(res.token)
-      setUser(res.user)
+      const apiRes = await AuthService.register(req)
+      const res = apiRes.data!
+      setStoredToken(res.token!)
+      setToken(res.token!)
+      OpenAPI.TOKEN = res.token!
+      setUser(res.user!)
       return res
     },
     [setUser]
   )
 
   const logout = useCallback(() => {
-    authApi.logout()
+    AuthService.logout().catch(() => {})
+    setStoredToken(null)
+    OpenAPI.TOKEN = undefined
     setToken(null)
     setUser(null)
   }, [])

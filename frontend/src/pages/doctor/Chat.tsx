@@ -25,7 +25,7 @@ import { useTenant } from '@/context/TenantContext'
 import { useAuth } from '@/context/AuthContext'
 import { useFirebaseChat } from '@/hooks/useFirebaseChat'
 import toast from 'react-hot-toast'
-import type { PatientChatConversationDto, PatientChatMessageDto } from '@/types/api'
+import type { PatientChatConversationDto, PatientChatMessageDto } from '@/api-client'
 import VideoCall from '@/components/VideoCall'
 import { Link } from 'react-router-dom'
 import { PrescriptionModal } from '@/components/modals/PrescriptionModal'
@@ -142,7 +142,7 @@ export default function DoctorChat() {
     }
 
     const filteredConversations = conversations?.filter(c =>
-        c.patientName.toLowerCase().includes(searchTerm.toLowerCase())
+        (c.patientName || '').toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     const selectedConv = conversations?.find(c => c.patientId === selectedPatientId)
@@ -209,7 +209,7 @@ export default function DoctorChat() {
                             return (
                                 <div
                                     key={conv.id}
-                                    onClick={() => setSelectedPatientId(conv.patientId)}
+                                    onClick={() => setSelectedPatientId(conv.patientId || null)}
                                     className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${isSelected
                                         ? 'bg-primary/10 border border-primary/20'
                                         : 'hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent'
@@ -221,7 +221,7 @@ export default function DoctorChat() {
                                                 <img src={conv.avatarUrl} alt={conv.patientName} className="size-full object-cover" />
                                             ) : (
                                                 <div className="size-full flex items-center justify-center font-black text-xs text-slate-400">
-                                                    {conv.patientName.charAt(0)}
+                                                    {(conv.patientName || '').charAt(0)}
                                                 </div>
                                             )}
                                         </div>
@@ -266,7 +266,7 @@ export default function DoctorChat() {
                                         <img className="w-full h-full object-cover" src={selectedConv.avatarUrl} alt={selectedConv.patientName} />
                                     ) : (
                                         <div className="size-full flex items-center justify-center font-black text-xs text-slate-400 bg-slate-50">
-                                            {selectedConv?.patientName.charAt(0)}
+                                            {selectedConv?.patientName?.charAt(0)}
                                         </div>
                                     )}
                                     <span className="absolute bottom-0 right-0 size-2.5 bg-green-500 border-2 border-white rounded-full"></span>
@@ -327,7 +327,7 @@ export default function DoctorChat() {
                                                     {selectedConv?.avatarUrl ? (
                                                         <img src={selectedConv.avatarUrl} alt="" className="size-full object-cover" />
                                                     ) : (
-                                                        <div className="size-full flex items-center justify-center font-black text-[10px] text-slate-400">{selectedConv?.patientName.charAt(0)}</div>
+                                                        <div className="size-full flex items-center justify-center font-black text-[10px] text-slate-400">{selectedConv?.patientName?.charAt(0)}</div>
                                                     )}
                                                 </div>
                                             )}
@@ -338,7 +338,7 @@ export default function DoctorChat() {
                                                     }`}>
                                                     <p className="text-sm font-medium leading-relaxed">{m.content}</p>
                                                     <span className={`text-[9px] mt-1.5 block font-bold uppercase tracking-tight opacity-70 ${isSelf ? 'text-right' : ''}`}>
-                                                        {new Date(m.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        {new Date(m.sentAt || 0).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
                                             </div>
@@ -421,7 +421,7 @@ export default function DoctorChat() {
                                 />
                             ) : (
                                 <div className="size-full flex items-center justify-center bg-slate-100 rounded-full font-black text-2xl text-slate-400">
-                                    {selectedConv?.patientName.charAt(0)}
+                                    {selectedConv?.patientName?.charAt(0)}
                                 </div>
                             )}
                         </div>

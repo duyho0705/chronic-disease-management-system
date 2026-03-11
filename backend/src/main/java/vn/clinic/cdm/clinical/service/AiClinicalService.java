@@ -4,7 +4,6 @@ package vn.clinic.cdm.clinical.service;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -580,7 +579,7 @@ public class AiClinicalService {
 
     private Bucket getBucket(UUID branchId) {
         return branchBuckets.computeIfAbsent(branchId, k -> Bucket.builder()
-                .addLimit(Bandwidth.classic(20, Refill.intervally(20, Duration.ofMinutes(1))))
+                .addLimit(Bandwidth.builder().capacity(20).refillIntervally(20, Duration.ofMinutes(1)).build())
                 .build());
     }
 }

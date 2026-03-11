@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import vn.clinic.cdm.common.annotation.RateLimit;
 import vn.clinic.cdm.patient.domain.Patient;
 import vn.clinic.cdm.patient.service.PatientPortalService;
 import vn.clinic.cdm.scheduling.service.SchedulingService;
@@ -48,6 +49,7 @@ public class PatientAppointmentController {
     }
 
     @PostMapping
+    @RateLimit(strict = true)
     @Operation(summary = "Äáº·t lá»‹ch háº¹n má»›i")
     public ResponseEntity<ApiResponse<AppointmentDto>> createAppointment(
             @RequestBody CreateAppointmentRequest request) {

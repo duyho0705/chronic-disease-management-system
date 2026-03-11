@@ -54,7 +54,7 @@ export function Layout() {
   }, [user, tenantId])
 
   const visibleNav = STAFF_NAV.filter(
-    (item) => !item.roles || (user?.roles && item.roles.some((r) => user.roles.includes(r)))
+    (item) => !item.roles || (user?.roles && item.roles.some((r) => user.roles?.includes(r)))
   )
 
   const handleLogout = () => {

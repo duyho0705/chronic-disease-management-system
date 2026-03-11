@@ -23,8 +23,11 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { UpdatePatientProfileRequest, ChangePasswordRequest } from '@/types/api'
+import type { UpdatePatientProfileRequest, ChangePasswordRequest } from '@/api-client'
 import { getPortalProfile, updatePortalProfile, changePortalPassword, uploadPortalAvatar } from '@/api/portal'
+
+// Extend api-client type with fields not yet in backend OpenAPI spec
+type ExtendedProfileRequest = UpdatePatientProfileRequest & { height?: string; weight?: string }
 
 
 const genderMap: Record<string, string> = {
@@ -37,7 +40,7 @@ export default function PatientProfile() {
     const { headers } = useTenant()
     const queryClient = useQueryClient()
     const [isEditing, setIsEditing] = useState(false)
-    const [formData, setFormData] = useState<UpdatePatientProfileRequest>({
+    const [formData, setFormData] = useState<ExtendedProfileRequest>({
         fullNameVi: '',
         dateOfBirth: '',
         gender: 'OTHER',
@@ -129,7 +132,7 @@ export default function PatientProfile() {
     }
 
     const updateMutation = useMutation({
-        mutationFn: (data: UpdatePatientProfileRequest) => updatePortalProfile(data, headers),
+        mutationFn: (data: ExtendedProfileRequest) => updatePortalProfile(data as any, headers),
         onSuccess: () => {
             toast.success('Cập nhật hồ sơ thành công!')
             queryClient.invalidateQueries({ queryKey: ['portal-profile'] })

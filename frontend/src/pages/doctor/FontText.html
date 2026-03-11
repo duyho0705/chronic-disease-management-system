@@ -6,8 +6,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
     <link
@@ -31,259 +30,165 @@
             },
         }
     </script>
-    <title>Cài đặt hệ thống - Sống Khỏe</title>
+    <title>Đăng ký - Sống Khỏe</title>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
-    <div class="relative flex min-h-screen w-full">
-        <!-- Sidebar Navigation -->
-        <aside class="w-64 border-r border-primary/10 bg-white dark:bg-slate-900 flex flex-col h-screen sticky top-0">
-            <div class="p-6 flex flex-col h-full justify-between">
-                <div class="flex flex-col gap-8">
-                    <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
-                            <span class="material-symbols-outlined">health_and_safety</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <h1 class="text-slate-900 dark:text-white text-base font-bold leading-none">Sống Khỏe</h1>
-                            <p class="text-primary text-xs font-medium">Hệ thống bác sĩ</p>
-                        </div>
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <!-- Navigation Header -->
+            <header
+                class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 md:px-10 py-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
+                <div class="flex items-center gap-3 text-slate-900 dark:text-slate-100">
+                    <div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+                        <span class="material-symbols-outlined">health_and_safety</span>
                     </div>
-                    <nav class="flex flex-col gap-2">
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 transition-colors"
-                            href="#">
-                            <span class="material-symbols-outlined">dashboard</span>
-                            <span class="text-sm font-medium">Bảng điều khiển</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 transition-colors"
-                            href="#">
-                            <span class="material-symbols-outlined">calendar_month</span>
-                            <span class="text-sm font-medium">Lịch hẹn</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 transition-colors"
-                            href="#">
-                            <span class="material-symbols-outlined">group</span>
-                            <span class="text-sm font-medium">Bệnh nhân</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 transition-colors"
-                            href="#">
-                            <span class="material-symbols-outlined">chat</span>
-                            <span class="text-sm font-medium">Tin nhắn</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/20 text-slate-900 dark:text-white border-l-4 border-primary"
-                            href="#">
-                            <span class="material-symbols-outlined text-primary">settings</span>
-                            <span class="text-sm font-bold">Cài đặt</span>
-                        </a>
-                    </nav>
+                    <h2 class="text-lg font-bold leading-tight tracking-tight">Sống Khỏe</h2>
                 </div>
-                <button
-                    class="flex items-center justify-center gap-2 w-full bg-primary hover:bg-primary/90 text-slate-900 font-bold py-2.5 rounded-xl transition-all">
-                    <span class="material-symbols-outlined text-xl">logout</span>
-                    <span class="text-sm">Đăng xuất</span>
-                </button>
-            </div>
-        </aside>
-        <!-- Main Content Area -->
-        <main class="flex-1 overflow-y-auto px-8 py-10 max-w-5xl mx-auto">
-            <header class="mb-8">
-                <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Cài đặt hệ thống</h1>
-                <p class="text-slate-500 dark:text-slate-400 mt-2">Quản lý thông tin cá nhân và cấu hình ứng dụng của
-                    bạn</p>
+                <div class="flex items-center gap-4">
+                    <span class="hidden md:block text-sm text-slate-500 dark:text-slate-400">Đã có tài khoản?</span>
+                    <button
+                        class="flex items-center justify-center rounded-xl h-10 bg-primary/10 dark:bg-primary/20 text-primary px-4 text-sm font-bold hover:bg-primary/20 transition-all">
+                        Đăng nhập
+                    </button>
+                </div>
             </header>
-            <!-- Tabs -->
-            <div class="border-b border-primary/10 mb-8">
-                <nav class="flex gap-8 overflow-x-auto no-scrollbar">
-                    <a class="pb-4 text-sm font-bold border-b-2 border-primary text-slate-900 dark:text-white whitespace-nowrap"
-                        href="#profile">Hồ sơ cá nhân</a>
-                    <a class="pb-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-primary transition-colors whitespace-nowrap"
-                        href="#notifications">Thông báo</a>
-                    <a class="pb-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-primary transition-colors whitespace-nowrap"
-                        href="#security">Bảo mật</a>
-                    <a class="pb-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-primary transition-colors whitespace-nowrap"
-                        href="#interface">Giao diện</a>
-                </nav>
-            </div>
-            <div class="space-y-12">
-                <!-- Profile Section -->
-                <section class="space-y-6" id="profile">
-                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Hồ sơ cá nhân</h2>
-                    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
-                        <div class="flex items-center gap-6 mb-8">
-                            <div class="relative group">
-                                <div class="w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-800 bg-cover bg-center border-4 border-white dark:border-slate-700 overflow-hidden"
-                                    data-alt="Professional portrait of a male doctor in lab coat"
-                                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCmt3x7P82LWX82ocl7M65YWvQnjcYIXnzKp4y0DVrjh3qPwTRE_RaJ0LpeXdUFUuE1LLZ_AhdIGlD3In5SNfYTjcCKPLEKXS20tirIziRwcKkIXRJPSOrcZxVkYts36xLYSEFfdo8C0GdYlboF6ls5iu3HYHQwnXStlUSkrjxAftrAGanmIGIa31wsSL6o87MvJOLfGzzvFPKyGJPOYdw0lnKSIC2dz81HkWkFu8ao6LjkfHr2p3KVk2bWin6ru5SiAK4oc7wC1vE')">
-                                </div>
-                                <button
-                                    class="absolute bottom-0 right-0 p-1.5 bg-primary rounded-full text-slate-900 border-2 border-white dark:border-slate-900 shadow-md">
-                                    <span class="material-symbols-outlined text-sm block">edit</span>
-                                </button>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold">BS. Nguyễn Văn A</h3>
-                                <p class="text-sm text-slate-500">Bác sĩ chuyên khoa II - Nội tổng quát</p>
-                                <button class="mt-2 text-xs font-bold text-primary hover:underline">Thay đổi ảnh đại
-                                    diện</button>
+            <main class="flex flex-1 justify-center py-10 px-4">
+                <div
+                    class="layout-content-container flex flex-col max-w-[520px] flex-1 bg-white dark:bg-slate-900/50 p-6 md:p-10 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <!-- Welcome Text -->
+                    <div class="flex flex-col gap-2 mb-8 text-center md:text-left">
+                        <h1
+                            class="text-3xl md:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">
+                            Tạo tài khoản</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-base font-medium">Tham gia cộng đồng Sống Khỏe
+                            để quản lý sức khỏe tốt hơn mỗi ngày</p>
+                    </div>
+                    <!-- Registration Form -->
+                    <form class="flex flex-col gap-5" onsubmit="return false;">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold px-1">Họ và
+                                tên</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+                                <input
+                                    class="form-input flex w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 h-14 pl-12 pr-4 text-base focus:border-primary focus:ring-primary/20 dark:text-white placeholder:text-slate-400 transition-all"
+                                    placeholder="Nhập họ và tên của bạn" type="text" />
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Họ và
-                                    tên</label>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold px-1">Email</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
                                 <input
-                                    class="w-full bg-slate-50 dark:bg-slate-800 border-primary/10 rounded-lg focus:ring-primary focus:border-primary text-sm p-3"
-                                    type="text" value="Nguyễn Văn A" />
+                                    class="form-input flex w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 h-14 pl-12 pr-4 text-base focus:border-primary focus:ring-primary/20 dark:text-white placeholder:text-slate-400 transition-all"
+                                    placeholder="example@gmail.com" type="email" />
                             </div>
-                            <div class="space-y-2">
-                                <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Chuyên
-                                    khoa</label>
-                                <select
-                                    class="w-full bg-slate-50 dark:bg-slate-800 border-primary/10 rounded-lg focus:ring-primary focus:border-primary text-sm p-3">
-                                    <option>Nội tổng quát</option>
-                                    <option>Nhi khoa</option>
-                                    <option>Sản phụ khoa</option>
-                                    <option>Tim mạch</option>
-                                </select>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Số điện
-                                    thoại</label>
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold px-1">Số điện
+                                thoại</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">call</span>
                                 <input
-                                    class="w-full bg-slate-50 dark:bg-slate-800 border-primary/10 rounded-lg focus:ring-primary focus:border-primary text-sm p-3"
-                                    type="tel" value="0901 234 567" />
+                                    class="form-input flex w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 h-14 pl-12 pr-4 text-base focus:border-primary focus:ring-primary/20 dark:text-white placeholder:text-slate-400 transition-all"
+                                    placeholder="090 123 4567" type="tel" />
                             </div>
-                            <div class="space-y-2">
-                                <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Email công
-                                    việc</label>
-                                <input
-                                    class="w-full bg-slate-50 dark:bg-slate-800 border-primary/10 rounded-lg focus:ring-primary focus:border-primary text-sm p-3"
-                                    type="email" value="bs.vana@songkhoe.vn" />
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold px-1">Mật
+                                    khẩu</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
+                                    <input
+                                        class="form-input flex w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 h-14 pl-12 pr-4 text-base focus:border-primary focus:ring-primary/20 dark:text-white placeholder:text-slate-400 transition-all"
+                                        placeholder="••••••••" type="password" />
+                                </div>
                             </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold px-1">Xác nhận
+                                    mật khẩu</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock_reset</span>
+                                    <input
+                                        class="form-input flex w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 h-14 pl-12 pr-4 text-base focus:border-primary focus:ring-primary/20 dark:text-white placeholder:text-slate-400 transition-all"
+                                        placeholder="••••••••" type="password" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 py-2">
+                            <input
+                                class="mt-1 rounded text-primary focus:ring-primary bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                                id="terms" type="checkbox" />
+                            <label class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed" for="terms">
+                                Tôi đồng ý với <a class="text-primary hover:underline font-semibold" href="#">Điều khoản
+                                    dịch vụ</a> và <a class="text-primary hover:underline font-semibold" href="#">Chính
+                                    sách bảo mật</a> của Sống Khỏe.
+                            </label>
+                        </div>
+                        <button
+                            class="w-full bg-primary hover:bg-primary/90 text-white h-14 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+                            <span>Đăng ký ngay</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </form>
+                    <!-- Divider -->
+                    <div class="relative my-8">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-slate-200 dark:border-slate-800"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="bg-white dark:bg-slate-900 px-4 text-slate-400">Hoặc tiếp tục với</span>
                         </div>
                     </div>
-                </section>
-                <!-- Notifications Section -->
-                <section class="space-y-6" id="notifications">
-                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Thông báo</h2>
-                    <div
-                        class="bg-white dark:bg-slate-900 rounded-xl border border-primary/5 shadow-sm divide-y divide-primary/5">
-                        <div class="p-6 flex items-center justify-between">
-                            <div>
-                                <p class="font-bold">Thông báo qua Email</p>
-                                <p class="text-sm text-slate-500">Nhận báo cáo tổng hợp và lịch hẹn qua email</p>
-                            </div>
-                            <div class="relative inline-flex items-center cursor-pointer">
-                                <input checked="" class="sr-only peer" type="checkbox" />
-                                <div
-                                    class="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-6 flex items-center justify-between">
-                            <div>
-                                <p class="font-bold">Thông báo SMS</p>
-                                <p class="text-sm text-slate-500">Thông báo khẩn cấp cho các ca trực tiếp</p>
-                            </div>
-                            <div class="relative inline-flex items-center cursor-pointer">
-                                <input class="sr-only peer" type="checkbox" />
-                                <div
-                                    class="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-6 flex items-center justify-between">
-                            <div>
-                                <p class="font-bold">Thông báo đẩy (Push)</p>
-                                <p class="text-sm text-slate-500">Thông báo trực tiếp trên trình duyệt hoặc điện thoại
-                                </p>
-                            </div>
-                            <div class="relative inline-flex items-center cursor-pointer">
-                                <input checked="" class="sr-only peer" type="checkbox" />
-                                <div
-                                    class="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Social Logins -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <button
+                            class="flex items-center justify-center gap-3 h-12 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                            <svg class="w-5 h-5" viewbox="0 0 24 24">
+                                <path
+                                    d="M12 5.04c1.9 0 3.51.64 4.85 1.91l3.62-3.62C18.23 1.33 15.35 0 12 0 7.31 0 3.32 2.68 1.41 6.59l4.23 3.29C6.64 7.08 9.09 5.04 12 5.04z"
+                                    fill="#EA4335"></path>
+                                <path
+                                    d="M23.49 12.27c0-.85-.07-1.68-.21-2.48H12v4.69h6.44c-.28 1.51-1.13 2.79-2.41 3.65l3.86 2.99c2.26-2.09 3.6-5.17 3.6-8.85z"
+                                    fill="#4285F4"></path>
+                                <path
+                                    d="M5.64 14.86c-.24-.72-.37-1.49-.37-2.3s.13-1.58.37-2.3L1.41 6.59C.51 8.24 0 10.06 0 12s.51 3.76 1.41 5.41l4.23-3.29z"
+                                    fill="#FBBC05"></path>
+                                <path
+                                    d="M12 24c3.24 0 5.96-1.07 7.95-2.91l-3.86-2.99c-1.1.74-2.51 1.18-4.09 1.18-2.91 0-5.36-2.04-6.25-4.81l-4.23 3.29C3.32 21.32 7.31 24 12 24z"
+                                    fill="#34A853"></path>
+                            </svg>
+                            <span class="text-sm font-semibold">Google</span>
+                        </button>
+                        <button
+                            class="flex items-center justify-center gap-3 h-12 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                            <svg class="w-5 h-5" fill="#1877F2" viewbox="0 0 24 24">
+                                <path
+                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z">
+                                </path>
+                            </svg>
+                            <span class="text-sm font-semibold">Facebook</span>
+                        </button>
                     </div>
-                </section>
-                <!-- Security Section -->
-                <section class="space-y-6" id="security">
-                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Bảo mật</h2>
-                    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm space-y-8">
-                        <div class="space-y-4">
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Đổi mật khẩu</h3>
-                            <div class="grid grid-cols-1 gap-4">
-                                <input
-                                    class="bg-slate-50 dark:bg-slate-800 border-primary/10 rounded-lg text-sm p-3 focus:ring-primary focus:border-primary"
-                                    placeholder="Mật khẩu hiện tại" type="password" />
-                                <input
-                                    class="bg-slate-50 dark:bg-slate-800 border-primary/10 rounded-lg text-sm p-3 focus:ring-primary focus:border-primary"
-                                    placeholder="Mật khẩu mới" type="password" />
-                                <input
-                                    class="bg-slate-50 dark:bg-slate-800 border-primary/10 rounded-lg text-sm p-3 focus:ring-primary focus:border-primary"
-                                    placeholder="Xác nhận mật khẩu mới" type="password" />
-                            </div>
-                        </div>
-                        <div class="pt-4 border-t border-primary/5 flex items-center justify-between">
-                            <div>
-                                <p class="font-bold">Xác thực 2 yếu tố (2FA)</p>
-                                <p class="text-sm text-slate-500">Bảo vệ tài khoản bằng mã xác nhận qua điện thoại</p>
-                            </div>
-                            <button
-                                class="px-4 py-2 bg-primary/20 text-slate-900 font-bold rounded-lg text-sm hover:bg-primary/30 transition-colors">
-                                Thiết lập
-                            </button>
-                        </div>
-                    </div>
-                </section>
-                <!-- Interface Section -->
-                <section class="space-y-6" id="interface">
-                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Giao diện</h2>
-                    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm space-y-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="space-y-4">
-                                <label class="text-sm font-bold uppercase tracking-wider text-slate-400">Chế độ hiển
-                                    thị</label>
-                                <div class="flex gap-4">
-                                    <button
-                                        class="flex-1 border-2 border-primary bg-primary/10 p-3 rounded-lg flex flex-col items-center gap-2">
-                                        <span class="material-symbols-outlined text-primary">light_mode</span>
-                                        <span class="text-sm font-bold">Sáng</span>
-                                    </button>
-                                    <button
-                                        class="flex-1 border-2 border-transparent bg-slate-50 dark:bg-slate-800 p-3 rounded-lg flex flex-col items-center gap-2 text-slate-400">
-                                        <span class="material-symbols-outlined">dark_mode</span>
-                                        <span class="text-sm font-bold">Tối</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="space-y-4">
-                                <label class="text-sm font-bold uppercase tracking-wider text-slate-400">Ngôn
-                                    ngữ</label>
-                                <select
-                                    class="w-full bg-slate-50 dark:bg-slate-800 border-primary/10 rounded-lg focus:ring-primary focus:border-primary text-sm p-3">
-                                    <option>Tiếng Việt</option>
-                                    <option>English</option>
-                                    <option>Français</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <!-- Action Footer -->
-                <div class="pt-10 flex justify-end gap-4">
-                    <button
-                        class="px-6 py-3 rounded-xl border border-primary/20 text-slate-600 dark:text-slate-400 font-bold hover:bg-primary/5 transition-all">
-                        Hủy bỏ
-                    </button>
-                    <button
-                        class="px-8 py-3 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                        Lưu thay đổi
-                    </button>
+                    <p class="mt-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                        Bạn đã tham gia Sống Khỏe? <a class="text-primary font-bold hover:underline" href="#">Đăng nhập
+                            ngay</a>
+                    </p>
                 </div>
-            </div>
-        </main>
+            </main>
+            <!-- Footer Small -->
+            <footer class="py-6 px-10 border-t border-slate-100 dark:border-slate-800 text-center">
+                <p class="text-xs text-slate-400">© 2024 Sống Khỏe. Đội ngũ bác sĩ đồng hành cùng bạn.</p>
+            </footer>
+        </div>
     </div>
 </body>
 

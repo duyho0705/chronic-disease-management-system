@@ -39,7 +39,7 @@ import {
     Tooltip
 } from 'recharts'
 import toast from 'react-hot-toast'
-import type { TriageVitalDto } from '@/types/api'
+import type { TriageVitalDto } from '@/api-client'
 
 // --- Types & Constants ---
 type VitalType = 'BLOOD_GLUCOSE' | 'BLOOD_PRESSURE_SYS' | 'BLOOD_PRESSURE_DIA' | 'HEART_RATE' | 'WEIGHT' | 'SPO2' | 'TEMPERATURE'
@@ -105,7 +105,7 @@ function getVitalUnit(type: string): string {
 // Build chart data from vital history
 function buildChartData(vitalHistory: TriageVitalDto[] | undefined, type: string) {
     const filtered = vitalHistory?.filter(v => v.vitalType?.toUpperCase() === type.toUpperCase()) || []
-    const sorted = [...filtered].sort((a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime())
+    const sorted = [...filtered].sort((a, b) => new Date(a.recordedAt || 0).getTime() - new Date(b.recordedAt || 0).getTime())
     const last7 = sorted.slice(-7)
     const dayLabels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
 
@@ -115,7 +115,7 @@ function buildChartData(vitalHistory: TriageVitalDto[] | undefined, type: string
     }
 
     return last7.map(v => ({
-        d: dayLabels[new Date(v.recordedAt).getDay()],
+        d: dayLabels[new Date(v.recordedAt || 0).getDay()],
         chiSo: v.valueNumeric
     }))
 }
@@ -172,10 +172,10 @@ export default function PatientDashboard() {
         const history = dashboard?.vitalHistory || []
         const sorted = history
             .filter(v => v.vitalType?.toUpperCase() === type.toUpperCase())
-            .sort((a, b) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime())
+            .sort((a, b) => new Date(b.recordedAt || 0).getTime() - new Date(a.recordedAt || 0).getTime())
 
         if (sorted.length < 2) return null
-        const latest = sorted[0].valueNumeric
+        const latest = sorted[0].valueNumeric ?? 0
         const prev = sorted[1].valueNumeric
         if (!prev) return null
         const diff = latest - prev
@@ -218,8 +218,8 @@ export default function PatientDashboard() {
                             unit="mmol/L"
                             chartData={glucoseChartData}
                             gradientId="glucoseGrad"
-                            statusLabel={glucoseVital && glucoseVital.valueNumeric > 6 ? "Cận cao" : "Ổn định"}
-                            statusColor={glucoseVital && glucoseVital.valueNumeric > 6 ? "amber" : "emerald"}
+                            statusLabel={glucoseVital && (glucoseVital.valueNumeric ?? 0) > 6 ? "Cận cao" : "Ổn định"}
+                            statusColor={glucoseVital && (glucoseVital.valueNumeric ?? 0) > 6 ? "amber" : "emerald"}
                             trend={glucoseTrend}
                         />
                         <VitalTrendCard
@@ -228,8 +228,8 @@ export default function PatientDashboard() {
                             unit="mmHg"
                             chartData={bpChartData}
                             gradientId="bpGrad"
-                            statusLabel={sysVital && sysVital.valueNumeric > 140 ? "Cao" : "Ổn định"}
-                            statusColor={sysVital && sysVital.valueNumeric > 140 ? "rose" : "emerald"}
+                            statusLabel={sysVital && (sysVital.valueNumeric ?? 0) > 140 ? "Cao" : "Ổn định"}
+                            statusColor={sysVital && (sysVital.valueNumeric ?? 0) > 140 ? "rose" : "emerald"}
                             trend={bpTrend}
                         />
                     </div>
@@ -823,7 +823,7 @@ function SecondaryVitalsGrid({ vitals }: { vitals: TriageVitalDto[] }) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {vitals.slice(0, 3).map((vital) => {
-                const iconInfo = getVitalIcon(vital.vitalType)
+                const iconInfo = getVitalIcon(vital.vitalType || '')
                 const IconComp = iconInfo.icon
                 return (
                     <div key={vital.id || vital.vitalType} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center gap-4 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 shadow-sm">
@@ -831,9 +831,9 @@ function SecondaryVitalsGrid({ vitals }: { vitals: TriageVitalDto[] }) {
                             <IconComp className={`w-6 h-6 ${iconInfo.fill ? 'fill-current' : ''}`} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-slate-400 tracking-widest">{getVitalLabel(vital.vitalType)}</p>
+                            <p className="text-[10px] font-black text-slate-400 tracking-widest">{getVitalLabel(vital.vitalType || '')}</p>
                             <p className="text-xl font-black text-slate-900 dark:text-white mt-0.5">
-                                {vital.valueNumeric} {vital.unit || getVitalUnit(vital.vitalType)}
+                                {vital.valueNumeric} {vital.unit || getVitalUnit(vital.vitalType || '')}
                             </p>
                         </div>
                     </div>

@@ -16,6 +16,7 @@ import vn.clinic.cdm.api.dto.clinical.ConsultationDto;
 import vn.clinic.cdm.api.dto.clinical.ConsultationDetailDto;
 import vn.clinic.cdm.api.dto.clinical.VitalTrendDto;
 
+import vn.clinic.cdm.common.annotation.RateLimit;
 import vn.clinic.cdm.patient.domain.Patient;
 import vn.clinic.cdm.patient.service.PatientPortalService;
 
@@ -75,6 +76,7 @@ public class PatientClinicalController {
         }
 
         @PostMapping("/vitals")
+        @RateLimit(strict = true)
         @Operation(summary = "Bệnh nhân tự nhập chỉ số sinh hiệu")
         public ResponseEntity<ApiResponse<PatientVitalLogDto>> logVital(@RequestBody PatientVitalLogDto dto) {
                 Patient p = portalService.getAuthenticatedPatient();
@@ -82,6 +84,7 @@ public class PatientClinicalController {
         }
 
         @PostMapping(value = "/vitals/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        @RateLimit(strict = true)
         @Operation(summary = "Nhập chỉ số sinh hiệu kèm ảnh máy đo")
         public ResponseEntity<ApiResponse<PatientVitalLogDto>> logVitalWithImage(
                         @RequestParam String vitalType,

@@ -7,7 +7,7 @@ import { ChevronDown, Plus, Loader2, Users, ChevronLeft, ChevronRight } from 'lu
 import { useTenant } from '@/context/TenantContext'
 import { useQuery } from '@tanstack/react-query'
 import { getDoctorPatientList } from '@/api/doctor'
-import type { PatientDto } from '@/types/api'
+import type { PatientDto } from '@/api-client'
 
 export function PatientList() {
     const navigate = useNavigate()
@@ -225,7 +225,7 @@ export function PatientList() {
                                                     className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
                                                     title="Đặt lịch tái khám"
                                                     onClick={() => {
-                                                        setSelectedPatientName(patient.fullNameVi)
+                                                        setSelectedPatientName(patient.fullNameVi || '')
                                                         setIsAppointmentModalOpen(true)
                                                     }}
                                                 >
@@ -242,7 +242,7 @@ export function PatientList() {
                                                     className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
                                                     title="Kê đơn thuốc điện tử"
                                                     onClick={() => {
-                                                        setSelectedPatientName(patient.fullNameVi)
+                                                        setSelectedPatientName(patient.fullNameVi || '')
                                                         setIsPrescriptionModalOpen(true)
                                                     }}
                                                 >

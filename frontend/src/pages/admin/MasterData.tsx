@@ -10,7 +10,8 @@ import {
     Settings2, DollarSign, Info, Package
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { MedicalServiceDto, PharmacyProductDto } from '@/types/api'
+import type { MedicalServiceDto } from '@/api-client'
+import type { PharmacyProductDto } from '@/types/api'
 
 type Tab = 'SERVICES' | 'PHARMACY'
 
@@ -51,7 +52,7 @@ export function MasterData() {
     // Mutations
     const serviceMutation = useMutation({
         mutationFn: (data: Partial<MedicalServiceDto>) =>
-            editingService ? updateMedicalService(editingService.id, data, headers) : createMedicalService(data, headers),
+            editingService ? updateMedicalService(editingService.id || '', data, headers) : createMedicalService(data, headers),
         onSuccess: () => {
             toastService.success(editingService ? '✨ Cập nhật dịch vụ thành công' : '✅ Đã thêm dịch vụ mới')
             setIsServiceModalOpen(false)
@@ -320,7 +321,7 @@ function ServiceForm({ initialData, onSubmit, onCancel, isPending }: {
         description: '',
         category: 'EXAM',
         unitPrice: 0,
-        isActive: true
+        active: true
     })
 
     return (
@@ -399,17 +400,17 @@ function ServiceForm({ initialData, onSubmit, onCancel, isPending }: {
                     <div className="md:col-span-2 space-y-2">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Trạng thái hoạt động</label>
                         <div
-                            onClick={() => setForm({ ...form, isActive: !form.isActive })}
-                            className={`flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${form.isActive ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}
+                            onClick={() => setForm({ ...form, active: !form.active })}
+                            className={`flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${form.active ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}
                         >
-                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${form.isActive ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${form.active ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
                                 <Info className="w-5 h-5" />
                             </div>
                             <div>
-                                <p className={`font-black uppercase tracking-widest text-[10px] ${form.isActive ? 'text-emerald-600' : 'text-red-600'}`}>
-                                    {form.isActive ? 'Đang hoạt động' : 'Tạm ngừng cung cấp'}
+                                <p className={`font-black uppercase tracking-widest text-[10px] ${form.active ? 'text-emerald-600' : 'text-red-600'}`}>
+                                    {form.active ? 'Đang hoạt động' : 'Tạm ngừng cung cấp'}
                                 </p>
-                                <p className="text-xs font-bold text-slate-500">Người dùng sẽ {form.isActive ? 'lựa chọn được' : 'không thấy'} dịch vụ này.</p>
+                                <p className="text-xs font-bold text-slate-500">Người dùng sẽ {form.active ? 'lựa chọn được' : 'không thấy'} dịch vụ này.</p>
                             </div>
                         </div>
                     </div>

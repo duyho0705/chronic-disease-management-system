@@ -10,7 +10,6 @@ import {
     Filter,
     Search,
     Lightbulb,
-    CalendarPlus,
     X,
     Loader2,
     ChevronRight,

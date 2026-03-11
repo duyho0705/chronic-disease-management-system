@@ -5,7 +5,7 @@ import { useTenant } from '@/context/TenantContext'
 import { toastService } from '@/services/toast'
 import { Building2, Plus, Pencil, Save, X, Phone, MapPin } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { TenantBranchDto, CreateBranchRequest } from '@/types/api'
+import type { TenantBranchDto, CreateBranchRequest } from '@/api-client'
 
 export function BranchManagement() {
     const { tenantId } = useTenant()
@@ -81,7 +81,7 @@ export function BranchManagement() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (editingBranch) {
-            updateMutation.mutate({ id: editingBranch.id, data: form })
+            updateMutation.mutate({ id: editingBranch.id || '', data: form })
         } else {
             createMutation.mutate({ ...form, tenantId: tenantId! } as CreateBranchRequest)
         }

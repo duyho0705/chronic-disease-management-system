@@ -4,7 +4,7 @@ import { useTenant } from '@/context/TenantContext'
 import { useQuery } from '@tanstack/react-query'
 import { getDoctorPrescriptions } from '@/api/doctor'
 import { Loader2, FileX, ChevronLeft, ChevronRight } from 'lucide-react'
-import type { PrescriptionDto } from '@/types/api'
+import type { PrescriptionDto } from '@/api-client'
 
 export function PrescriptionList() {
     const { headers, tenantId } = useTenant()
@@ -183,8 +183,8 @@ export function PrescriptionList() {
                                                     {px.items?.length || 0} thuốc
                                                 </td>
                                                 <td className="px-6 py-4 text-center">
-                                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${getStatusStyle(px.status)}`}>
-                                                        {getStatusLabel(px.status)}
+                                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${getStatusStyle(px.status || '')}`}>
+                                                        {getStatusLabel(px.status || '')}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
@@ -293,7 +293,7 @@ export function PrescriptionList() {
                                         <div className="flex-1 min-w-0">
                                             <p className="text-xs font-black text-slate-800 dark:text-slate-200 truncate">{px.patientName}</p>
                                             <p className="text-[10px] text-slate-400 italic mt-0.5 font-medium">
-                                                {px.items?.length || 0} thuốc • {getStatusLabel(px.status)}
+                                                {px.items?.length || 0} thuốc • {getStatusLabel(px.status || '')}
                                             </p>
                                         </div>
                                         <span className="material-symbols-outlined text-slate-300 self-center group-hover:translate-x-1 transition-transform text-sm">chevron_right</span>

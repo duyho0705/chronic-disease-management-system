@@ -61,10 +61,12 @@ function SocialLoginHandler() {
           const token = await result.user.getIdToken()
           try {
             const res = await socialLogin({ idToken: token, tenantId: undefined, branchId: undefined })
-            setTenant(res.user.tenantId, res.user.branchId ?? undefined)
-            setTimeout(() => {
-              navigation.navigateAfterLogin(res.user)
-            }, 300)
+            if (res?.user) {
+              setTenant(res.user.tenantId || null, res.user.branchId ?? undefined)
+              setTimeout(() => {
+                navigation.navigateAfterLogin(res.user!)
+              }, 300)
+            }
           } catch (socialErr: any) {
             console.log("Social login needs tenant selection:", socialErr)
             if (socialErr.errorCode === ERROR_CODES.AUTH_TENANT_REQUIRED || socialErr.message === 'REQUIRE_TENANT_SELECTION') {
