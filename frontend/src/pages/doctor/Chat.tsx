@@ -29,6 +29,7 @@ import type { PatientChatConversationDto, PatientChatMessageDto } from '@/api-cl
 import VideoCall from '@/components/VideoCall'
 import { Link } from 'react-router-dom'
 import { PrescriptionModal } from '@/components/modals/PrescriptionModal'
+import { HistoryModal } from '@/components/modals/HistoryModal'
 
 interface ExtendedConversation extends PatientChatConversationDto {
     risk?: 'HIGH' | 'WARNING' | 'NORMAL';
@@ -117,6 +118,7 @@ export default function DoctorChat() {
     const [isVideoCallOpen, setIsVideoCallOpen] = useState(false)
     const [isSending, setIsSending] = useState(false)
     const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false)
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
 
     // 2. Fetch Chat History (Realtime)
     const { messages: firebaseHistory, loading: loadingHistory, sendMessage } = useFirebaseChat(
@@ -171,7 +173,7 @@ export default function DoctorChat() {
     }
 
     return (
-        <div className="flex h-[calc(100vh-80px)] w-full overflow-hidden font-display bg-white dark:bg-slate-900">
+        <div className="flex h-full w-full overflow-hidden font-display bg-white dark:bg-slate-900">
             <style>
                 {`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
@@ -183,16 +185,16 @@ export default function DoctorChat() {
             </style>
 
             {/* Left Column: Contact List */}
-            <aside className={`w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900/50 shrink-0 ${selectedPatientId ? 'hidden lg:flex' : 'flex'}`}>
+            <section className={`w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900/50 shrink-0 ${selectedPatientId ? 'hidden lg:flex' : 'flex'}`}>
                 <div className="p-4">
-                    <div className="relative group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-primary transition-colors" />
+                    <div className="relative">
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
                         <input
                             type="text"
                             placeholder="Tìm kiếm bệnh nhân..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/50 transition-all font-bold"
+                            className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/50"
                         />
                     </div>
                 </div>
@@ -203,65 +205,63 @@ export default function DoctorChat() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
-                    <div className="p-2 space-y-1">
+                    <div className="p-3 space-y-2">
                         {filteredConversations?.map((conv) => {
                             const isSelected = selectedPatientId === conv.patientId;
                             return (
                                 <div
                                     key={conv.id}
                                     onClick={() => setSelectedPatientId(conv.patientId || null)}
-                                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${isSelected
-                                        ? 'bg-primary/10 border border-primary/20'
+                                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors ${isSelected
+                                        ? 'bg-primary/5 border border-primary/20'
                                         : 'hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent'
                                         }`}
                                 >
                                     <div className="relative shrink-0">
-                                        <div className="size-12 rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm bg-slate-100">
-                                            {conv.avatarUrl ? (
-                                                <img src={conv.avatarUrl} alt={conv.patientName} className="size-full object-cover" />
-                                            ) : (
-                                                <div className="size-full flex items-center justify-center font-black text-xs text-slate-400">
-                                                    {(conv.patientName || '').charAt(0)}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <span className={`absolute bottom-0 right-0 size-3 border-2 border-white dark:border-slate-900 rounded-full ${conv.isOnline !== false ? 'bg-green-500' : 'bg-slate-300'}`}></span>
+                                        <img 
+                                            src={conv.avatarUrl || 'https://via.placeholder.com/150'} 
+                                            alt={conv.patientName} 
+                                            className={`size-12 rounded-full object-cover ${!conv.isOnline && conv.isOnline !== undefined ? 'grayscale' : ''}`} 
+                                        />
+                                        {conv.isOnline !== false && (
+                                            <span className="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-white dark:border-slate-900 rounded-full"></span>
+                                        )}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-center mb-0.5">
-                                            <h3 className={`text-sm font-bold truncate ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-white'}`}>{conv.patientName}</h3>
+                                            <h3 className="text-sm font-bold truncate text-slate-900 dark:text-white">{conv.patientName}</h3>
                                             <span className="text-[10px] text-slate-400">10:45</span>
                                         </div>
-                                        <p className="text-xs text-slate-600 dark:text-slate-400 truncate opacity-80">{conv.lastMessage || 'Bắt đầu trò chuyện'}</p>
+                                        <p className="text-xs text-slate-600 dark:text-slate-400 truncate">{conv.lastMessage || 'Bắt đầu trò chuyện'}</p>
                                         <div className="flex items-center gap-2 mt-1">
-                                            <span className={`px-1.5 py-0.5 text-[9px] rounded-md font-black uppercase tracking-wider ${conv.risk === 'HIGH' ? 'bg-red-100 text-red-600' : conv.risk === 'WARNING' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
+                                            <span className={`px-1.5 py-0.5 text-[10px] rounded-md font-bold ${conv.risk === 'HIGH' ? 'bg-red-100 text-red-600' : conv.risk === 'WARNING' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
                                                 {conv.risk === 'HIGH' ? 'Nguy cơ cao' : conv.risk === 'WARNING' ? 'Theo dõi' : 'Bình thường'}
                                             </span>
                                         </div>
                                     </div>
-                                    {conv.unreadCount ? (
-                                        <div className="size-5 rounded-full bg-primary flex items-center justify-center text-[10px] text-slate-900 font-black shadow-sm shadow-primary/20">{conv.unreadCount}</div>
-                                    ) : isSelected && (
-                                        <div className="size-5 rounded-full bg-primary flex items-center justify-center text-[10px] text-slate-900 font-black shadow-sm shadow-primary/20">2</div>
-                                    )}
+                                    {(conv.unreadCount || isSelected) ? (
+                                        <div className="size-5 rounded-full bg-primary flex items-center justify-center text-[10px] text-white font-bold">
+                                            {conv.unreadCount || 2}
+                                        </div>
+                                    ) : null}
                                 </div>
                             );
                         })}
                     </div>
                 </div>
-            </aside>
+            </section>
 
             {/* Middle Column: Chat Window */}
-            <main className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-900/20 overflow-hidden relative">
+            <section className="flex-1 flex flex-col bg-background-light dark:bg-background-dark relative">
                 {selectedPatientId ? (
                     <>
                         {/* Chat Header */}
-                        <header className="h-16 px-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between shrink-0 z-10">
+                        <div className="h-16 px-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between shrink-0">
                             <div className="flex items-center gap-3">
-                                <button onClick={() => setSelectedPatientId(null)} className="lg:hidden p-2 hover:bg-slate-100 rounded-xl transition-all">
-                                    <ArrowLeft className="w-5 h-5" />
+                                <button onClick={() => setSelectedPatientId(null)} className="lg:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                                    <span className="material-symbols-outlined">arrow_back</span>
                                 </button>
-                                <div className="size-10 rounded-full bg-slate-100 overflow-hidden border-2 border-primary/20 shadow-sm relative">
+                                <div className="size-10 rounded-full bg-slate-200 overflow-hidden">
                                     {selectedConv?.avatarUrl ? (
                                         <img className="w-full h-full object-cover" src={selectedConv.avatarUrl} alt={selectedConv.patientName} />
                                     ) : (
@@ -269,30 +269,29 @@ export default function DoctorChat() {
                                             {selectedConv?.patientName?.charAt(0)}
                                         </div>
                                     )}
-                                    <span className="absolute bottom-0 right-0 size-2.5 bg-green-500 border-2 border-white rounded-full"></span>
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold leading-none text-slate-900 dark:text-white uppercase tracking-tight">{selectedConv?.patientName}</h3>
+                                    <h3 className="text-sm font-bold leading-none">{selectedConv?.patientName}</h3>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <span className="size-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-none">Đang trực tuyến</span>
+                                        <span className="size-2 rounded-full bg-green-500"></span>
+                                        <span className="text-xs text-slate-500">Đang hoạt động • 10:45 AM</span>
                                     </div>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <button onClick={() => setIsVideoCallOpen(true)} className="p-2.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all group active:scale-95">
-                                    <Video className="w-5 h-5 group-hover:text-primary" />
+                                <button className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                                    <span className="material-symbols-outlined">call</span>
                                 </button>
-                                <button className="p-2.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all group">
-                                    <MoreVertical className="w-5 h-5 group-hover:text-primary" />
+                                <button onClick={() => setIsVideoCallOpen(true)} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                                    <span className="material-symbols-outlined">videocam</span>
                                 </button>
                             </div>
-                        </header>
+                        </div>
 
                         {/* Chat History */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-slate-50/30 dark:bg-transparent">
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
                             <div className="flex justify-center">
-                                <span className="text-[9px] bg-slate-200 dark:bg-slate-800 px-3 py-1.5 rounded-full text-slate-500 font-black uppercase tracking-[0.2em]">Hôm nay, 24 Tháng 5</span>
+                                <span className="text-[10px] bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded-full text-slate-500 font-medium">HÔM NAY</span>
                             </div>
 
                             <AnimatePresence>
@@ -307,8 +306,8 @@ export default function DoctorChat() {
                                     if (isSystem) {
                                         return (
                                             <div key={i} className="flex justify-center">
-                                                <span className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/40 px-4 py-1.5 rounded-xl flex items-center gap-2 text-[10px] text-red-700 dark:text-red-400 font-black uppercase tracking-wider">
-                                                    <AlertTriangle className="w-3.5 h-3.5" />
+                                                <span className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/40 px-4 py-1.5 rounded-xl flex items-center gap-2 text-[10px] text-red-700 dark:text-red-400 font-bold uppercase tracking-wider">
+                                                    <span className="material-symbols-outlined text-[10px]">warning</span>
                                                     {m.content}
                                                 </span>
                                             </div>
@@ -320,27 +319,23 @@ export default function DoctorChat() {
                                             key={i}
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            className={`flex gap-3 max-w-[85%] ${isSelf ? 'flex-row-reverse ml-auto' : ''}`}
+                                            className={`flex gap-3 max-w-[80%] ${isSelf ? 'flex-row-reverse ml-auto' : ''}`}
                                         >
                                             {!isSelf && (
-                                                <div className="size-8 rounded-full overflow-hidden self-end mb-4 border border-slate-200 shadow-sm bg-slate-100">
-                                                    {selectedConv?.avatarUrl ? (
-                                                        <img src={selectedConv.avatarUrl} alt="" className="size-full object-cover" />
-                                                    ) : (
-                                                        <div className="size-full flex items-center justify-center font-black text-[10px] text-slate-400">{selectedConv?.patientName?.charAt(0)}</div>
-                                                    )}
-                                                </div>
+                                                <img 
+                                                    src={selectedConv?.avatarUrl || 'https://via.placeholder.com/150'} 
+                                                    alt="Avatar" 
+                                                    className="size-8 rounded-full self-end object-cover" 
+                                                />
                                             )}
-                                            <div className={`space-y-1 ${isSelf ? 'items-end' : 'items-start'}`}>
-                                                <div className={`p-4 rounded-2xl shadow-sm border ${isSelf
-                                                    ? 'bg-primary text-slate-900 rounded-br-none border-primary shadow-lg shadow-primary/20'
-                                                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-bl-none border-slate-100 dark:border-slate-700'
-                                                    }`}>
-                                                    <p className="text-sm font-medium leading-relaxed">{m.content}</p>
-                                                    <span className={`text-[9px] mt-1.5 block font-bold uppercase tracking-tight opacity-70 ${isSelf ? 'text-right' : ''}`}>
-                                                        {new Date(m.sentAt || 0).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                    </span>
-                                                </div>
+                                            <div className={`${isSelf 
+                                                    ? 'bg-primary text-white p-3 rounded-2xl rounded-br-none shadow-md'
+                                                    : 'bg-white dark:bg-slate-800 p-3 rounded-2xl rounded-bl-none shadow-sm border border-slate-100 dark:border-slate-700'
+                                                }`}>
+                                                <p className="text-sm">{m.content}</p>
+                                                <span className={`text-[10px] mt-1 block ${isSelf ? 'opacity-70 text-right' : 'text-slate-400'}`}>
+                                                    {new Date(m.sentAt || 0).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
                                             </div>
                                         </motion.div>
                                     );
@@ -350,43 +345,59 @@ export default function DoctorChat() {
 
                         {/* Message Input Area */}
                         <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0">
-                            <div className="flex gap-2 mb-4 overflow-x-auto pb-1 no-scrollbar whitespace-nowrap">
-                                {quickResponses.map((qr, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => setMessage(qr.label)}
-                                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-sm ${qr.color}`}
-                                    >
-                                        <qr.icon className="w-4 h-4" />
-                                        {qr.label}
-                                    </button>
-                                ))}
+                            <div className="flex gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
+                                <button
+                                    onClick={() => setMessage('Gửi khuyến nghị')}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary text-xs font-bold rounded-full whitespace-nowrap"
+                                >
+                                    <span className="material-symbols-outlined text-sm">recommend</span>
+                                    Gửi khuyến nghị
+                                </button>
+                                <button
+                                    onClick={() => setMessage('Gửi cảnh báo')}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-100 text-red-600 text-xs font-bold rounded-full whitespace-nowrap"
+                                >
+                                    <span className="material-symbols-outlined text-sm">warning</span>
+                                    Gửi cảnh báo
+                                </button>
+                                <button
+                                    onClick={() => setMessage('Đơn thuốc điện tử')}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-600 text-xs font-bold rounded-full whitespace-nowrap"
+                                >
+                                    <span className="material-symbols-outlined text-sm">medication</span>
+                                    Đơn thuốc mới
+                                </button>
                             </div>
-                            <div className="flex items-end gap-3">
-                                <div className="flex gap-1 mb-2 shrink-0">
-                                    <button className="p-2.5 text-slate-400 hover:text-primary transition-all rounded-xl hover:bg-slate-50">
-                                        <ImageIcon className="w-5 h-5" />
+                            <div className="flex items-end gap-2">
+                                <div className="flex gap-1 mb-2">
+                                    <button className="p-2 text-slate-400 hover:text-primary transition-colors">
+                                        <span className="material-symbols-outlined">image</span>
                                     </button>
-                                    <button className="p-2.5 text-slate-400 hover:text-primary transition-all rounded-xl hover:bg-slate-50">
-                                        <Paperclip className="w-5 h-5" />
+                                    <button className="p-2 text-slate-400 hover:text-primary transition-colors">
+                                        <span className="material-symbols-outlined">attach_file</span>
                                     </button>
                                 </div>
-                                <div className="flex-1 relative bg-slate-100 dark:bg-slate-800 rounded-2xl p-2 flex items-end shadow-inner">
+                                <div className="flex-1 relative">
                                     <textarea
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
-                                        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-                                        className="w-full bg-transparent border-none focus:ring-0 text-sm font-bold resize-none py-2 px-3 placeholder:text-slate-400 min-h-[44px] max-h-32 custom-scrollbar"
-                                        placeholder="Nhập tin nhắn tư vấn..."
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleSend();
+                                            }
+                                        }}
+                                        className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-primary/50 resize-none"
+                                        placeholder="Nhập tin nhắn..."
                                         rows={1}
                                     />
                                 </div>
                                 <button
                                     onClick={handleSend}
                                     disabled={!message.trim() || isSending}
-                                    className="bg-primary hover:bg-primary/90 text-slate-900 p-3.5 rounded-2xl shadow-xl shadow-primary/20 transition-all hover:scale-110 active:scale-95 disabled:opacity-30 flex items-center justify-center shrink-0"
+                                    className="bg-primary hover:bg-primary/90 text-white p-3 rounded-xl shadow-lg transition-transform active:scale-95 disabled:opacity-50"
                                 >
-                                    {isSending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
+                                    {isSending ? <Loader2 className="w-6 h-6 animate-spin" /> : <span className="material-symbols-outlined">send</span>}
                                 </button>
                             </div>
                         </div>
@@ -394,7 +405,7 @@ export default function DoctorChat() {
                 ) : (
                     <div className="flex-1 flex flex-col items-center justify-center text-center p-20 space-y-6">
                         <div className="w-24 h-24 bg-primary/10 text-primary rounded-[2.5rem] flex items-center justify-center shadow-inner animate-pulse">
-                            <MessageSquare className="w-10 h-10" />
+                            <span className="material-symbols-outlined text-[40px]">forum</span>
                         </div>
                         <div>
                             <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Trung tâm Tư vấn Thông minh</h3>
@@ -406,13 +417,13 @@ export default function DoctorChat() {
                         </div>
                     </div>
                 )}
-            </main>
+            </section>
 
             {/* Right Column: Patient Summary */}
             {selectedPatientId && (
-                <aside className="w-72 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col p-5 overflow-y-auto custom-scrollbar hidden xl:flex shrink-0">
-                    <div className="text-center mb-10">
-                        <div className="size-20 mx-auto rounded-full border-4 border-primary/20 p-1 mb-3 ring-4 ring-primary/5 shadow-2xl">
+                <section className="w-72 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col p-5 overflow-y-auto custom-scrollbar hidden xl:flex shrink-0">
+                    <div className="text-center mb-6">
+                        <div className="size-20 mx-auto rounded-full border-4 border-primary/20 p-1 mb-3">
                             {selectedConv?.avatarUrl ? (
                                 <img
                                     src={selectedConv.avatarUrl}
@@ -425,86 +436,75 @@ export default function DoctorChat() {
                                 </div>
                             )}
                         </div>
-                        <h3 className="font-bold text-lg text-slate-900 dark:text-white uppercase tracking-tight">{selectedConv?.patientName}</h3>
-                        <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mt-1">Nam • 58 tuổi</p>
+                        <h3 className="font-bold text-lg">{selectedConv?.patientName}</h3>
+                        <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Nam, 58 tuổi</p>
                     </div>
 
-                    <div className="space-y-8">
-                        <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                            <div className="flex items-center justify-between mb-3">
-                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">CHỈ SỐ SINH TỒN</h4>
-                                <span className="text-[10px] text-primary font-bold uppercase">
-                                    Cập nhật 1h trước
-                                </span>
+                    <div className="space-y-4">
+                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                            <div className="flex items-center justify-between mb-2">
+                                <h4 className="text-xs font-bold text-slate-500">CHỈ SỐ SINH TỒN</h4>
+                                <span className="text-[10px] text-primary font-bold">Cập nhật 1h trước</span>
                             </div>
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between group">
-                                    <div className="flex items-center gap-3">
-                                        <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
-                                            <Activity className="w-4 h-4" />
-                                        </div>
-                                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-tighter">Huyết áp</span>
+                            <div className="grid grid-cols-1 gap-3">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-red-500 text-sm">blood_pressure</span>
+                                        <span className="text-xs text-slate-600 dark:text-slate-400">Huyết áp</span>
                                     </div>
-                                    <span className="text-sm font-black text-red-500">160/95</span>
+                                    <span className="text-sm font-bold text-red-500">160/95</span>
                                 </div>
-                                <div className="flex items-center justify-between group">
-                                    <div className="flex items-center gap-3">
-                                        <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                            <TrendingUp className="w-4 h-4" />
-                                        </div>
-                                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-tighter">Nhịp tim</span>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-blue-500 text-sm">favorite</span>
+                                        <span className="text-xs text-slate-600 dark:text-slate-400">Nhịp tim</span>
                                     </div>
-                                    <span className="text-sm font-black text-slate-900 dark:text-white">82 bpm</span>
+                                    <span className="text-sm font-bold">82 bpm</span>
                                 </div>
-                                <div className="flex items-center justify-between group">
-                                    <div className="flex items-center gap-3">
-                                        <div className="size-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500">
-                                            <Pill className="w-4 h-4" />
-                                        </div>
-                                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-tighter">Đường huyết</span>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-orange-500 text-sm">water_drop</span>
+                                        <span className="text-xs text-slate-600 dark:text-slate-400">Đường huyết</span>
                                     </div>
-                                    <span className="text-sm font-black text-slate-900 dark:text-white">6.8 mmol/L</span>
+                                    <span className="text-sm font-bold">6.8 mmol/L</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="space-y-3">
-                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Lối tắt hành động</h4>
-                            <Link to={`/patients/${selectedPatientId}/ehr`} className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
+                        <div className="space-y-2">
+                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Lối tắt nhanh</h4>
+                            <Link to={`/patients/${selectedPatientId}/ehr`} className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
                                 <div className="flex items-center gap-3">
-                                    <FileText className="w-4 h-4 text-primary" />
-                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Hồ sơ đầy đủ</span>
+                                    <span className="material-symbols-outlined text-primary">description</span>
+                                    <span className="text-sm font-medium">Xem hồ sơ đầy đủ</span>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-primary transition-colors" />
+                                <span className="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
                             </Link>
-                            <button onClick={() => setIsPrescriptionModalOpen(true)} className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
+                            <button onClick={() => setIsPrescriptionModalOpen(true)} className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
                                 <div className="flex items-center gap-3">
-                                    <Pill className="w-4 h-4 text-primary" />
-                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Kê đơn thuốc điện tử</span>
+                                    <span className="material-symbols-outlined text-primary">pill</span>
+                                    <span className="text-sm font-medium">Kê đơn thuốc</span>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-primary transition-colors" />
+                                <span className="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
                             </button>
-                            <button className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
+                            <button onClick={() => setIsHistoryModalOpen(true)} className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
                                 <div className="flex items-center gap-3">
-                                    <HistoryIcon className="w-4 h-4 text-primary" />
-                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Lịch sử khám</span>
+                                    <span className="material-symbols-outlined text-primary">history</span>
+                                    <span className="text-sm font-medium">Lịch sử khám</span>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-primary transition-colors" />
+                                <span className="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
                             </button>
-                        </div>
-
-                        <div className="p-5 bg-primary/5 rounded-2xl border border-primary/10 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:scale-125 transition-transform duration-500">
-                                <Sparkles className="w-12 h-12 text-primary" />
-                            </div>
-                            <div className="flex items-center gap-2 mb-3 relative z-10">
-                                <Sparkles className="w-4 h-4 text-primary" />
-                                <h5 className="text-[10px] font-black text-primary uppercase tracking-widest">Ghi chú AI</h5>
-                            </div>
-                            <p className="text-[11px] text-slate-600 dark:text-slate-400 italic font-medium leading-relaxed relative z-10">"Bệnh nhân có tiền sử cao huyết áp mãn tính, cần theo dõi sát sao vào buổi sáng."</p>
                         </div>
                     </div>
-                </aside>
+
+                    <div className="mt-8 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="material-symbols-outlined text-primary text-lg">info</span>
+                            <h5 className="text-xs font-bold text-primary">Ghi chú nhanh</h5>
+                        </div>
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 italic">Bệnh nhân có tiền sử cao huyết áp mãn tính, cần theo dõi sát sao vào buổi sáng.</p>
+                    </div>
+                </section>
             )}
 
             {isVideoCallOpen && (
@@ -521,6 +521,12 @@ export default function DoctorChat() {
                 onClose={() => setIsPrescriptionModalOpen(false)}
                 patientId={selectedPatientId!}
                 patientName={selectedConv?.patientName}
+            />
+
+            <HistoryModal 
+                isOpen={isHistoryModalOpen} 
+                onClose={() => setIsHistoryModalOpen(false)} 
+                patientName={selectedConv?.patientName} 
             />
         </div>
     );

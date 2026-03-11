@@ -318,7 +318,7 @@ export default function PatientAppointments() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setShowBooking(false)}
-                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+                            className="absolute inset-0 bg-slate-900/60"
                         />
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}

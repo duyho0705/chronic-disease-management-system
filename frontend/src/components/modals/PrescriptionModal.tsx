@@ -118,7 +118,7 @@ export function PrescriptionModal({ isOpen, onClose, patientName = 'Nguyễn Vă
     if (!isOpen) return null
 
     return createPortal(
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] p-4 sm:p-6 overflow-hidden">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 sm:p-6 overflow-hidden">
             {/* Backdrop */}
             <div className="fixed inset-0" onClick={() => {
                 onClose()

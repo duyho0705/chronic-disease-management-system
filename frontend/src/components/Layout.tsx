@@ -65,7 +65,7 @@ export function Layout() {
 
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark font-display flex antialiased">
+    <div className="h-screen overflow-hidden bg-background-light dark:bg-background-dark font-display flex antialiased">
       {/* ═══════════ Sidebar - Desktop (100% FontText.html) ═══════════ */}
       <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden lg:flex flex-col sticky top-0 h-screen z-50">
         <div className="p-6 flex items-center gap-3">
@@ -143,7 +143,7 @@ export function Layout() {
 
       {/* ═══════════ Mobile Sidebar Overlay ═══════════ */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 z-[60] bg-slate-900/40 lg:hidden transition-opacity" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* ═══════════ Mobile Sidebar ═══════════ */}
@@ -249,10 +249,12 @@ export function Layout() {
         </header>
 
         {/* ─── Page Content ─── */}
-        <div className={`flex-1 overflow-y-auto scrollbar-hide flex flex-col ${location.pathname.includes('/chat') ? '' : 'p-0'}`}>
+        <div className={`flex-1 flex flex-col ${location.pathname.includes('/chat') ? 'overflow-hidden' : 'overflow-y-auto scrollbar-hide'}`}>
           <Outlet />
           {/* Footer spacing */}
-          <div className="h-12 w-full shrink-0"></div>
+          {!location.pathname.includes('/chat') && (
+            <div className="h-12 w-full shrink-0"></div>
+          )}
         </div>
       </main>
 

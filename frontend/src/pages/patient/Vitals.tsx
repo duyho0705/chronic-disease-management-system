@@ -563,7 +563,7 @@ export default function PatientVitals() {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     onClick={() => setShowInputModal(false)}
-                                    className="absolute inset-0 bg-white/60 dark:bg-slate-900/50 backdrop-blur-sm"
+                                    className="absolute inset-0 bg-white/60 dark:bg-slate-900/50"
                                 />
                                 <motion.div
                                     initial={{ scale: 0.9, opacity: 0, y: 20 }}

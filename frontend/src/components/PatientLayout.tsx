@@ -259,7 +259,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsNotifOpen(false)}
-                            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60]"
+                            className="fixed inset-0 bg-slate-900/40 z-[60]"
                         />
                         <motion.div
                             initial={{ x: '100%' }}

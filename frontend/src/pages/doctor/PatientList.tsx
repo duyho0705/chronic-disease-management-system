@@ -1,9 +1,9 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PrescriptionModal } from '@/components/modals/PrescriptionModal'
 import { AppointmentModal } from '@/components/modals/AppointmentModal'
-import { ChevronDown, Plus, Loader2, Users, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Loader2, Users, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTenant } from '@/context/TenantContext'
 import { useQuery } from '@tanstack/react-query'
 import { getDoctorPatientList } from '@/api/doctor'
@@ -14,7 +14,6 @@ export function PatientList() {
     const { headers, tenantId } = useTenant()
     const [selectedRisk, setSelectedRisk] = useState<string | null>(null)
     const [selectedDisease, setSelectedDisease] = useState('Tất cả loại bệnh')
-    const [isDiseaseDropdownOpen, setIsDiseaseDropdownOpen] = useState(false)
     const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false)
     const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false)
     const [selectedPatientName, setSelectedPatientName] = useState('')
@@ -71,77 +70,76 @@ export function PatientList() {
         return pages
     }
 
+    // ─── Mock Data Helpers for UI Template ───
+    const getMockDisease = (id?: string) => {
+        if (!id) return 'Tiểu đường';
+        const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const diseases = ['Tiểu đường, Cao huyết áp', 'Tim mạch', 'Bệnh thận', 'Tiểu đường', 'Phổi tắc nghẽn'];
+        return diseases[hash % diseases.length];
+    }
+    const getMockStatus = (id?: string) => {
+        if (!id) return { label: 'Bình thường', classes: 'bg-emerald-100 text-emerald-600' };
+        const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        if (hash % 3 === 0) return { label: 'Nguy cơ cao', classes: 'bg-red-100 text-red-600' };
+        if (hash % 3 === 1) return { label: 'Cần theo dõi', classes: 'bg-orange-100 text-orange-500' };
+        return { label: 'Bình thường', classes: 'bg-emerald-100 text-emerald-600' };
+    }
+    const getMockMetric = (id?: string) => {
+        if (!id) return { title: 'Nhịp tim: 75 bpm', trend: 'Ổn định', trendUp: false, colorClass: 'text-emerald-500' };
+        const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        if (hash % 3 === 0) return { title: 'Đường huyết: 8.5 mmol/L', trend: 'Tăng 0.5 so với hôm qua', trendUp: true, colorClass: 'text-red-500' };
+        if (hash % 3 === 1) return { title: 'Huyết áp: 140/90 mmHg', trend: 'Tăng nhẹ', trendUp: true, colorClass: 'text-orange-500' };
+        return { title: 'Nhịp tim: 75 bpm', trend: 'Ổn định', trendUp: false, colorClass: 'text-emerald-500' };
+    }
+
     return (
-        <div className="font-display bg-background-light dark:bg-background-dark p-8">
+        <div className="font-display bg-background-light dark:bg-background-dark p-8 flex-1 overflow-y-auto">
+            <div className="mb-8">
+                <h2 className="text-3xl font-black tracking-tight mb-2 text-slate-900 dark:text-white">Danh sách bệnh nhân</h2>
+                <p className="text-slate-500 dark:text-slate-400">Quản lý và theo dõi chỉ số sức khỏe của bệnh nhân theo thời gian thực.</p>
+            </div>
+
             {/* Filters Section */}
-            <div className="flex flex-wrap items-center gap-6 mb-10">
-                <div className="flex items-center gap-3 bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <span className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-100 dark:border-slate-800 mr-2">Mức độ nguy cơ:</span>
-                    <div className="flex gap-2 pr-2">
-                        <button
-                            onClick={() => setSelectedRisk(selectedRisk === 'Nguy cơ cao' ? null : 'Nguy cơ cao')}
-                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-tighter ${selectedRisk === 'Nguy cơ cao' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-red-50 text-red-500 hover:bg-red-100'}`}
-                        >
-                            Nguy cơ cao
-                        </button>
-                        <button
-                            onClick={() => setSelectedRisk(selectedRisk === 'Cần theo dõi' ? null : 'Cần theo dõi')}
-                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-tighter ${selectedRisk === 'Cần theo dõi' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30' : 'bg-amber-50 text-amber-500 hover:bg-amber-100'}`}
-                        >
-                            Cần theo dõi
-                        </button>
-                        <button
-                            onClick={() => setSelectedRisk(selectedRisk === 'Bình thường' ? null : 'Bình thường')}
-                            className={`px-6 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-tighter ${selectedRisk === 'Bình thường' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-emerald-50 text-emerald-500 hover:bg-emerald-100'}`}
-                        >
-                            Bình thường
-                        </button>
-                    </div>
-                </div>
-
-                <div className="relative group">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+                <div className="flex items-center gap-1.5 bg-white p-1 rounded-full border border-slate-200">
+                    <span className="pl-3 pr-1 text-xs font-medium text-slate-400">MỨC ĐỘ NGUY CƠ:</span>
                     <button
-                        onClick={() => setIsDiseaseDropdownOpen(!isDiseaseDropdownOpen)}
-                        className="flex items-center gap-4 bg-white dark:bg-slate-900 px-6 py-3 rounded-full border border-slate-200 dark:border-slate-800 shadow-sm group hover:border-primary transition-all cursor-pointer min-w-[240px]"
+                        onClick={() => setSelectedRisk(selectedRisk === 'Nguy cơ cao' ? null : 'Nguy cơ cao')}
+                        className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${selectedRisk === 'Nguy cơ cao' ? 'bg-red-500 text-white shadow-sm' : 'bg-red-100 text-red-600 hover:bg-red-200'}`}
                     >
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap">Loại bệnh:</span>
-                        <span className="text-sm font-bold text-slate-700 dark:text-slate-200 flex-1 text-left">{selectedDisease}</span>
-                        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isDiseaseDropdownOpen ? 'rotate-180' : ''}`} />
+                        Nguy cơ cao
                     </button>
-
-                    <AnimatePresence>
-                        {isDiseaseDropdownOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl z-50 overflow-hidden py-1"
-                            >
-                                {['Tất cả loại bệnh', 'Tiểu đường', 'Cao huyết áp', 'Tim mạch', 'Bệnh thận', 'Phổi tắc nghẽn'].map((disease) => (
-                                    <button
-                                        key={disease}
-                                        onClick={() => {
-                                            setSelectedDisease(disease)
-                                            setIsDiseaseDropdownOpen(false)
-                                        }}
-                                        className="w-full px-6 py-3 text-left hover:bg-primary/10 transition-colors flex items-center justify-between group/item"
-                                    >
-                                        <span className={`text-sm font-bold ${selectedDisease === disease ? 'text-primary' : 'text-slate-600 dark:text-slate-400'}`}>
-                                            {disease}
-                                        </span>
-                                        {selectedDisease === disease && (
-                                            <div className="size-2 bg-primary rounded-full shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
-                                        )}
-                                    </button>
-                                ))}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    <button
+                        onClick={() => setSelectedRisk(selectedRisk === 'Cần theo dõi' ? null : 'Cần theo dõi')}
+                        className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${selectedRisk === 'Cần theo dõi' ? 'bg-orange-500 text-white shadow-sm' : 'bg-orange-100 text-orange-500 hover:bg-orange-200'}`}
+                    >
+                        Cần theo dõi
+                    </button>
+                    <button
+                        onClick={() => setSelectedRisk(selectedRisk === 'Bình thường' ? null : 'Bình thường')}
+                        className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${selectedRisk === 'Bình thường' ? 'bg-[#22c55e] text-white shadow-sm' : 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200'}`}
+                    >
+                        Bình thường
+                    </button>
                 </div>
 
-                <button className="ml-auto flex items-center gap-3 px-8 py-4 bg-primary text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all active:scale-95">
-                    <Plus className="w-4 h-4" />
-                    <span>Thêm bệnh nhân</span>
+                <div className="flex items-center gap-1.5 bg-white py-1 pl-4 pr-2 rounded-full border border-slate-200 h-[40px]">
+                    <span className="text-xs font-medium text-slate-400">LOẠI BỆNH:</span>
+                    <select
+                        value={selectedDisease}
+                        onChange={(e) => setSelectedDisease(e.target.value)}
+                        className="bg-transparent border-none text-sm font-semibold text-slate-800 focus:ring-0 py-0 pl-1 pr-6 cursor-pointer outline-none w-[160px]"
+                    >
+                        <option>Tất cả loại bệnh</option>
+                        <option>Tiểu đường</option>
+                        <option>Cao huyết áp</option>
+                        <option>Tim mạch</option>
+                    </select>
+                </div>
+
+                <button className="ml-auto flex items-center gap-2 px-6 py-2 bg-[#4ade80] text-white font-semibold rounded-full hover:bg-green-500 transition-colors h-[40px] shadow-sm">
+                    <span className="material-symbols-outlined text-xl">person_add</span>
+                    <span className="text-sm">Thêm bệnh nhân</span>
                 </button>
             </div>
 
@@ -162,96 +160,107 @@ export function PatientList() {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-slate-50 dark:bg-slate-800/50">
-                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Bệnh nhân</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Giới tính</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">SĐT</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Cập nhật</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Thao tác</th>
+                                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200">
+                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Bệnh nhân</th>
+                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Loại bệnh</th>
+                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Chỉ số gần nhất</th>
+                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Trạng thái</th>
+                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Cập nhật</th>
+                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                {patients.map((patient, idx) => (
-                                    <motion.tr
-                                        key={patient.id}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: idx * 0.03 }}
-                                        className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer group"
-                                        onClick={() => navigate(`/patients/${patient.id}/ehr`)}
-                                    >
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-3">
-                                                <div className="size-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm flex items-center justify-center">
-                                                    {patient.avatarUrl ? (
-                                                        <img alt={patient.fullNameVi} className="w-full h-full object-cover" src={patient.avatarUrl} />
-                                                    ) : (
-                                                        <span className="font-black text-slate-400 text-sm">
-                                                            {patient.fullNameVi?.charAt(0)?.toUpperCase()}
-                                                        </span>
-                                                    )}
+                                {patients.map((patient, idx) => {
+                                    const mockStatus = getMockStatus(patient.id);
+                                    const mockMetric = getMockMetric(patient.id);
+
+                                    return (
+                                        <motion.tr
+                                            key={patient.id}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: idx * 0.03 }}
+                                            className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer group"
+                                            onClick={() => navigate(`/patients/${patient.id}/ehr`)}
+                                        >
+                                            <td className="px-6 py-4 border-b border-slate-100">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                                                        {patient.avatarUrl ? (
+                                                            <img alt={patient.fullNameVi} className="w-full h-full object-cover" src={patient.avatarUrl} />
+                                                        ) : (
+                                                            <span className="font-bold text-slate-400">
+                                                                {patient.fullNameVi?.charAt(0)?.toUpperCase()}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">{patient.fullNameVi}</div>
+                                                        <div className="text-xs text-slate-500">{calculateAge(patient.dateOfBirth)} tuổi</div>
+                                                    </div>
                                                 </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">{patient.fullNameVi}</span>
-                                                    <span className="text-xs text-slate-500">{calculateAge(patient.dateOfBirth)} tuổi</span>
+                                            </td>
+                                            <td className="px-6 py-4 border-b border-slate-100">
+                                                <div className="font-medium text-slate-700 dark:text-slate-300">{getMockDisease(patient.id)}</div>
+                                            </td>
+                                            <td className="px-6 py-4 border-b border-slate-100">
+                                                <div className="font-bold text-slate-800 dark:text-slate-200">{mockMetric.title}</div>
+                                                <div className={`text-xs ${mockMetric.colorClass} flex items-center`}>
+                                                    <span className="material-symbols-outlined text-[14px]">
+                                                        {mockMetric.trendUp ? 'trending_up' : 'trending_flat'}
+                                                    </span>
+                                                    {mockMetric.trend}
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${patient.gender === 'MALE' ? 'bg-blue-50 text-blue-600 border-blue-200' : patient.gender === 'FEMALE' ? 'bg-pink-50 text-pink-600 border-pink-200' : 'bg-slate-50 text-slate-500 border-slate-200'}`}>
-                                                {patient.gender === 'MALE' ? 'Nam' : patient.gender === 'FEMALE' ? 'Nữ' : patient.gender || '–'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5 text-sm text-slate-600 dark:text-slate-400 font-medium">
-                                            {patient.phone || '–'}
-                                        </td>
-                                        <td className="px-6 py-5 text-sm text-slate-500 truncate max-w-[200px]">
-                                            {patient.email || '–'}
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <span className="text-xs text-slate-400">{formatUpdate(patient.updatedAt)}</span>
-                                        </td>
-                                        <td className="px-6 py-5 text-right">
-                                            <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-                                                <button
-                                                    className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
-                                                    title="Xem chi tiết"
-                                                    onClick={() => navigate(`/patients/${patient.id}/ehr`)}
-                                                >
-                                                    <span className="material-symbols-outlined text-xl">visibility</span>
-                                                </button>
-                                                <button
-                                                    className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
-                                                    title="Đặt lịch tái khám"
-                                                    onClick={() => {
-                                                        setSelectedPatientName(patient.fullNameVi || '')
-                                                        setIsAppointmentModalOpen(true)
-                                                    }}
-                                                >
-                                                    <span className="material-symbols-outlined text-xl">event_available</span>
-                                                </button>
-                                                <button
-                                                    className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
-                                                    title="Nhắn tin"
-                                                    onClick={() => navigate('/chat')}
-                                                >
-                                                    <span className="material-symbols-outlined text-xl">chat</span>
-                                                </button>
-                                                <button
-                                                    className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
-                                                    title="Kê đơn thuốc điện tử"
-                                                    onClick={() => {
-                                                        setSelectedPatientName(patient.fullNameVi || '')
-                                                        setIsPrescriptionModalOpen(true)
-                                                    }}
-                                                >
-                                                    <span className="material-symbols-outlined text-xl">description</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </motion.tr>
-                                ))}
+                                            </td>
+                                            <td className="px-6 py-4 border-b border-slate-100">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${mockStatus.classes}`}>
+                                                    {mockStatus.label}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 border-b border-slate-100">
+                                                <span className="text-xs text-slate-500">{formatUpdate(patient.updatedAt)}</span>
+                                            </td>
+                                            <td className="px-6 py-4 border-b border-slate-100 text-right">
+                                                <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                                                    <button
+                                                        className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
+                                                        title="Xem chi tiết"
+                                                        onClick={() => navigate(`/patients/${patient.id}/ehr`)}
+                                                    >
+                                                        <span className="material-symbols-outlined text-xl">visibility</span>
+                                                    </button>
+                                                    <button
+                                                        className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
+                                                        title="Đặt lịch tái khám"
+                                                        onClick={() => {
+                                                            setSelectedPatientName(patient.fullNameVi || '')
+                                                            setIsAppointmentModalOpen(true)
+                                                        }}
+                                                    >
+                                                        <span className="material-symbols-outlined text-xl">event_available</span>
+                                                    </button>
+                                                    <button
+                                                        className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
+                                                        title="Nhắn tin"
+                                                        onClick={() => navigate('/chat')}
+                                                    >
+                                                        <span className="material-symbols-outlined text-xl">chat</span>
+                                                    </button>
+                                                    <button
+                                                        className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/20 hover:text-primary transition-all text-slate-500"
+                                                        title="Kê đơn thuốc điện tử"
+                                                        onClick={() => {
+                                                            setSelectedPatientName(patient.fullNameVi || '')
+                                                            setIsPrescriptionModalOpen(true)
+                                                        }}
+                                                    >
+                                                        <span className="material-symbols-outlined text-xl">description</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

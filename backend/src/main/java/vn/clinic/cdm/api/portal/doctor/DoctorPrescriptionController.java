@@ -63,6 +63,15 @@ public class DoctorPrescriptionController {
         return ResponseEntity.ok(ApiResponse.success(clinicalService.mapPrescriptionToDto(p)));
     }
 
+    @PostMapping
+    @Operation(summary = "Tạo đơn thuốc mới")
+    public ResponseEntity<ApiResponse<PrescriptionDto>> createPrescription(
+            @jakarta.validation.Valid @RequestBody vn.clinic.cdm.api.dto.medication.CreatePrescriptionRequest request) {
+        Prescription p = clinicalService.createPrescription(request);
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
+                .body(ApiResponse.success(clinicalService.mapPrescriptionToDto(p)));
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Cập nhật đơn thuốc điện tử (chẩn đoán, ghi chú)")
     public ResponseEntity<ApiResponse<PrescriptionDto>> updatePrescription(

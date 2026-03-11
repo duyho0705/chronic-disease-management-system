@@ -40,7 +40,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={onClose}
-                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"
+                    className="absolute inset-0 bg-slate-900/40"
                 />
 
                 {/* Modal Container */}

@@ -1,15 +1,12 @@
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: cdm-postgres-db
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+  redis:
+    image: redis:7-alpine
+    container_name: cdm-redis
     ports:
-      - "${DB_PORT}:5432"
+      - "6379:6379"
     volumes:
-      - cdm_postgres_data:/var/lib/postgresql/data
+      - cdm_redis_data:/data
+    command: redis-server --save 60 1 --loglevel warning
 
 volumes:
-  cdm_postgres_data:
+  cdm_redis_data:
